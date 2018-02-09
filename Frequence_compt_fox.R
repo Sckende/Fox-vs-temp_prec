@@ -1,4 +1,4 @@
-setwd("/Users/nicolas/Desktop/Claire/R_analysis/Data")
+setwd("/Users/nicolas/OneDrive - Université de Moncton/Doc doc doc/Ph.D. - ANALYSES/R analysis/Data")
 
 #####Chargement du fichier comportements renard 2015#####
 comp<-read.table("Fox_compt_2015.txt", h=T, sep="\t",dec=",")
@@ -33,6 +33,7 @@ TAB
 
 require(plotrix)
 pie3D(TAB$TOT,labels = TAB$i, explode = 0.15,labelcex=0.7, main="Pie chart of fox behaviour in 2015", col = c("seagreen1","salmon","red2","olivedrab2","orange","navy","bisque"))
+
 
 #####Chargement du fichier comportements renard 1996-1999#####
 
@@ -89,9 +90,9 @@ pie3D(TAB$TOT,labels = TAB$i, explode = 0.15,labelcex=0.7, main="Fréquence des 
 #radial.pie(TAB$TOT,labels = TAB$i,labelcex=0.7, main="Fréquence des comportements de renard 2015", col = c("seagreen1","salmon","red2","olivedrab2","orange","navy","bisque"), radlab=T)
 
 
-################ Compilation pour calcul de taux d'attaque ####################
+################ Compilation pour calcul de taux d'attaque par individu au travers de toutes les années ***####################
 ####### Calcul des moyennes d'attaque individuelles ######
-#### Tentative de partir des fichiers brutes de time budget ####
+#### À partir des fichiers brutes de time budget ####
 
 # ICI CREATION DE BDD AVEC UN TAUX D'ATTAQUE PAR INDIVIDU
 
@@ -468,7 +469,7 @@ unique(ff2$year[which(ff2$lmg_year == "crash")]) # "peak" / "inter"
 ####ajout des données de températures moyennes et maximales et de précipitations cumulées
 #####Températures#####
 #chargement des données de températures
-temp<-read.table("TEMP_Tair moy 1989-2016 BYLCAMP.txt", h=T, sep="\t", dec=",")
+temp<-read.table("TEMP_Tair moy 1989-2017 BYLCAMP.txt", h=T, sep="\t", dec=",")
 summary(temp)
 #temp<-na.omit(temp)
 #transformation date en jour julien#
@@ -482,12 +483,13 @@ temp$JJ<-as.numeric(temp$JJ)
 
 #calcul de la température moyenne entre la première et la dernière date d'observation de renard pour chaque année
 #retrait de 2016 car données manquantes pour températures
-ff2 <- ff2[!ff2$year == 2016,]
+
 for(n in 1:nrow(ff2)){
   d<-ff2$year[n]
   #mini_jour <- ff2$min_date[n]
   #maxi_jour <- ff2$max_date[n]
   ff2$max_temp[n] <- max(temp$TEMP[temp$JJ >= ff2$min_date[n] & temp$JJ <= ff2$max_date[n] & temp$YEAR == d], na.rm=T)
+  ff2$min_temp[n] <- min(temp$TEMP[temp$JJ >= ff2$min_date[n] & temp$JJ <= ff2$max_date[n] & temp$YEAR == d], na.rm=T)
   ff2$mean_temp[n] <- mean(temp$TEMP[temp$JJ >= ff2$min_date[n] & temp$JJ <= ff2$max_date[n] & temp$YEAR == d], na.rm=T)
   ff2$sd_temp[n] <- sd(temp$TEMP[temp$JJ >= ff2$min_date[n] & temp$JJ <= ff2$max_date[n] & temp$YEAR == d], na.rm=T)
 }
@@ -495,7 +497,7 @@ summary(ff2)
 
 plot(ff2$mean_temp,ff2$atq_rate)
 
-smoothingSpline = smooth.spline(ff2$max_temp, ff2$atq_rate, spar=0.1)
+smoothingSpline = smooth.spline(ff2$max_temp, ff2$atq_rate, spar=0.5)
 plot(ff2$max_temp,ff2$atq_rate, type = "p", col = "darkorange", font.axis = 3, las = 1, xaxt = "n", xlab = "Maximal temperature", ylab = "Attack rate") #semble y avoir une tendance avec une température optimale d'attaque pour le renard
 # Modification de l'axe des x
 xtick<-seq(7, 11, by=1)
@@ -522,8 +524,12 @@ for(n in 1:nrow(ff2)){
 summary(ff2)
 
 plot(ff2$cumul_prec,ff2$atq_rate)
+lines(smooth.spline(ff2$cumul_prec,ff2$atq_rate, spar = 0.6))
 summary(ff2)
 
+fff <- ff2[ff2$cumul_prec <= 60,]
+plot(fff$cumul_prec, fff$atq_rate)
+lines(smooth.spline(fff$cumul_prec,fff$atq_rate, spar = 0.6))
 #Rajout des variables de productivite primaire et de time lag prop_fox
 #creation dataframe pour prop_fox_dens_lag (decalage d'une annee par rapport à l'abondance de lmg)
 foxylag <- data.frame("year" = rep(NA, time = length(fox$year)), "prop_repro" = rep(NA, time = length(fox$year)))
