@@ -1,5 +1,5 @@
 getwd()
-setwd(dir = "/Users/nicolas/OneDrive - Université de Moncton/Doc doc doc/Ph.D. - ANALYSES/R analysis/Data")
+setwd(dir = "C:/Users/HP_9470m/OneDrive - Université de Moncton/Doc doc doc/Ph.D. - ANALYSES/R analysis/Data")
 list.files()
 o <- read.table("FOX-functional response V2.txt", h = T, sep = ",", dec = ".")
 summary(o)
