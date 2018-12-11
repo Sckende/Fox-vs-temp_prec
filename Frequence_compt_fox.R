@@ -1,4 +1,4 @@
-setwd("/Users/nicolas/OneDrive - Université de Moncton/Doc doc doc/Ph.D. - ANALYSES/R analysis/Data")
+setwd("C:/Users/HP_9470m/OneDrive - Université de Moncton/Doc doc doc/Ph.D. - ANALYSES/R analysis/Data")
 
 #####Chargement du fichier comportements renard 2015#####
 comp<-read.table("Fox_compt_2015.txt", h=T, sep="\t",dec=",")
@@ -43,7 +43,7 @@ summary(comp1)
 
 #comp1$CPT[comp1$CPT=="ATTAQ"]="ATTAQUE"#commande qui génère des NAs, ne fonctionne pas sur variable qualitative
 levels(comp1$CPT)[1]="ATTAQUE"#pour modification des valeurs qualitatives
-#comp1[match("ATTAQ",levels(comp1$CPT))]<-"ATTAQUE”#commande Nico
+#comp1[match("ATTAQ",levels(comp1$CPT))]<-"ATTAQUE”#commande Nicolas
 
 
 comp1a<-subset(comp1,YEAR==2004);comp1a<-comp1a[order(comp1a$CPT),]
