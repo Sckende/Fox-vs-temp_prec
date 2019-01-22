@@ -1,4 +1,4 @@
-setwd("/home/claire/Bureau/FOX_mvt_weather")
+setwd("/Users/nicolas/OneDrive - Université de Moncton/Doc doc doc/Ph.D. - ANALYSES/R analysis/Data")
 list.files()
 mvt <- read.table("daily_distances_0701_to_0716.txt", h = T, sep = ";")
 prec <- read.table("PREC_Bylot_2018.txt", h = T, sep = "\t", dec = ",")
