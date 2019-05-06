@@ -1,4 +1,4 @@
-####### Calcul des moyennes d'attaque individuelles ######
+####### Calcul des moyennes d'attaque PAR INDIVIDU PAR SAISON ######
 #### Tentative de partir des fichiers brutes de time budget ####
 
 getwd ()
