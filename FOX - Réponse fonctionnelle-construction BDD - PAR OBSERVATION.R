@@ -1,4 +1,4 @@
-####### Calcul des moyennes d'attaque PAR INDIVIDU PAR SAISON ######
+####### Calcul des moyennes d'attaque PAR INDIVIDU PAR OBSERVATION ######
 #### Tentative de partir des fichiers brutes de time budget ####
 
 getwd ()
@@ -7,46 +7,108 @@ setwd(dir = "C:/Users/HP_9470m/OneDrive - Université de Moncton/Doc doc doc/Ph.
 rm( list = ls ())
 
 ######################## Fox - 2004 ###########################
+# Loading database
 rf<-read.table("Fox-2004-fonct-essai.txt", sep = "\t", h = T)
 summary(rf)
+head(rf)
+
+# Checking ID levels
 levels(rf$ID)
 
-# Récupération de la durée totale des observations par individu
-TAB <- NULL
-TAB1 <- NULL
+# Checking behaviours levels
+levels(rf$Behavior)
 
-for (j in unique(rf$ID)){
-  for (i in unique(rf$Date[rf$ID == j])) {#pour diminuer le risque de perdre une 2 durées d'observation identiques pour un même individu
-  id <- j
-  date <- i
- obs<-sum(unique(rf$Obs_lenght[rf$ID==j & rf$Date == i]))
-  
- di <-data.frame(id, date, obs)
-TAB <- rbind(TAB, di)
+# Split database depending on Date, ID and, Obs_length
+data <- split(rf, paste(rf$Date, rf$ID, rf$Obs_lenght))
 
-  }}
-print(TAB)
+# Computation of "all_atq_rate" = atq rate per obs per ind for all items (lemming, goose, eggs, and gosling)
+levels(rf$Item[rf$Behavior == "attaque"]) # keep items: couple, egg, lemming, oie, young
 
-for (k in unique(TAB$id)) {
-  fox <- k
-  tot_obs <- sum(TAB$obs[TAB$id == k])
-  bo <- data.frame(fox, tot_obs)
-  TAB1 <- rbind(TAB1, bo)
-}
-print(TAB1)
+data <- lapply(data, function(x){
+  for(i in 1:length(x$Behavior)){
+    if(x$Behavior[i] == "attaque" & x$Item[i] %in% c("couple", "egg", "lemming", "oie", "young")){
+        x$all_atq[i] <- 1
+      } else {
+        x$all_atq[i] <- 0
+    }
+  }
+  x$all_atq_rate <- sum(x$all_atq)/x$Obs_lenght[1]  
+  x
+})
 
-# Récupération du nombre d'attaque sur oie par individu
-levels(rf$Behavior); levels(rf$Item)
-rf1<-subset(rf, rf$Behavior == "attaque" & rf$Item == c("couple", "egg", "oie", "young")) #subset uniquement avec les compt d'attaque et les items associés aux oies
-rf1<-droplevels(rf1) #retirer les levels == à 0
-summary(rf1)
+# Computation of "goo_atq_rate" = atq rate per obs per ind for goose items (goose, eggs, and gosling)
+levels(rf$Item[rf$Behavior == "attaque"]) # keep items: couple, egg, oie, young
 
-#Nombre d'attaque total par individu
-SUM_atq <- table(rf1$ID, rf1$Behavior)
-SUM_atq <- as.data.frame(SUM_atq); names(SUM_atq) <- c("ID", "Behaviour", "atq")
+data <- lapply(data, function(x){
+  for(i in 1:length(x$Behavior)){
+    if(x$Behavior[i] == "attaque" & x$Item[i] %in% c("couple", "egg", "oie", "young")){
+      x$goo_atq[i] <- 1
+    } else {
+      x$goo_atq[i] <- 0
+      }
+  }
+  x$goo_atq_rate <- sum(x$goo_atq)/x$Obs_lenght[1]
+  x
+})
 
-fox_fonc <- cbind(rep(2004, dim(TAB1)[1]),rep(min(TAB$date), dim(TAB1)[1]),rep(max(TAB$date), dim(TAB1)[1]),TAB1, SUM_atq$atq[match(TAB1$fox,SUM_atq$ID)]) #SUM_atq$atq[match(TAB1$fox,SUM_atq$ID)] #Match les valeurs du nombre d'attaque par les ID
-names(fox_fonc) <- c("year","min_date","max_date",names(TAB1), "tot_atq")
+FOX_ATQ <- do.call("rbind", data)
+head(FOX_ATQ)
+
+######################## Fox - 2005 ###########################
+# Loading database
+rf<-read.table("Fox-2005-fonct-essai.txt", sep = "\t", h = T)
+summary(rf)
+head(rf)
+
+# Checking ID levels
+levels(rf$ID)
+
+# Checking behaviours levels
+levels(rf$Behavior)
+
+# Split database depending on Date, ID and, Obs_length
+data <- split(rf, paste(rf$Date, rf$ID, rf$Obs_lenght))
+
+# Computation of "all_atq_rate" = atq rate per obs per ind for all items (lemming, goose, eggs, and gosling)
+levels(rf$Item[rf$Behavior == "attaque"]) # keep items: couple, egg, lemming, oie, young
+table(rf$Item[rf$Behavior == "attaque"])
+
+data <- lapply(data, function(x){
+  for(i in 1:length(x$Behavior)){
+    if(x$Behavior[i] == "attaque" & x$Item[i] %in% c("couple", "egg", "lemming", "oie", "young")){
+      x$all_atq[i] <- 1
+    } else {
+      x$all_atq[i] <- 0
+    }
+  }
+  x$all_atq_rate <- sum(x$all_atq)/x$Obs_lenght[1]  
+  x
+})
+
+# Computation of "goo_atq_rate" = atq rate per obs per ind for goose items (goose, eggs, and gosling)
+levels(rf$Item[rf$Behavior == "attaque"]) # keep items: couple, egg, oie, young
+
+data <- lapply(data, function(x){
+  for(i in 1:length(x$Behavior)){
+    if(x$Behavior[i] == "attaque" & x$Item[i] %in% c("couple", "egg", "oie", "young")){
+      x$goo_atq[i] <- 1
+    } else {
+      x$goo_atq[i] <- 0
+    }
+  }
+  x$goo_atq_rate <- sum(x$goo_atq)/x$Obs_lenght[1]
+  x
+})
+
+rf <- do.call("rbind", data)
+FOX_ATQ <- rbind(FOX_ATQ, rf) # See for the warning message
+
+
+
+
+
+
+
 
 ######################## Fox - 2005 ###########################
 rf<-read.table("Fox-2005-fonct-essai.txt", sep = "\t", h = T)
