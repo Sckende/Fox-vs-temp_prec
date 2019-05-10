@@ -53,6 +53,12 @@ data <- lapply(data, function(x){
 
 FOX_ATQ <- do.call("rbind", data)
 head(FOX_ATQ)
+summary(FOX_ATQ)
+FOX_ATQ$Behavior <- as.character(FOX_ATQ$Behavior)
+FOX_ATQ$Item <- as.character(FOX_ATQ$Item)
+FOX_ATQ$Habitat <- as.character(FOX_ATQ$Habitat)
+FOX_ATQ$Cache <- as.character(FOX_ATQ$Cache)
+FOX_ATQ$ID <- as.character(FOX_ATQ$ID)
 
 ######################## Fox - 2005 ###########################
 # Loading database
@@ -101,319 +107,185 @@ data <- lapply(data, function(x){
 })
 
 rf <- do.call("rbind", data)
-FOX_ATQ <- rbind(FOX_ATQ, rf) # See for the warning message
 
-
-
-
-
-
-
-
-######################## Fox - 2005 ###########################
-rf<-read.table("Fox-2005-fonct-essai.txt", sep = "\t", h = T)
 summary(rf)
-levels(rf$ID)
+rf$Behavior <- as.character(rf$Behavior)
+rf$Item <- as.character(rf$Item)
+rf$Habitat <- as.character(rf$Habitat)
+rf$Cache <- as.character(rf$Cache)
+rf$ID <- as.character(rf$ID)
 
-# Récupération de la durée totale des observations par individu
-TAB <- NULL
-TAB1 <- NULL
-
-for (j in unique(rf$ID)){
-  for (i in unique(rf$Date[rf$ID == j])) {#pour diminuer le risque de perdre une 2 durées d'observation identiques pour un même individu
-    id <- j
-    date <- i
-    obs<-sum(unique(rf$Obs_lenght[rf$ID==j & rf$Date == i]))
-    
-    di <-data.frame(id, date, obs)
-    TAB <- rbind(TAB, di)
-    
-  }}
-print(TAB)
-
-for (k in unique(TAB$id)) {
-  fox <- k
-  tot_obs <- sum(TAB$obs[TAB$id == k])
-  bo <- data.frame(fox, tot_obs)
-  TAB1 <- rbind(TAB1, bo)
-}
-print(TAB1)
-
-# Récupération du nombre d'attaque sur oie par individu
-levels(rf$Behavior); levels(rf$Item)
-rf1<-subset(rf, rf$Behavior == "attaque" & rf$Item == c("couple", "egg", "oie", "young")) #subset uniquement avec les compt d'attaque et les items associés aux oies
-rf1<-droplevels(rf1) #retirer les levels == à 0
-summary(rf1)
-
-#Nombre d'attaque total par individu
-SUM_atq <- table(rf1$ID, rf1$Behavior)
-SUM_atq <- as.data.frame(SUM_atq); names(SUM_atq) <- c("ID", "Behaviour", "atq")
-SUM_atq
-
-ff <- cbind(rep(2005, dim(TAB1)[1]),rep(min(TAB$date), dim(TAB1)[1]),rep(max(TAB$date), dim(TAB1)[1]),TAB1, SUM_atq$atq[match(TAB1$fox,SUM_atq$ID)]) #SUM_atq$atq[match(TAB1$fox,SUM_atq$ID)] #Match les valeurs du nombre d'attaque par les ID
-names(ff) <- c("year","min_date", "max_date",names(TAB1), "tot_atq")
-
-fox_fonc <- rbind(fox_fonc, ff)
+FOX_ATQ <- rbind(FOX_ATQ, rf) # See for the warning message
+names(FOX_ATQ)
+FOX_ATQ <- FOX_ATQ[,-c(1, 6, 8:10)]
 
 ######################## Fox - 1996-1999 ###########################
-rf<-read.table("Fox-1996-1999-fonct-essai.txt", sep = "\t", h = T)
+rf<-read.table("FOX-1996-1999-fonct-essai_V2.txt", sep = "\t", h = T)
+head(rf)
+names(rf)
 summary(rf)
 rf$ID <- as.factor(rf$ID)
+
+# Conversion of OBS_LENGTH in second
+rf$OBS_LENGTH <- as.numeric(substr(rf$OBS_LENGTH, 4, 5))
+rf$OBS_LENGTH <- rf$OBS_LENGTH*60
+
+
+# Checking ID levels
 levels(rf$ID)
-rf$PROIE[is.na(rf$PROIE)] <- 0
 
-# Création d'une nouvelle variable Behavior 
-for (x in 1:nrow(rf)) {
-  if (rf$ATA[x] == 1) {
-    rf$Behavior[x] <- "attaque" 
-  } else {
-    rf$Behavior[x] <- "autre"
-  }
-}
+# Checking behaviours levels
+levels(rf$BEHAV)
 
-# Création d'une nouvelle variable Item
-for (x in 1:nrow(rf)) {
-  if (rf$PROIE[x] == 0) {
-    rf$Item[x] <- 0
-  } 
-  if (rf$PROIE[x] == 1){
-    rf$Item[x] <- "oie"
-  } 
-  if (rf$PROIE[x] == 2){
-    rf$Item[x] <- "lemming"
-  }
-}
+# Checking items levels
+levels(rf$SP_PREDAT)
 
-rf$Behavior <- as.factor(rf$Behavior)
-rf$Item <- as.factor(rf$Item)
+# Split database depending on year, Date, ID and, Obs_length
+data <- split(rf, paste(rf$AN, rf$DATE, rf$ID, rf$OBS_LENGTH))
 
-# Conversion de la durée d'observation
+# Computation of "all_atq_rate" = atq rate per obs per ind for all items (lemming, goose, eggs, and gosling)
+levels(rf$BEHAV)
+levels(rf$SP_PREDAT[rf$BEHAV == "attaque" | rf$BEHAV == "attaque_mult"]) # keep items: egg, lmg, oie
+table(rf$SP_PREDAT[rf$BEHAV == "attaque" | rf$BEHAV == "attaque_mult"], useNA = "always")
 
-rf$long_obs <- strptime(rf$long_obs, format = "%H:%M")
-rf <- na.omit(rf) #ne fonctionne pas, je sais pas pourquoi
-rf <- rf[-c(69,70),] #retrait des deux lignes avec NA pour la longueur observation
-
-require(lubridate)
-
-for (x in 1:nrow(rf)) {
-  if (hour(rf$long_obs[x]) == 1) {
-    rf$Obs_lenght[x] <- hour(rf$long_obs[x])*3600 + minute(rf$long_obs[x])*60
-  } else {
-    rf$Obs_lenght[x] <- minute(rf$long_obs[x])*60
-  }
-}
-
-summary(rf)
-
-# Récupération de la durée totale des observations par individu
-TAB <- NULL
-TAB1 <- NULL
-for (p in unique(rf$Year)){
-for (j in unique(rf$ID[rf$Year == p])){
-  for (i in unique(rf$Date[rf$ID == j  & rf$Year == p])) {#pour diminuer le risque de perdre une 2 durées d'observation identiques pour un même individu
-    Year <- p
-    id <- j
-    date <- i
-    obs<-sum(unique(rf$Obs_lenght[rf$ID==j & rf$Date == i & rf$Year == p]))
-    
-    di <-data.frame(Year, id, date, obs)
-    TAB <- rbind(TAB, di)
+data <- lapply(data, function(x){
+  for(i in 1:length(x$BEHAV)){
+    if(x$BEHAV[i] %in% c("attaque", "attaque_mult") & x$SP_PREDAT[i] %in% c("egg", "lmg", "oie")){
+      x$all_atq[i] <- 1
+    } else {
+      x$all_atq[i] <- 0
+    }
+    if(x$BEHAV[i] %in% c("attaque", "attaque_mult") & x$SP_PREDAT[i] %in% c("egg", "oie")){
+      x$goo_atq[i] <- 1
+    } else {
+      x$goo_atq[i] <- 0
     }
   }
-}
-print(TAB)
+  x$all_atq_rate <- sum(x$all_atq)/x$OBS_LENGTH[1] 
+  x$goo_atq_rate <- sum(x$goo_atq)/x$OBS_LENGTH[1] 
+  x
+})
 
-for (p in unique(TAB$Year)) {
-  for (k in unique(TAB$id[TAB$Year == p])) {
-    year <- p
-    min_date <- min(TAB$date[TAB$Year == p])
-    max_date <- max(TAB$date[TAB$Year == p])
-    fox <- k
-    tot_obs <- sum(TAB$obs[TAB$id == k & TAB$Year == p])
-    bo <- data.frame(year,min_date, max_date, fox, tot_obs)
-    TAB1 <- rbind(TAB1, bo)
+rf <- do.call("rbind", data)
+
+names(FOX_ATQ)
+FOX_ATQ <- cbind(Bloc = NA, FOX_ATQ, Prec = NA)
+names(rf)
+rf.2 <- as.data.frame(cbind(Bloc = as.character(rf$BLOC),
+                            Year = rf$AN,
+                            Date = rf$DATE,
+                            Cache = NA,
+                            ID = rf$ID,
+                            Obs_lenght = rf$OBS_LENGTH,
+                            Habitat = as.character(rf$HAB),
+                            Behavior = as.character(rf$BEHAV),
+                            Item = as.character(rf$SP_PREDAT),
+                            all_atq = rf$all_atq,
+                            all_atq_rate = as.numeric(rf$all_atq_rate),
+                            goo_atq = rf$goo_atq,
+                            goo_atq_rate = as.numeric(rf$goo_atq_rate),
+                            Prec = rf$PREC))
+
+head(rf.2)
+rf.2$all_atq_rate <- as.numeric(as.character(rf.2$all_atq_rate))
+rf.2$goo_atq_rate <- as.numeric(as.character(rf.2$goo_atq_rate))
+summary(rf.2)
+names(rf.2)
+
+FOX_ATQ <- rbind(FOX_ATQ, rf.2)
+summary(FOX_ATQ)
+
+
+######################## Fox - 2015- 2017 ###########################
+rf <- read.table("FOX-2015-2017-fonct-essai.txt", sep = "\t", h = T)
+summary(rf)
+levels(rf$Cache)
+levels(rf$CPT)
+rf$Item <- as.character(rf$Item)
+table(rf$Item)
+
+# Checking ID levels
+table(rf$new_ID)
+
+# Checking behaviours levels
+levels(rf$CPT)
+
+# Checking items levels when attacking
+summary(rf$Item[rf$CPT == "ATTAQ"])
+
+# Split database depending on year, Date, ID and, Obs_length
+data <- split(rf, paste(rf$YEAR, rf$Date, rf$new_ID, rf$OBS_LENGHT))
+
+# Computation of "all/goo_atq_rate" = atq rate per obs per ind for all items or only goose item
+levels(rf$BEHAV)
+summary(rf$Item[rf$CPT == "ATTAQ"]) # keep items: LMG, DEAD_EGG, EGG, OIE, YOUNG 
+table(rf$Item[rf$CPT == "ATTAQ"], useNA = "always")
+
+data <- lapply(data, function(x){
+  for(i in 1:length(x$CPT)){
+    if(x$CPT[i] ==  "ATTAQ"){
+      x$all_atq[i] <- 1
+    } else {
+      x$all_atq[i] <- 0
+    }
+    if(x$CPT[i] == "ATTAQ" & x$Item[i] %in% c("egg", "OIE", "YOUNG", "DEAD_EGG")){
+      x$goo_atq[i] <- 1
+    } else {
+      x$goo_atq[i] <- 0
+    }
   }
-}
-print(TAB1)
+  x$all_atq_rate <- sum(x$all_atq)/x$OBS_LENGHT[1] 
+  x$goo_atq_rate <- sum(x$goo_atq)/x$OBS_LENGHT[1] 
+  x
+})
 
-# Récupération du nombre d'attaque sur oie par individu
-levels(rf$Behavior); levels(rf$Item)
-rf1<-subset(rf, rf$Behavior == "attaque" & rf$Item == "oie") #subset uniquement avec les compt d'attaque et les items associés aux oies
-rf1<-droplevels(rf1) #retirer les levels == à 0
-summary(rf1)
+rf <- do.call("rbind", data)
 
-#Nombre d'attaque total par individu
+# Check point
+rf[rf$CPT == "ATTAQ" & rf$Item == "egg",]
 
-you <- NULL
-for (l in unique(rf1$Year)){
- 
-  SUM_atq <- as.data.frame(table(rf1$ID[rf1$Year == l], rf1$Behavior[rf1$Year == l]))
-  names(SUM_atq) <- c("ID", "Behaviour", "atq")
-  
-  Year <- rep(l,nrow(SUM_atq))
-  do <- data.frame(Year, SUM_atq)
-  
-  you <- rbind(you, do)
-} 
-print(you)
+names(FOX_ATQ)
+names(rf)
+rf.2 <- as.data.frame(cbind(Bloc = as.character(rf$Bloc),
+                            Year = rf$YEAR,
+                            Date = rf$Date,
+                            Cache = as.character(rf$Cache),
+                            ID = as.character(rf$new_ID),
+                            Obs_lenght = rf$OBS_LENGHT,
+                            Habitat = as.character(rf$Habitat),
+                            Behavior = as.character(rf$CPT),
+                            Item = as.character(rf$Item),
+                            all_atq = rf$all_atq,
+                            all_atq_rate = rf$all_atq_rate,
+                            goo_atq = rf$goo_atq,
+                            goo_atq_rate = rf$goo_atq_rate,
+                            Prec = rf$PRECIPITATION))
 
-for (l in unique(TAB1$year)) {
-  
-  tot_atq <-  you$atq[you$Year == l][match(TAB1$fox[TAB1$year == l],you$ID[you$Year == l])]
-  ff <- cbind(TAB1[TAB1$year == l,],tot_atq) 
-  
-  fox_fonc <- rbind(fox_fonc, ff)
-}
+head(rf.2)
+rf.2$all_atq_rate <- as.numeric(as.character(rf.2$all_atq_rate))
+rf.2$goo_atq_rate <- as.numeric(as.character(rf.2$goo_atq_rate))
+summary(rf.2)
+names(rf.2)
 
-######################## Fox - 2015 ###########################
-rf<-read.table("Fox-2015-fonct-essai.txt", sep = "\t", h = T)
-summary(rf)
-levels(rf$ID)
-
-# Récupération de la durée totale des observations par individu
-TAB <- NULL
-TAB1 <- NULL
-
-for (j in unique(rf$ID)){
-  for (i in unique(rf$Date[rf$ID == j])) {#pour diminuer le risque de perdre une 2 durées d'observation identiques pour un même individu
-    id <- j
-    date <- i
-    obs<-sum(unique(rf$Obs_lenght[rf$ID==j & rf$Date == i]))
-    
-    di <-data.frame(id, date, obs)
-    TAB <- rbind(TAB, di)
-    
-  }}
-print(TAB)
-
-for (k in unique(TAB$id)) {
-  fox <- k
-  tot_obs <- sum(TAB$obs[TAB$id == k])
-  bo <- data.frame(fox, tot_obs)
-  TAB1 <- rbind(TAB1, bo)
-}
-print(TAB1)
-
-# Récupération du nombre d'attaque sur oie par individu
-levels(rf$Behavior)
-rf1<-subset(rf, rf$Behavior == "ATTAQ") #subset uniquement avec les compt d'attaque et les items associés aux oies
-rf1<-droplevels(rf1) #retirer les levels == à 0
-summary(rf1)
-
-#Nombre d'attaque total par individu
-SUM_atq <- table(rf1$ID, rf1$Behavior)
-SUM_atq <- as.data.frame(SUM_atq); names(SUM_atq) <- c("ID", "Behaviour", "atq")
-SUM_atq
-
-ff <- cbind(rep(2015, dim(TAB1)[1]), rep(min(TAB$date), dim(TAB1)[1]),rep(max(TAB$date), dim(TAB1)[1]),TAB1, SUM_atq$atq[match(TAB1$fox,SUM_atq$ID)]) #SUM_atq$atq[match(TAB1$fox,SUM_atq$ID)] #Match les valeurs du nombre d'attaque par les ID
-names(ff) <- c("year","min_date","max_date", names(TAB1), "tot_atq")
-print(ff)
-
-fox_fonc <- rbind(fox_fonc, ff)
-print(fox_fonc)
+FOX_ATQ <- rbind(FOX_ATQ, rf.2)
+summary(FOX_ATQ)
 
 
-######################## Fox - 2016 ###########################
-rf<-read.table("Fox-2016-fonct-essai.txt", sep = "\t", h = T)
-summary(rf)
-levels(rf$ID)
-# conversion des dates en jours juliens
-rf$DAY <- strptime(rf$DAY, format = "%Y-%m-%d")
-rf$Date <- rf$DAY$yday + 1
+#### HERE I AM ####
+# Add 2002 and 2003 years
+# Add climatic variables
+# Clean the database to have one row per atq rate per observation
+x11()
+par(mfrow = c(1, 2))
+boxplot(FOX_ATQ$all_atq_rate)
+boxplot(FOX_ATQ$goo_atq_rate)
 
-# Récupération de la durée totale des observations par individu
-TAB <- NULL
-TAB1 <- NULL
 
-for (j in unique(rf$ID)){
-  for (i in unique(rf$Date[rf$ID == j])) {#pour diminuer le risque de perdre une 2 durées d'observation identiques pour un même individu
-    id <- j
-    date <- i
-    obs<-sum(unique(rf$Obs_lenght[rf$ID==j & rf$Date == i]))
-    
-    di <-data.frame(id, date, obs)
-    TAB <- rbind(TAB, di)
-    
-  }}
-print(TAB)
 
-for (k in unique(TAB$id)) {
-  fox <- k
-  tot_obs <- sum(TAB$obs[TAB$id == k])
-  bo <- data.frame(fox, tot_obs)
-  TAB1 <- rbind(TAB1, bo)
-}
-print(TAB1)
 
-# Récupération du nombre d'attaque sur oie par individu
-levels(rf$Behavior)
-rf1<-subset(rf, rf$Behavior == "ATTAQ") #subset uniquement avec les compt d'attaque et les items associés aux oies
-rf1<-droplevels(rf1) #retirer les levels == à 0
-summary(rf1)
 
-#Nombre d'attaque total par individu
-SUM_atq <- table(rf1$ID, rf1$Behavior)
-SUM_atq <- as.data.frame(SUM_atq); names(SUM_atq) <- c("ID", "Behaviour", "atq")
-SUM_atq
 
-ff <- cbind(rep(2016, dim(TAB1)[1]),rep(min(TAB$date), dim(TAB1)[1]),rep(max(TAB$date), dim(TAB1)[1]),TAB1, SUM_atq$atq[match(TAB1$fox,SUM_atq$ID)]) #SUM_atq$atq[match(TAB1$fox,SUM_atq$ID)] #Match les valeurs du nombre d'attaque par les ID
-names(ff) <- c("year", "min_date", "max_date",names(TAB1), "tot_atq")
-print(ff)
 
-fox_fonc <- rbind(fox_fonc, ff)
-print(fox_fonc)
-summary(fox_fonc)
-
-######################## Fox - 2017 ###########################
-rf<-read.table("Fox-2017-fonct-essai.txt", sep = "\t", h = T)
-summary(rf)
-levels(rf$ID)
-# conversion des dates en jours juliens
-rf$DAY <- strptime(rf$DAY, format = "%Y-%m-%d")
-rf$Date <- rf$DAY$yday + 1
-
-# Récupération de la durée totale des observations par individu
-TAB <- NULL
-TAB1 <- NULL
-
-for (j in unique(rf$ID)){
-  for (i in unique(rf$Date[rf$ID == j])) {#pour diminuer le risque de perdre une 2 durées d'observation identiques pour un même individu
-    id <- j
-    date <- i
-    obs<-sum(unique(rf$Obs_lenght[rf$ID==j & rf$Date == i]))
-    
-    di <-data.frame(id, date, obs)
-    TAB <- rbind(TAB, di)
-    
-  }}
-print(TAB)
-
-for (k in unique(TAB$id)) {
-  fox <- k
-  tot_obs <- sum(TAB$obs[TAB$id == k])
-  bo <- data.frame(fox, tot_obs)
-  TAB1 <- rbind(TAB1, bo)
-}
-print(TAB1)
-
-# Récupération du nombre d'attaque sur oie par individu
-levels(rf$Behavior)
-rf1<-subset(rf, rf$Behavior == "ATTAQ") #subset uniquement avec les compt d'attaque et les items associés aux oies
-rf1<-droplevels(rf1) #retirer les levels == à 0
-summary(rf1)
-
-#Nombre d'attaque total par individu
-SUM_atq <- table(rf1$ID, rf1$Behavior)
-SUM_atq <- as.data.frame(SUM_atq); names(SUM_atq) <- c("ID", "Behaviour", "atq")
-SUM_atq
-
-ff <- cbind(rep(2016, dim(TAB1)[1]),rep(min(TAB$date), dim(TAB1)[1]),rep(max(TAB$date), dim(TAB1)[1]),TAB1, SUM_atq$atq[match(TAB1$fox,SUM_atq$ID)]) #SUM_atq$atq[match(TAB1$fox,SUM_atq$ID)] #Match les valeurs du nombre d'attaque par les ID
-names(ff) <- c("year", "min_date", "max_date",names(TAB1), "tot_atq")
-print(ff)
-
-fox_fonc <- rbind(fox_fonc, ff)
-print(fox_fonc)
-summary(fox_fonc)
 
 
 #### Dataframe final #####
@@ -429,11 +301,6 @@ fox_fonc$year[fox_fonc$year == 98] <- 1998
 fox_fonc$year[fox_fonc$year == 99] <- 1999
 summary(fox_fonc)
 
-#calcul du taux d'attaque par individu
-fox_fonc$atq_rate <- fox_fonc$tot_atq/fox_fonc$tot_obs 
-summary(fox_fonc)
-boxplot(fox_fonc$atq_rate)
-plot(fox_fonc$year, fox_fonc$atq_rate)
 
 #outlier
 fox_fonc[fox_fonc$atq_rate>=0.04,]
