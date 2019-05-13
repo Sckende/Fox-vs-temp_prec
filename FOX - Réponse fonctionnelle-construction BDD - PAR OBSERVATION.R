@@ -36,7 +36,7 @@ data <- lapply(data, function(x){
   x
 })
 
-# Computation of "goo_atq_rate" = atq rate per obs per ind for goose items (goose, eggs, and gosling)
+# Computation of "goo_atq_rate" = atq rate per obs per ind for goose items (goose, eggs, and gosling) & "AD_atq_rate" = atq rate only on nests with adult
 levels(rf$Item[rf$Behavior == "attaque"]) # keep items: couple, egg, oie, young
 
 data <- lapply(data, function(x){
@@ -45,9 +45,15 @@ data <- lapply(data, function(x){
       x$goo_atq[i] <- 1
     } else {
       x$goo_atq[i] <- 0
-      }
+    }
+    if(x$Behavior[i] == "attaque" & x$Item[i] %in% c("couple", "oie")){
+      x$AD_atq[i] <- 1
+    } else {
+      x$AD_atq[i] <- 0
+    }
   }
   x$goo_atq_rate <- sum(x$goo_atq)/x$Obs_lenght[1]
+  x$AD_atq_rate <- sum(x$AD_atq)/x$Obs_lenght[1]
   x
 })
 
@@ -101,8 +107,14 @@ data <- lapply(data, function(x){
     } else {
       x$goo_atq[i] <- 0
     }
+    if(x$Behavior[i] == "attaque" & x$Item[i] %in% c("couple", "oie")){
+      x$AD_atq[i] <- 1
+    } else {
+      x$AD_atq[i] <- 0
+    }
   }
   x$goo_atq_rate <- sum(x$goo_atq)/x$Obs_lenght[1]
+  x$AD_atq_rate <- sum(x$AD_atq)/x$Obs_lenght[1]
   x
 })
 
@@ -115,7 +127,7 @@ rf$Habitat <- as.character(rf$Habitat)
 rf$Cache <- as.character(rf$Cache)
 rf$ID <- as.character(rf$ID)
 
-FOX_ATQ <- rbind(FOX_ATQ, rf) # See for the warning message
+FOX_ATQ <- rbind(FOX_ATQ, rf)
 names(FOX_ATQ)
 FOX_ATQ <- FOX_ATQ[,-c(1, 6, 8:10)]
 
@@ -143,7 +155,7 @@ levels(rf$SP_PREDAT)
 # Split database depending on year, Date, ID and, Obs_length
 data <- split(rf, paste(rf$AN, rf$DATE, rf$ID, rf$OBS_LENGTH))
 
-# Computation of "all_atq_rate" = atq rate per obs per ind for all items (lemming, goose, eggs, and gosling)
+# Computation of "all_atq_rate", "goo_atq_rate", and "AD_atq_rate"
 levels(rf$BEHAV)
 levels(rf$SP_PREDAT[rf$BEHAV == "attaque" | rf$BEHAV == "attaque_mult"]) # keep items: egg, lmg, oie
 table(rf$SP_PREDAT[rf$BEHAV == "attaque" | rf$BEHAV == "attaque_mult"], useNA = "always")
@@ -160,9 +172,15 @@ data <- lapply(data, function(x){
     } else {
       x$goo_atq[i] <- 0
     }
+    if(x$BEHAV[i] %in% c("attaque", "attaque_mult") & x$SP_PREDAT[i] == "oie"){
+      x$AD_atq[i] <- 1
+    } else {
+      x$AD_atq[i] <- 0
+    }
   }
   x$all_atq_rate <- sum(x$all_atq)/x$OBS_LENGTH[1] 
   x$goo_atq_rate <- sum(x$goo_atq)/x$OBS_LENGTH[1] 
+  x$AD_atq_rate <- sum(x$AD_atq)/x$OBS_LENGTH[1]
   x
 })
 
@@ -184,11 +202,14 @@ rf.2 <- as.data.frame(cbind(Bloc = as.character(rf$BLOC),
                             all_atq_rate = as.numeric(rf$all_atq_rate),
                             goo_atq = rf$goo_atq,
                             goo_atq_rate = as.numeric(rf$goo_atq_rate),
+                            AD_atq = rf$AD_atq,
+                            AD_atq_rate = as.numeric(rf$AD_atq_rate),
                             Prec = rf$PREC))
 
 head(rf.2)
 rf.2$all_atq_rate <- as.numeric(as.character(rf.2$all_atq_rate))
 rf.2$goo_atq_rate <- as.numeric(as.character(rf.2$goo_atq_rate))
+rf.2$AD_atq_rate <- as.numeric(as.character(rf.2$AD_atq_rate))
 summary(rf.2)
 names(rf.2)
 
@@ -211,14 +232,14 @@ table(rf$new_ID)
 levels(rf$CPT)
 
 # Checking items levels when attacking
-summary(rf$Item[rf$CPT == "ATTAQ"])
+table(rf$Item[rf$CPT == "ATTAQ"])
 
 # Split database depending on year, Date, ID and, Obs_length
 data <- split(rf, paste(rf$YEAR, rf$Date, rf$new_ID, rf$OBS_LENGHT))
 
-# Computation of "all/goo_atq_rate" = atq rate per obs per ind for all items or only goose item
-levels(rf$BEHAV)
-summary(rf$Item[rf$CPT == "ATTAQ"]) # keep items: LMG, DEAD_EGG, EGG, OIE, YOUNG 
+# Computation of "all/goo/AD_atq_rate"
+levels(rf$CPT)
+table(rf$Item[rf$CPT == "ATTAQ"]) # keep items: LMG, DEAD_EGG, EGG, OIE, YOUNG 
 table(rf$Item[rf$CPT == "ATTAQ"], useNA = "always")
 
 data <- lapply(data, function(x){
@@ -233,9 +254,15 @@ data <- lapply(data, function(x){
     } else {
       x$goo_atq[i] <- 0
     }
+    if(x$CPT[i] == "ATTAQ" & x$Item[i] == "OIE"){
+      x$AD_atq[i] <- 1
+    } else {
+      x$AD_atq[i] <- 0
+    }
   }
   x$all_atq_rate <- sum(x$all_atq)/x$OBS_LENGHT[1] 
   x$goo_atq_rate <- sum(x$goo_atq)/x$OBS_LENGHT[1] 
+  x$AD_atq_rate <- sum(x$AD_atq)/x$OBS_LENGHT[1]
   x
 })
 
@@ -259,6 +286,8 @@ rf.2 <- as.data.frame(cbind(Bloc = as.character(rf$Bloc),
                             all_atq_rate = rf$all_atq_rate,
                             goo_atq = rf$goo_atq,
                             goo_atq_rate = rf$goo_atq_rate,
+                            AD_atq = rf$AD_atq,
+                            AD_atq_rate = rf$AD_atq_rate,
                             Prec = rf$PRECIPITATION))
 
 head(rf.2)
@@ -270,11 +299,18 @@ names(rf.2)
 FOX_ATQ <- rbind(FOX_ATQ, rf.2)
 summary(FOX_ATQ)
 
-
-#### HERE I AM ####
-# Add 2002 and 2003 years
-# Add climatic variables
 # Clean the database to have one row per atq rate per observation
+head(FOX_ATQ)
+
+FOX <- split(FOX_ATQ, paste(FOX_ATQ$Year, FOX_ATQ$Date, FOX_ATQ$ID, FOX_ATQ$Obs_lenght))
+
+FOX[1:10]
+FOX <- lapply(FOX, function(x){
+  x <- x[1,]
+})
+
+# Add climatic variables
+
 x11()
 par(mfrow = c(1, 2))
 boxplot(FOX_ATQ$all_atq_rate)
