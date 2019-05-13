@@ -293,6 +293,7 @@ rf.2 <- as.data.frame(cbind(Bloc = as.character(rf$Bloc),
 head(rf.2)
 rf.2$all_atq_rate <- as.numeric(as.character(rf.2$all_atq_rate))
 rf.2$goo_atq_rate <- as.numeric(as.character(rf.2$goo_atq_rate))
+rf.2$AD_atq_rate <- as.numeric(as.character(rf.2$AD_atq_rate))
 summary(rf.2)
 names(rf.2)
 
@@ -309,8 +310,48 @@ FOX <- lapply(FOX, function(x){
   x <- x[1,]
 })
 
+FOX <- do.call("rbind", FOX)
+summary(FOX)
+
+FOX[-c(3, 6, 11, 14, 15)] <- lapply(FOX[-c(3, 6, 11, 14, 15)], as.factor)
+FOX[c(3, 6, 11, 14, 15)] <- lapply(FOX[c(3, 6, 11, 14, 15)], as.numeric)
+str(FOX)
+
+FOX$Year <- as.character(FOX$Year)
+FOX$Year[FOX$Year == "98"] <- "1998"
+FOX$Year[FOX$Year == "99"] <- "1999"
+FOX$Year[FOX$Year == "96"] <- "1996"
+FOX$Year[FOX$Year == "97"] <- "1997"
+
+table(FOX$Cache)
+FOX$Cache <- as.character(FOX$Cache)
+FOX$Cache[FOX$Cache == "-"] <- NA
+FOX$Cache[FOX$Cache == "abbitibi"] <- "ABI"
+FOX$Cache[FOX$Cache == "goose garden" | FOX$Cache == "GOOSE_GARDEN"] <- "GG"
+FOX$Cache[FOX$Cache == "peksek" | FOX$Cache == "PEKSEK"] <- "PK"
+
+table(as.character(FOX$Habitat), useNA = "always")
+FOX$Habitat[FOX$Habitat == "LIM HM" | FOX$Habitat == "H et M" | FOX$Habitat == "" | FOX$Habitat == "neige"] <- NA
+FOX$Habitat[FOX$Habitat == "H" | FOX$Habitat == "wetland" | FOX$Habitat == "prairie humide" | FOX$Habitat == "polygones"] <- "WET"
+FOX$Habitat[FOX$Habitat == "M" | FOX$Habitat == "mes" | FOX$Habitat == "mesic" | FOX$Habitat == "mesique"] <- "MES"
 # Add climatic variables
 
+FOX[c("Year", "Cache", "Habitat")] <- lapply(FOX[c("Year", "Cache", "Habitat")] , as.factor)
+FOX <- droplevels(FOX)
+summary(FOX)
+
+#### Addition of other variables ####
+
+fox <- read.csv("FOX_abundance_breeding_1993_2017.txt", sep = "\t", dec = ",")
+lmg <- read.csv("LEM_1993-2017.txt", sep = "\t", dec = ",")
+breed <- read.csv("GOOSE_breeding_informations_1995_2017.txt", sep = "\t", dec = ",")
+temp <- read.table("TEMP_Tair moy 1989-2017 BYLCAMP.txt", sep = "\t", h = T)
+prec <- read.table()
+
+
+#### Data exploration ####
+# Check observations less than 3 minutes
+# Check outlier in atq rate up to or equal to 0.04
 x11()
 par(mfrow = c(1, 2))
 boxplot(FOX_ATQ$all_atq_rate)
@@ -326,16 +367,6 @@ boxplot(FOX_ATQ$goo_atq_rate)
 
 #### Dataframe final #####
 # À faire sur le dataframe final de fox_fonc
-# retrait des observations = 0
-fox_fonc <- fox_fonc[!fox_fonc$tot_obs == 0,]
-#remplace les NA par des 0 pour la colone atq
-fox_fonc$tot_atq[is.na(fox_fonc$tot_atq)] <- 0
-#uniformisation des années
-fox_fonc$year[fox_fonc$year == 96] <- 1996
-fox_fonc$year[fox_fonc$year == 97] <- 1997
-fox_fonc$year[fox_fonc$year == 98] <- 1998
-fox_fonc$year[fox_fonc$year == 99] <- 1999
-summary(fox_fonc)
 
 
 #outlier
