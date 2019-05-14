@@ -342,145 +342,70 @@ summary(FOX)
 
 #### Addition of other variables ####
 
-fox <- read.csv("FOX_abundance_breeding_1993_2017.txt", sep = "\t", dec = ",")
 lmg <- read.csv("LEM_1993-2017.txt", sep = "\t", dec = ",")
-breed <- read.csv("GOOSE_breeding_informations_1995_2017.txt", sep = "\t", dec = ",")
-temp <- read.table("TEMP_Tair moy 1989-2017 BYLCAMP.txt", sep = "\t", h = T)
-prec <- read.table()
+breed <- read.csv("GOOSE_breeding_informations_1995_2017.txt", sep = "\t", dec = ",", h = T)
+clim <- read.table("FOX_climate_data.txt", sep = "\t", h = T)
+
+
+head(lmg)
+FOX$lmg <- lmg$LMG_C1_CORR[match(FOX$Year, lmg$YEAR)]
+FOX$lmg.year <- lmg$LMG_YEAR[match(FOX$Year, lmg$YEAR)]
+
+head(breed)
+FOX$nest.density <- breed$NEST_DENSITY[match(FOX$Year, breed$YEAR)]
+
+fox.atq <- merge(FOX, clim[,c(1,2, 8:14)], all.x = TRUE, by.x = c("Year", "Date"), by.y = c("year", "JJ"))
 
 
 #### Data exploration ####
-# Check observations less than 3 minutes
-# Check outlier in atq rate up to or equal to 0.04
+library(viridis) # For colors in plot
+    # Keeping the observation more or equal than 3 min (180 s)
+fox.atq <- fox.atq[fox.atq$Obs_lenght >= 180,]
+
+par(mfrow = c(1, 2))
+boxplot(fox.atq$all_atq_rate)
+boxplot(fox.atq$goo_atq_rate)
+
+    # TEMP
+par(mfrow = c(1, 2))
+plot(fox.atq$max_temp, fox.atq$AD_atq_rate, bty = "n")
+plot(fox.atq$max_temp, fox.atq$all_atq_rate, bty = "n")
+
+par(mfrow = c(1, 2))
+plot(fox.atq$min_daily_temp, fox.atq$AD_atq_rate, bty = "n")
+plot(fox.atq$min_daily_temp, fox.atq$all_atq_rate, bty = "n")
+
+par(mfrow = c(1, 2))
+plot(fox.atq$mean_daily_temp, fox.atq$AD_atq_rate, bty = "n")
+plot(fox.atq$mean_daily_temp, fox.atq$all_atq_rate, bty = "n")
+
+    # HUMIDITY
+par(mfrow = c(1, 2))
+plot(fox.atq$max.hum, fox.atq$AD_atq_rate, bty = "n")
+plot(fox.atq$max.hum, fox.atq$all_atq_rate, bty = "n")
+
+par(mfrow = c(1, 2))
+plot(fox.atq$min.hum, fox.atq$AD_atq_rate, bty = "n")
+plot(fox.atq$min.hum, fox.atq$all_atq_rate, bty = "n")
+
+    # PRECIPITATION
 x11()
 par(mfrow = c(1, 2))
-boxplot(FOX_ATQ$all_atq_rate)
-boxplot(FOX_ATQ$goo_atq_rate)
+color <- viridis_pal(option = "D")(length(unique(fox.atq$Year))) # color choice in existing color palette (option A, B, C, or D)
+plot(fox.atq$rain, fox.atq$AD_atq_rate, bty = "n", col = color[as.numeric(factor(fox.atq$Year))], pch = 19, cex = 1.5)
+legend("topright", legend = levels(fox.atq$Year), col = color, pch = 19, bty = "n")
+plot(fox.atq$rain, fox.atq$all_atq_rate, bty = "n", col = color[as.numeric(factor(fox.atq$Year))], pch = 19, cex = 1.5)
+legend("topright", legend = levels(fox.atq$Year), col = color, pch = 19, bty = "n")
 
+    # wind speed
+par(mfrow = c(1, 2))
+plot(fox.atq$max.speed, fox.atq$AD_atq_rate, bty = "n")
+plot(fox.atq$max.speed, fox.atq$all_atq_rate, bty = "n")
 
-
-
-
-
-
-
-
-#### Dataframe final #####
-# À faire sur le dataframe final de fox_fonc
-
-
-#outlier
-fox_fonc[fox_fonc$atq_rate>=0.04,]
-
-#garder observation supérieure et égale à 3 minutes
-ff2 <- fox_fonc[fox_fonc$tot_obs>=180,]
-boxplot(ff2$atq_rate)
-plot(ff2$year, ff2$atq_rate)
-dim(ff2)
-
-#### Ajout des variables biotiques et abiotiques pour analyses de piste ####
-
-####Ajout des autres variables biologiques et météorologiques####
-#changement de répertoire
-setwd("/Users/nicolas/Documents/Claire/Doc doc doc !/R analysis/Data")
-fox<-read.csv("Fox_abundance_Chevallier.txt", sep = "\t", dec = ",")
-lmg<-read.csv("LEM96-2016.txt", sep = "\t", dec = ",")
-AO<-read.csv("AO_saisonnier.txt", sep = ",", dec = ".")
-breed<-read.csv("GOOSE_breeding_informations.txt", sep = "\t", dec = ".")
-
-#ajout des données de lmg, AO, démo oies, fox
-for(n in 1:nrow(ff2)){
-  d<-ff2$year[n]
-  ff2$fox_dens[n]<-fox$natal_growth_dens[fox$year == d]
-  #fox_dens_timelag<-fox$natal_growth_dens[fox$year == d+ ou - 1]
-  ff2$lmg_abun[n]<-lmg$LMG_C2[lmg$YEAR == d]
-
-  ff2$winAO[n]<-AO$winAO[AO$YEAR==d]
-  ff2$sprAO[n]<-AO$sprAO[AO$YEAR==d]
-  ff2$esumAO[n]<-AO$esumAO[AO$YEAR==d]
-  ff2$lsumAO[n]<-AO$lsumAO[AO$YEAR==d]
-  
-  ff2$nest_density[n]<-breed$NEST_DENSITY[breed$YEAR==d]
-  ff2$clutch_size[n]<-breed$CLUTCH_SIZE[breed$YEAR==d]
-  ff2$egg_abun[n]<-breed$EGG_ABUN[breed$YEAR==d]
-  ff2$ratio_JUVad[n]<-breed$RATIO_YOU_AD[breed$YEAR==d]
-  ff2$brood_size[n]<-breed$BROOD_SIZE_BAND[breed$YEAR==d]
-  ff2$nest_succ[n]<-breed$NEST_SUCC[breed$YEAR==d]
-  
-}
-summary(ff2)
-
-####ajout des données de températures moyennes et maximales et de précipitations cumulées
-#####Températures#####
-#chargement des données de températures
-temp<-read.table("Tair moy 1989-2016 BYLCAMP.txt", h=T, sep="\t", dec=",")
-summary(temp)
-#temp<-na.omit(temp)
-#transformation date en jour julien#
-#install.packages("date")
-require(date)
-
-temp$YMD<-paste(temp$YEAR,temp$MONTH,temp$DAY,sep = "-")
-temp$YMD<-strptime(temp$YMD, format = "%Y-%m-%d")
-temp$JJ<-format(temp$YMD,format = "%j")
-temp$JJ<-as.numeric(temp$JJ)
-
-#calcul de la température moyenne entre la première et la dernière date d'observation de renard pour chaque année
-#retrait de 2016 car données manquantes pour températures
-ff2 <- ff2[!ff2$year == 2016,]
-for(n in 1:nrow(ff2)){
-  d<-ff2$year[n]
-  #mini_jour <- ff2$min_date[n]
-  #maxi_jour <- ff2$max_date[n]
-  ff2$max_temp[n] <- max(temp$TEMP[temp$JJ >= ff2$min_date[n] & temp$JJ <= ff2$max_date[n] & temp$YEAR == d], na.rm=T)
-  ff2$mean_temp[n] <- mean(temp$TEMP[temp$JJ >= ff2$min_date[n] & temp$JJ <= ff2$max_date[n] & temp$YEAR == d], na.rm=T)
-  ff2$sd_temp[n] <- sd(temp$TEMP[temp$JJ >= ff2$min_date[n] & temp$JJ <= ff2$max_date[n] & temp$YEAR == d], na.rm=T)
-}
-summary(ff2)
-
-plot(ff2$mean_temp,ff2$atq_rate)
-
-smoothingSpline = smooth.spline(ff2$max_temp, ff2$atq_rate, spar=0.1)
-plot(ff2$max_temp,ff2$atq_rate, type = "p", col = "darkorange", font.axis = 3, las = 1, xaxt = "n", xlab = "Maximal temperature", ylab = "Attack rate") #semble y avoir une tendance avec une température optimale d'attaque pour le renard
-# Modification de l'axe des x
-xtick<-seq(7, 11, by=1)
-axis(side=1, at=xtick, labels = FALSE)
-text(x=xtick,  par("usr")[3], 
-  labels = xtick, srt = 0, pos = 1, xpd = TRUE)
-lines(smoothingSpline, col = "orange")
-
-boxplot(ff2$atq_rate~ff2$max_temp, xlab = "Maximal temperature", ylab = "Attack rate")
-
-boxplot(ff2$atq_rate~ff2$mean_temp, xlab = "Maximal temperature", ylab = "Attack rate")
-#####Précipitations#####
-#calcul précipitation cumulée entre la première et la dernière date d'observation de renard pour chaque année 
-
-prec<-read.table("precipitation_Bylot_1996-2016.txt",h=T, dec = ",", sep = "\t")
-summary(prec)
-
-for(n in 1:nrow(ff2)){
-  d<-ff2$year[n]
-  #mini_jour <- ff2$min_date[n]
-  #maxi_jour <- ff2$max_date[n]
-  ff2$cumul_prec[n] <- sum(prec$rain[prec$day >= ff2$min_date[n] & prec$day <= ff2$max_date[n] & prec$year == d], na.rm=T)
-}
-summary(ff2)
-
-plot(ff2$cumul_prec,ff2$atq_rate)
-summary(ff2)
-
-####Complete data with C1 and C1/2 lmg abundance####
-setwd(dir = "/Users/nicolas/Documents/Claire/Doc doc doc !/R analysis/Data")
-LG <- read.table("LEM96-2016.txt", sep = "\t", dec = ".", h = T)
-summary(LG)
-
-for (i in 1:nrow(ff2)) {
-  d <- ff2$year[i]
-  ff2$lmg_C12[i] <- LG$LMG_C1_C2[LG$YEAR == d]
-  ff2$lmg_C1[i] <- LG$LMG_C1[LG$YEAR == d]
-  
-}
-summary(ff2)
-colnames(ff2)[9] <- "lmg_C2"
-
-#write.csv(ff2, "FOX-functional response V2.txt")
+    # Lemming abundance
+color <- viridis_pal(option = "D")(length(unique(fox.atq$lmg.year)))
+par(mfrow = c(1, 2))
+plot(fox.atq$lmg, fox.atq$AD_atq_rate, bty = "n", col = color[as.numeric(fox.atq$lmg.year)], pch = 19, cex = 1.5)
+legend("topright", legend = levels(fox.atq$lmg.year), col = color, pch = 19, bty = "n")
+plot(fox.atq$lmg, fox.atq$all_atq_rate, bty = "n", col = color[as.numeric(fox.atq$lmg.year)], pch = 19, cex = 1.5)
+legend("topright", legend = levels(fox.atq$lmg.year), col = color, pch = 19, bty = "n")
