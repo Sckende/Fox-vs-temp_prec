@@ -123,7 +123,7 @@ summary(all.clim)
 #### Precipitation bloc ####
 head(prec)
 names(prec)[c(1, 3)] <- c("year", "rain")
-prec <- prec[prec$YEAR %in% c(1996:1999, 2004, 2005, 2015:2017),]
+prec <- prec[prec$year %in% c(1996:1999, 2004, 2005, 2015:2017),]
 
 head(all.clim)
 all.clim$JJ <- paste(all.clim$day, all.clim$month, all.clim$year, sep = "-")
@@ -135,4 +135,4 @@ all.clim <- merge(all.clim, prec, all = TRUE)
 summary(all.clim)
 
 
-#write.table(all.clim, "FOX_climate_data.txt")
+#write.table(all.clim, "FOX_climate_data.txt", sep = "\t")
