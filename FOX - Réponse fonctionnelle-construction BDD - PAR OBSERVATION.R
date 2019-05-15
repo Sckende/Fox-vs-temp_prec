@@ -344,7 +344,7 @@ summary(FOX)
 
 lmg <- read.csv("LEM_1993-2017.txt", sep = "\t", dec = ",")
 breed <- read.csv("GOOSE_breeding_informations_1995_2017.txt", sep = "\t", dec = ",", h = T)
-clim <- read.table("FOX_climate_data.txt", sep = "\t", h = T)
+clim.day <- read.table("FOX_climate_data_daily_range.txt", sep = "\t", h = T)
 
 
 head(lmg)
@@ -354,9 +354,11 @@ FOX$lmg.year <- lmg$LMG_YEAR[match(FOX$Year, lmg$YEAR)]
 head(breed)
 FOX$nest.density <- breed$NEST_DENSITY[match(FOX$Year, breed$YEAR)]
 
-fox.atq <- merge(FOX, clim[,c(1,2, 8:14)], all.x = TRUE, by.x = c("Year", "Date"), by.y = c("year", "JJ"))
+head(clim.day)
+FOX$Year <- as.numeric(as.character(FOX$Year))
+FOX <- merge(FOX, clim.day[,c(1,2, 8:11)], all.x = TRUE, by.x = c("Year", "Date"), by.y = c("year", "date"))
 
-head(fox.atq)
-summary(fox.atq)
+head(FOX)
+summary(FOX)
 
 #write.table(fox.atq, "FOX_atq.per.obs_clim.txt", sep = "\t")
