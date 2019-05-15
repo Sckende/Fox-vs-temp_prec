@@ -53,23 +53,19 @@ color <- viridis_pal(option = "D")(length(unique(data$lmg.year)))
 par(mfrow = c(1, 2))
 plot(data$lmg, data$AD_atq_rate, bty = "n", col = color[as.numeric(data$lmg.year)], pch = 19, cex = 1.5, main = "Nests with adults", xlab = "Lemming abundance", ylab = "Attack rate per ind. per obs.")
 legend("topright", legend = levels(data$lmg.year), col = color, pch = 19, bty = "n")
-plot(data$lmg, data$all_atq_rate, bty = "n", col = color[as.numeric(data$lmg.year)], pch = 19, cex = 1.5, main = "Nests with adults", xlab = "Lemming abundance", ylab = "Attack rate per ind. per obs.")
+plot(data$lmg, data$all_atq_rate, bty = "n", col = color[as.numeric(data$lmg.year)], pch = 19, cex = 1.5, main = "All predated items", xlab = "Lemming abundance", ylab = "Attack rate per ind. per obs.")
 legend("topright", legend = levels(data$lmg.year), col = color, pch = 19, bty = "n")
 
 
-# Data visualization
-plot(data$max_temp, data$atq_rate, bty = "n")
-plot(data$cumul_prec, data$atq_rate, bty = "n")
-plot(data$lmg_C1, data$atq_rate, bty = "n")
-plot(data$year, data$atq_rate, bty = "n")
+# Models
 
 atq.mod <- list()
 
-atq.mod[[1]] <- gam(atq_rate ~ s(max_temp),
+atq.mod[[1]] <- gam(AD_atq_rate ~ s(max.daily.temp),
                      data = data)
-atq.mod[[2]] <- gam(atq_rate ~ s(cumul_prec),
+atq.mod[[2]] <- gam(AD_atq_rate ~ s(min.daily.temp),
                     data = data)
-m1 <- gam(atq_rate ~ s(max_temp), data = data, method = "REML")
+m1 <- gam(AD_atq_rate ~ s(max.daily.temp), data = data, method = "REML")
 summary(m1)
 coef(m1)
 plot(atq.mod[[1]], residuals = TRUE, se = TRUE,  pch = 1, bty = "n", ylim = c(-0.004, 0.010))
