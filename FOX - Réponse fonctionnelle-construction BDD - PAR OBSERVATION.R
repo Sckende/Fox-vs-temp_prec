@@ -356,56 +356,7 @@ FOX$nest.density <- breed$NEST_DENSITY[match(FOX$Year, breed$YEAR)]
 
 fox.atq <- merge(FOX, clim[,c(1,2, 8:14)], all.x = TRUE, by.x = c("Year", "Date"), by.y = c("year", "JJ"))
 
+head(fox.atq)
+summary(fox.atq)
 
-#### Data exploration ####
-library(viridis) # For colors in plot
-    # Keeping the observation more or equal than 3 min (180 s)
-fox.atq <- fox.atq[fox.atq$Obs_lenght >= 180,]
-
-par(mfrow = c(1, 2))
-boxplot(fox.atq$all_atq_rate)
-boxplot(fox.atq$goo_atq_rate)
-
-    # TEMP
-par(mfrow = c(1, 2))
-plot(fox.atq$max_temp, fox.atq$AD_atq_rate, bty = "n")
-plot(fox.atq$max_temp, fox.atq$all_atq_rate, bty = "n")
-
-par(mfrow = c(1, 2))
-plot(fox.atq$min_daily_temp, fox.atq$AD_atq_rate, bty = "n")
-plot(fox.atq$min_daily_temp, fox.atq$all_atq_rate, bty = "n")
-
-par(mfrow = c(1, 2))
-plot(fox.atq$mean_daily_temp, fox.atq$AD_atq_rate, bty = "n")
-plot(fox.atq$mean_daily_temp, fox.atq$all_atq_rate, bty = "n")
-
-    # HUMIDITY
-par(mfrow = c(1, 2))
-plot(fox.atq$max.hum, fox.atq$AD_atq_rate, bty = "n")
-plot(fox.atq$max.hum, fox.atq$all_atq_rate, bty = "n")
-
-par(mfrow = c(1, 2))
-plot(fox.atq$min.hum, fox.atq$AD_atq_rate, bty = "n")
-plot(fox.atq$min.hum, fox.atq$all_atq_rate, bty = "n")
-
-    # PRECIPITATION
-x11()
-par(mfrow = c(1, 2))
-color <- viridis_pal(option = "D")(length(unique(fox.atq$Year))) # color choice in existing color palette (option A, B, C, or D)
-plot(fox.atq$rain, fox.atq$AD_atq_rate, bty = "n", col = color[as.numeric(factor(fox.atq$Year))], pch = 19, cex = 1.5)
-legend("topright", legend = levels(fox.atq$Year), col = color, pch = 19, bty = "n")
-plot(fox.atq$rain, fox.atq$all_atq_rate, bty = "n", col = color[as.numeric(factor(fox.atq$Year))], pch = 19, cex = 1.5)
-legend("topright", legend = levels(fox.atq$Year), col = color, pch = 19, bty = "n")
-
-    # wind speed
-par(mfrow = c(1, 2))
-plot(fox.atq$max.speed, fox.atq$AD_atq_rate, bty = "n")
-plot(fox.atq$max.speed, fox.atq$all_atq_rate, bty = "n")
-
-    # Lemming abundance
-color <- viridis_pal(option = "D")(length(unique(fox.atq$lmg.year)))
-par(mfrow = c(1, 2))
-plot(fox.atq$lmg, fox.atq$AD_atq_rate, bty = "n", col = color[as.numeric(fox.atq$lmg.year)], pch = 19, cex = 1.5)
-legend("topright", legend = levels(fox.atq$lmg.year), col = color, pch = 19, bty = "n")
-plot(fox.atq$lmg, fox.atq$all_atq_rate, bty = "n", col = color[as.numeric(fox.atq$lmg.year)], pch = 19, cex = 1.5)
-legend("topright", legend = levels(fox.atq$lmg.year), col = color, pch = 19, bty = "n")
+#write.table(fox.atq, "FOX_atq.per.obs_clim.txt", sep = "\t")
