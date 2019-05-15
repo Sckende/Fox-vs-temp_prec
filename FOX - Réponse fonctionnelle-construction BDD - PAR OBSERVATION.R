@@ -361,4 +361,4 @@ FOX <- merge(FOX, clim.day[,c(1,2, 8:11)], all.x = TRUE, by.x = c("Year", "Date"
 head(FOX)
 summary(FOX)
 
-write.table(FOX, "FOX_atq.per.obs_clim.txt", sep = "\t")
+#write.table(FOX, "FOX_atq.per.obs_clim.txt", sep = "\t")
