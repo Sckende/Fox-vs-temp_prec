@@ -355,6 +355,7 @@ head(breed)
 FOX$nest.density <- breed$NEST_DENSITY[match(FOX$Year, breed$YEAR)]
 
 head(clim.day)
+summary(clim.day)
 FOX$Year <- as.numeric(as.character(FOX$Year))
 FOX <- merge(FOX, clim.day[,c(1,2, 8:11)], all.x = TRUE, by.x = c("Year", "Date"), by.y = c("year", "date"))
 

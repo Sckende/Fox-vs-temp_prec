@@ -140,50 +140,50 @@ summary(all.clim)
 
 #### Humidity bloc ####
 # Max & min humidity per day
-
-hum <- read.table("HUM_hourly_BYLCAMP_1993_2018.txt", sep = "\t", h = T)
-head(hum)
-hum$date <- as.Date(paste(hum$day, hum$month, hum$year, sep = "-"), format = "%d-%m-%Y")
-hum$date <- as.integer(format(hum$date, "%j"))
-
-hum <- hum[hum$year %in% c(1996:1999, 2004, 2005, 2015:2017) & hum$date %in% c(158:206),]
-
-summary(hum)
-hum$hum <- as.numeric(as.character(hum$hum))
-
-hum.var <- split(hum, paste(hum$year, hum$date))
-
-hum.var <- lapply(hum.var, function(x){
-  station <- as.character(x$station[1])
-  lat <- x$lat[1]
-  long <- x$long[1]
-  year <- x$year[1]
-  month <- x$month[1]
-  day <- x$day[1]
-  date <- x$date[1]
-  max.hum <- max(x$hum, na.rm = TRUE)
-  min.hum <- min(x$hum, na.rm = TRUE)
-  
-  x <- c(station = station,
-         lat = lat,
-         long = long,
-         year = year,
-         month = month,
-         day = day,
-         date = date,
-         max.hum = max.hum,
-         min.hum = min.hum)
-  
-})
-
-hum.var <- as.data.frame(do.call("rbind", hum.var))
-hum.var[2:9] <- lapply(hum.var[2:9], function(x){
-  x <- as.numeric(as.character(x))
-})
-summary(hum.var)
-
-all.clim <- merge(all.clim, hum.var, all = TRUE)
-summary(all.clim)
+# 
+# hum <- read.table("HUM_hourly_BYLCAMP_1993_2018.txt", sep = "\t", h = T)
+# head(hum)
+# hum$date <- as.Date(paste(hum$day, hum$month, hum$year, sep = "-"), format = "%d-%m-%Y")
+# hum$date <- as.integer(format(hum$date, "%j"))
+# 
+# hum <- hum[hum$year %in% c(1996:1999, 2004, 2005, 2015:2017) & hum$date %in% c(158:206),]
+# 
+# summary(hum)
+# hum$hum <- as.numeric(as.character(hum$hum))
+# 
+# hum.var <- split(hum, paste(hum$year, hum$date))
+# 
+# hum.var <- lapply(hum.var, function(x){
+#   station <- as.character(x$station[1])
+#   lat <- x$lat[1]
+#   long <- x$long[1]
+#   year <- x$year[1]
+#   month <- x$month[1]
+#   day <- x$day[1]
+#   date <- x$date[1]
+#   max.hum <- max(x$hum, na.rm = TRUE)
+#   min.hum <- min(x$hum, na.rm = TRUE)
+#   
+#   x <- c(station = station,
+#          lat = lat,
+#          long = long,
+#          year = year,
+#          month = month,
+#          day = day,
+#          date = date,
+#          max.hum = max.hum,
+#          min.hum = min.hum)
+#   
+# })
+# 
+# hum.var <- as.data.frame(do.call("rbind", hum.var))
+# hum.var[2:9] <- lapply(hum.var[2:9], function(x){
+#   x <- as.numeric(as.character(x))
+# })
+# summary(hum.var)
+# 
+# all.clim <- merge(all.clim, hum.var, all = TRUE)
+# summary(all.clim)
 
 
 #### Precipitation bloc ####
