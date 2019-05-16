@@ -56,19 +56,44 @@ legend("topright", legend = levels(data$lmg.year), col = color, pch = 19, bty = 
 plot(data$lmg, data$all_atq_rate, bty = "n", col = color[as.numeric(data$lmg.year)], pch = 19, cex = 1.5, main = "All predated items", xlab = "Lemming abundance", ylab = "Attack rate per ind. per obs.")
 legend("topright", legend = levels(data$lmg.year), col = color, pch = 19, bty = "n")
 
-
+data$lmg.year <- as.factor(as.numeric(data$lmg.year)) # 1 = crash, 2 = inter, 3 = peak
 # Models
 
 atq.mod <- list()
 
 atq.mod[[1]] <- gam(AD_atq_rate ~ s(max.daily.temp),
-                     data = data)
-atq.mod[[2]] <- gam(AD_atq_rate ~ s(min.daily.temp),
+                    method = "REML",
                     data = data)
-m1 <- gam(AD_atq_rate ~ s(max.daily.temp), data = data, method = "REML")
-summary(m1)
-coef(m1)
+atq.mod[[2]] <- gam(AD_atq_rate ~ s(min.daily.temp),
+                    method = "REML",
+                    data = data)
+atq.mod[[3]] <- gam(AD_atq_rate ~ s(rain),
+                    method = "REML",
+                    data = data)
+atq.mod[[4]] <- gam(AD_atq_rate ~ s(rain) + lmg.year,
+                    method = "REML",
+                    data = data)
+atq.mod[[5]] <- gam(AD_atq_rate ~ s(rain) + s(max.daily.temp),
+                    method = "REML",
+                    data = data)
+atq.mod[[6]] <- gam(AD_atq_rate ~ s(rain) + s(max.daily.temp) + s(lmg),
+                    method = "REML",
+                    data = data)
+
+
+
+par(mfrow = c(1, 2))
 plot(atq.mod[[1]], residuals = TRUE, se = TRUE,  pch = 1, bty = "n", ylim = c(-0.004, 0.010))
+plot(atq.mod[[1]], bty = "n", ylim = c(-0.004, 0.010))
 plot(atq.mod[[2]], residuals = TRUE, se = TRUE,  pch = 1, bty = "n", ylim = c(-0.004, 0.010))
-summary(atq.mod[[2]])
-coef(atq.mod[[2]])
+plot(atq.mod[[2]],bty = "n", ylim = c(-0.004, 0.010))
+plot(atq.mod[[3]], residuals = TRUE, se = TRUE,  pch = 1, bty = "n", ylim = c(-0.004, 0.010))
+plot(atq.mod[[3]],bty = "n", ylim = c(-0.004, 0.010))
+plot(atq.mod[[5]], residuals = TRUE, se = TRUE,  pch = 1, bty = "n", ylim = c(-0.004, 0.010), col = "blue")
+plot(atq.mod[[5]],bty = "n", ylim = c(-0.004, 0.010))
+
+coef(atq.mod[[5]])
+gam.check(atq.mod[[5]])
+AIC(atq.mod[[1]], atq.mod[[2]], atq.mod[[3]], atq.mod[[4]], atq.mod[[5]])
+
+gam.check(atq.mod[[2]])
