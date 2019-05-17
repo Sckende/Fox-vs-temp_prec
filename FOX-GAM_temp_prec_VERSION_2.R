@@ -6,14 +6,15 @@ summary(data)
 
 library(viridis) # For colors in plot
 library(mgcv)
+library(DHARMa)
 #### Data exploration ####
 
 # Keeping the observation more or equal than 3 min (180 s)
 data <- data[data$Obs_lenght >= 180,]
 
 par(mfrow = c(1, 2))
-boxplot(data$all_atq_rate)
-boxplot(data$goo_atq_rate)
+boxplot(data$all_atq_rate, bty = "n", main = "Attack rate for all predated items")
+boxplot(data$goo_atq_rate, bty = "n", main = "Attack rate for nests with adults")
 
 # MAX DAILY TEMP
 par(mfrow = c(1, 2))
@@ -76,10 +77,10 @@ atq.mod[[4]] <- gam(AD_atq_rate ~ s(rain) + lmg.year,
 atq.mod[[5]] <- gam(AD_atq_rate ~ s(rain) + s(max.daily.temp),
                     method = "REML",
                     data = data)
-atq.mod[[6]] <- gam(AD_atq_rate ~ s(rain) + s(max.daily.temp) + s(lmg),
+atq.mod[[6]] <- gam(AD_atq_rate ~ s(rain, by = lmg.year) + s(max.daily.temp, by = lmg.year) + lmg.year,
                     method = "REML",
                     data = data)
-
+summary(atq.mod[[3]])
 
 
 par(mfrow = c(1, 2))
@@ -89,11 +90,22 @@ plot(atq.mod[[2]], residuals = TRUE, se = TRUE,  pch = 1, bty = "n", ylim = c(-0
 plot(atq.mod[[2]],bty = "n", ylim = c(-0.004, 0.010))
 plot(atq.mod[[3]], residuals = TRUE, se = TRUE,  pch = 1, bty = "n", ylim = c(-0.004, 0.010))
 plot(atq.mod[[3]],bty = "n", ylim = c(-0.004, 0.010))
-plot(atq.mod[[5]], residuals = TRUE, se = TRUE,  pch = 1, bty = "n", ylim = c(-0.004, 0.010), col = "blue")
-plot(atq.mod[[5]],bty = "n", ylim = c(-0.004, 0.010))
+plot(atq.mod[[5]], residuals = TRUE, se = TRUE,  pch = 1, bty = "n", ylim = c(-0.004, 0.010))
+plot(atq.mod[[6]], residuals = TRUE, se = TRUE,  pch = 1, bty = "n", ylim = c(-0.004, 0.010))
 
 coef(atq.mod[[5]])
+summary(atq.mod[[5]])
 gam.check(atq.mod[[5]])
+
+atq.mod[[5]] <- gam(AD_atq_rate ~ s(rain, k = 5) + s(max.daily.temp, k= 5),
+                    method = "REML",
+                    data = data)
+gam.check(atq.mod[[5]])
+
+
+
 AIC(atq.mod[[1]], atq.mod[[2]], atq.mod[[3]], atq.mod[[4]], atq.mod[[5]])
 
-gam.check(atq.mod[[2]])
+gam.check(atq.mod[[6]])
+
+plot(simulateResiduals(atq.mod[[6]]))
