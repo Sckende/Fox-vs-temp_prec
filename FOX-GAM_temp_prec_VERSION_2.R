@@ -12,6 +12,7 @@ library(DHARMa)
 # Keeping the observation more or equal than 3 min (180 s)
 data <- data[data$Obs_lenght >= 180,]
 
+
 par(mfrow = c(1, 2))
 boxplot(data$all_atq_rate, bty = "n", main = "Attack rate for all predated items")
 boxplot(data$goo_atq_rate, bty = "n", main = "Attack rate for nests with adults")
@@ -80,7 +81,43 @@ atq.mod[[5]] <- gam(AD_atq_rate ~ s(rain) + s(max.daily.temp),
 atq.mod[[6]] <- gam(AD_atq_rate ~ s(rain, by = lmg.year) + s(max.daily.temp, by = lmg.year) + lmg.year,
                     method = "REML",
                     data = data)
-summary(atq.mod[[3]])
+atq.mod[[7]] <- gam(AD_atq_rate ~ s(rain) + s(max.daily.temp) + s(lmg, k = 5),
+                    method = "REML",
+                    data = data)
+summary(atq.mod[[7]])
+plot(atq.mod[[7]], pages = 1)
+
+m <- gam(AD_atq_rate ~ s(rain) + s(max.daily.temp) + s(max.daily.speed) + s(lmg, k = 5) + s(nest.density, k = 5) + s(Year, bs = "re"),
+       method = "REML",
+       #select = TRUE,
+       data = data)
+summary(m)
+x11()
+plot(m, page = 1)
+gam.check(m)
+
+m.test <- gam(AD_atq ~ s(rain) + s(max.daily.temp) + s(max.daily.speed) + s(lmg, k = 5) + s(nest.density, k = 5) + offset(log(Obs_lenght)),
+              data = data,
+              select = TRUE,
+              family = poisson)
+summary(m.test)
+plot(m.test, page = 1)
+
+
+plot(simulateResiduals(m))
+
+concurvity(m, full = TRUE)
+
+m1 <- gam(lmg ~ s(nest.density, k = 5),
+          data = data)
+summary(m1)
+plot(m1, se = TRUE, residuals = TRUE, pch = 1, cex = 1, bty = "n", shade = TRUE)
+
+
+
+par(mfrow=c(2,2))
+visreg(m)
+plot(model.frame(m))
 
 
 par(mfrow = c(1, 2))
