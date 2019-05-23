@@ -32,7 +32,8 @@ data <- lapply(data, function(x){
         x$all_atq[i] <- 0
     }
   }
-  x$all_atq_rate <- sum(x$all_atq)/x$Obs_lenght[1]  
+  x$all_atq <- sum(x$all_atq)
+  x$all_atq_rate <- x$all_atq/x$Obs_lenght[1]  
   x
 })
 
@@ -52,8 +53,10 @@ data <- lapply(data, function(x){
       x$AD_atq[i] <- 0
     }
   }
-  x$goo_atq_rate <- sum(x$goo_atq)/x$Obs_lenght[1]
-  x$AD_atq_rate <- sum(x$AD_atq)/x$Obs_lenght[1]
+  x$goo_atq <- sum(x$goo_atq)
+  x$AD_atq <- sum(x$AD_atq)
+  x$goo_atq_rate <- x$goo_atq/x$Obs_lenght[1]
+  x$AD_atq_rate <- x$AD_atq/x$Obs_lenght[1]
   x
 })
 
@@ -93,7 +96,8 @@ data <- lapply(data, function(x){
       x$all_atq[i] <- 0
     }
   }
-  x$all_atq_rate <- sum(x$all_atq)/x$Obs_lenght[1]  
+  x$all_atq <- sum(x$all_atq)
+  x$all_atq_rate <- x$all_atq/x$Obs_lenght[1]  
   x
 })
 
@@ -113,8 +117,10 @@ data <- lapply(data, function(x){
       x$AD_atq[i] <- 0
     }
   }
-  x$goo_atq_rate <- sum(x$goo_atq)/x$Obs_lenght[1]
-  x$AD_atq_rate <- sum(x$AD_atq)/x$Obs_lenght[1]
+  x$goo_atq <- sum(x$goo_atq)
+  x$AD_atq <- sum(x$AD_atq)
+  x$goo_atq_rate <- x$goo_atq/x$Obs_lenght[1]
+  x$AD_atq_rate <- x$AD_atq/x$Obs_lenght[1]
   x
 })
 
@@ -178,9 +184,12 @@ data <- lapply(data, function(x){
       x$AD_atq[i] <- 0
     }
   }
-  x$all_atq_rate <- sum(x$all_atq)/x$OBS_LENGTH[1] 
-  x$goo_atq_rate <- sum(x$goo_atq)/x$OBS_LENGTH[1] 
-  x$AD_atq_rate <- sum(x$AD_atq)/x$OBS_LENGTH[1]
+  x$all_atq <- sum(x$all_atq)
+  x$goo_atq <- sum(x$goo_atq)
+  x$AD_atq <- sum(x$AD_atq)
+  x$all_atq_rate <- x$all_atq/x$OBS_LENGTH[1] 
+  x$goo_atq_rate <- x$goo_atq/x$OBS_LENGTH[1] 
+  x$AD_atq_rate <- x$AD_atq/x$OBS_LENGTH[1]
   x
 })
 
@@ -207,6 +216,10 @@ rf.2 <- as.data.frame(cbind(Bloc = as.character(rf$BLOC),
                             Prec = rf$PREC))
 
 head(rf.2)
+rf.2$all_atq <- as.numeric(as.character(rf.2$all_atq))
+rf.2$goo_atq <- as.numeric(as.character(rf.2$goo_atq))
+rf.2$AD_atq <- as.numeric(as.character(rf.2$AD_atq))
+
 rf.2$all_atq_rate <- as.numeric(as.character(rf.2$all_atq_rate))
 rf.2$goo_atq_rate <- as.numeric(as.character(rf.2$goo_atq_rate))
 rf.2$AD_atq_rate <- as.numeric(as.character(rf.2$AD_atq_rate))
@@ -260,9 +273,13 @@ data <- lapply(data, function(x){
       x$AD_atq[i] <- 0
     }
   }
-  x$all_atq_rate <- sum(x$all_atq)/x$OBS_LENGHT[1] 
-  x$goo_atq_rate <- sum(x$goo_atq)/x$OBS_LENGHT[1] 
-  x$AD_atq_rate <- sum(x$AD_atq)/x$OBS_LENGHT[1]
+  x$all_atq <- sum(x$all_atq)
+  x$goo_atq <- sum(x$goo_atq)
+  x$AD_atq <- sum(x$AD_atq)
+  
+  x$all_atq_rate <- x$all_atq/x$OBS_LENGHT[1] 
+  x$goo_atq_rate <- x$goo_atq/x$OBS_LENGHT[1] 
+  x$AD_atq_rate <- x$AD_atq/x$OBS_LENGHT[1]
   x
 })
 
@@ -291,6 +308,9 @@ rf.2 <- as.data.frame(cbind(Bloc = as.character(rf$Bloc),
                             Prec = rf$PRECIPITATION))
 
 head(rf.2)
+rf.2$all_atq <- as.numeric(as.character(rf.2$all_atq))
+rf.2$goo_atq <- as.numeric(as.character(rf.2$goo_atq))
+rf.2$AD_atq <- as.numeric(as.character(rf.2$AD_atq))
 rf.2$all_atq_rate <- as.numeric(as.character(rf.2$all_atq_rate))
 rf.2$goo_atq_rate <- as.numeric(as.character(rf.2$goo_atq_rate))
 rf.2$AD_atq_rate <- as.numeric(as.character(rf.2$AD_atq_rate))
@@ -363,3 +383,4 @@ head(FOX)
 summary(FOX)
 
 #write.table(FOX, "FOX_atq.per.obs_clim.txt", sep = "\t")
+
