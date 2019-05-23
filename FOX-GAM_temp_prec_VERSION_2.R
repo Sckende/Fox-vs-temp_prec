@@ -146,3 +146,59 @@ AIC(atq.mod[[1]], atq.mod[[2]], atq.mod[[3]], atq.mod[[4]], atq.mod[[5]])
 gam.check(atq.mod[[6]])
 
 plot(simulateResiduals(atq.mod[[6]]))
+
+#### Zero-inflated Poisson family in GAM-M ####
+
+# Full model
+zip.1 <- gam(AD_atq ~ s(rain) + max.daily.temp + s(max.daily.speed) + s(lmg, k = 5) + s(nest.density, k = 5) + s(Year, bs = "re") + offset(log(Obs_lenght)),
+             family = ziP(), # Have to understand more details to use the ziplss() family
+             method = "REML",
+             #select = TRUE,
+             data = data)
+summary(zip.1)
+x11(); plot(zip.1, page = 1)
+plot(simulateResiduals(zip.1))
+
+# Models compairison
+zip <- list()
+zip[[1]] <- gam(AD_atq ~ s(rain) + s(max.daily.temp) + s(max.daily.speed) + s(lmg, k = 5) + s(nest.density, k = 5) + s(Year, bs = "re") + offset(log(Obs_lenght)),
+                family = ziP(), # Have to understand more details to use the ziplss() family
+                method = "REML",
+                #select = TRUE,
+                data = data)
+zip[[2]] <- gam(AD_atq ~ s(max.daily.temp) + s(max.daily.speed) + s(lmg, k = 5) + s(nest.density, k = 5) + s(Year, bs = "re") + offset(log(Obs_lenght)),
+                family = ziP(), # Have to understand more details to use the ziplss() family
+                method = "REML",
+                #select = TRUE,
+                data = data)
+zip[[3]] <- gam(AD_atq ~ s(rain) + s(max.daily.temp) + s(lmg, k = 5) + s(nest.density, k = 5) + s(Year, bs = "re") + offset(log(Obs_lenght)),
+                family = ziP(), # Have to understand more details to use the ziplss() family
+                method = "REML",
+                #select = TRUE,
+                data = data)
+zip[[4]] <- gam(AD_atq ~ s(max.daily.temp) + s(lmg, k = 5) + s(nest.density, k = 5) + s(Year, bs = "re") + offset(log(Obs_lenght)),
+                family = ziP(), # Have to understand more details to use the ziplss() family
+                method = "REML",
+                #select = TRUE,
+                data = data)
+zip[[5]] <- gam(AD_atq ~ s(max.daily.temp) + s(Year, bs = "re") + offset(log(Obs_lenght)),
+                family = ziP(), # Have to understand more details to use the ziplss() family
+                method = "REML",
+                #select = TRUE,
+                data = data)
+AIC(zip[[1]], zip[[2]], zip[[3]], zip[[4]], zip[[5]])
+
+
+anova(zip[[1]], zip[[2]])
+
+# Best model compairison with number of k
+
+bmod <- list()
+bmod[[1]] <- gam(AD_atq ~ s(rain) + s(max.daily.temp, k = 8) + s(max.daily.speed) + s(lmg, k = 5) + s(nest.density, k = 5) + s(Year, bs = "re") + offset(log(Obs_lenght)),
+                          family = ziP(), # Have to understand more details to use the ziplss() family
+                          method = "REML",
+                          #select = TRUE,
+                          data = data)
+x11();visreg:::visreg(zip.1, "rain", by = "Year", scale = "response", overlay = FALSE)
+
+# shape constrained gam
