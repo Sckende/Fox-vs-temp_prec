@@ -8,7 +8,7 @@ library(viridis) # For colors in plot
 library(mgcv)
 library(DHARMa)
 #### Data exploration ####
-
+data$Year <- as.factor(data$Year)
 # Keeping the observation more or equal than 3 min (180 s)
 data <- data[data$Obs_lenght >= 180,]
 
@@ -150,14 +150,19 @@ plot(simulateResiduals(atq.mod[[6]]))
 #### Zero-inflated Poisson family in GAM-M ####
 
 # Full model
-zip.1 <- gam(AD_atq ~ s(rain) + max.daily.temp + s(max.daily.speed) + s(lmg, k = 5) + s(nest.density, k = 5) + s(Year, bs = "re") + offset(log(Obs_lenght)),
+zip.1 <- gam(AD_atq ~ s(rain) + max.daily.temp + s(max.daily.speed)+ s(Year, bs = "re") + offset(log(Obs_lenght)),
              family = ziP(), # Have to understand more details to use the ziplss() family
              method = "REML",
              #select = TRUE,
              data = data)
 summary(zip.1)
-x11(); plot(zip.1, page = 1)
+x11(); plot(zip.1, page = 1, all.terms = TRUE)
 plot(simulateResiduals(zip.1))
+x11();visreg:::visreg(zip.1, "max.daily.temp", by = "Year", scale = "linear", overlay = TRUE, band = FALSE)
+plot(predict(zip.1, type = "response"))
+par(mfrow = c(1, 2))
+hist(data$AD_atq, breaks = 0:50)
+hist(predict(zip.1, type = "response"), breaks = 0:50)
 
 # Models compairison
 zip <- list()
@@ -191,14 +196,79 @@ AIC(zip[[1]], zip[[2]], zip[[3]], zip[[4]], zip[[5]])
 
 anova(zip[[1]], zip[[2]])
 
-# Best model compairison with number of k
+# Best model compairison with or without smooth
 
 bmod <- list()
-bmod[[1]] <- gam(AD_atq ~ s(rain) + s(max.daily.temp, k = 8) + s(max.daily.speed) + s(lmg, k = 5) + s(nest.density, k = 5) + s(Year, bs = "re") + offset(log(Obs_lenght)),
+bmod[[1]] <- gam(AD_atq ~ s(rain) + s(max.daily.temp) + s(max.daily.speed) + s(lmg, k = 5) + s(nest.density, k = 5) + s(Year, bs = "re") + offset(log(Obs_lenght)),
                           family = ziP(), # Have to understand more details to use the ziplss() family
                           method = "REML",
                           #select = TRUE,
                           data = data)
-x11();visreg:::visreg(zip.1, "rain", by = "Year", scale = "response", overlay = FALSE)
+bmod[[2]] <- gam(AD_atq ~ s(rain) + max.daily.temp + s(max.daily.speed) + s(lmg, k = 5) + s(nest.density, k = 5) + s(Year, bs = "re") + offset(log(Obs_lenght)),
+                 family = ziP(), # Have to understand more details to use the ziplss() family
+                 method = "REML",
+                 #select = TRUE,
+                 data = data)
+bmod[[3]] <- gam(AD_atq ~ rain + max.daily.temp + s(max.daily.speed) + s(lmg, k = 5) + s(nest.density, k = 5) + s(Year, bs = "re") + offset(log(Obs_lenght)),
+                    family = ziP(), # Have to understand more details to use the ziplss() family
+                    method = "REML",
+                    #select = TRUE,
+                    data = data)
+
+bmod[[4]] <- gam(AD_atq ~ rain + max.daily.temp + max.daily.speed + s(lmg, k = 5) + s(nest.density, k = 5) + s(Year, bs = "re") + offset(log(Obs_lenght)),
+    family = ziP(), # Have to understand more details to use the ziplss() family
+    method = "REML",
+    #select = TRUE,
+    data = data)
+
+AIC(bmod[[1]], bmod[[2]], bmod[[3]], bmod[[4]])
+
+# Best model and variation of k value
+
+m <- gam(AD_atq ~ s(rain) + s(max.daily.temp, k = 2) + s(max.daily.speed) + s(lmg, k = 5) + s(nest.density, k = 5) + s(Year, bs = "re") + offset(log(Obs_lenght)),
+                 family = ziP(), # Have to understand more details to use the ziplss() family
+                 method = "REML",
+                 #select = TRUE,
+                 data = data)
+summary(m)
+x11(); plot(m, page = 1, all.terms = TRUE)
+
+m.1 <- gam(AD_atq ~ s(rain) + s(max.daily.temp, k = 4) + s(max.daily.speed) + s(lmg, k = 5) + s(nest.density, k = 5) + s(Year, bs = "re") + offset(log(Obs_lenght)),
+         family = ziP(), # Have to understand more details to use the ziplss() family
+         method = "REML",
+         #select = TRUE,
+         data = data)
+summary(m.1)
+x11(); plot(m.1, page = 1, all.terms = TRUE)
+
+m.2 <- gam(AD_atq ~ s(rain) + max.daily.temp + s(max.daily.speed) + s(lmg, k = 5) + s(nest.density, k = 5) + s(Year, bs = "re") + offset(log(Obs_lenght)),
+           family = ziP(), # Have to understand more details to use the ziplss() family
+           method = "REML",
+           #select = TRUE,
+           data = data)
+summary(m.2)
+x11(); plot(m.2, page = 1, all.terms = TRUE, rug = T, residuals = T)
+
+m.3 <- gam(AD_atq ~ s(rain) + max.daily.temp + s(max.daily.speed) + s(Year, bs = "re") + offset(log(Obs_lenght)),
+           family = ziP(), # Have to understand more details to use the ziplss() family
+           method = "REML",
+           #select = TRUE,
+           data = data)
+summary(m.3)
+summary(m.3)$s.table
+x11(); plot(m.3, page = 1, all.terms = TRUE, rug = T, residuals = T)
+plot(m.3, select = 2)
+
+# Try to plot depending on level of random plot
+x11()
+par(mfrow=c(1,2), cex=1.1)
+itsadug:::plot_smooth(m.3, view="rain", rm.ranef=TRUE, main="intercept + s(x1)", rug=FALSE)
+plot_smooth(m.3, view="rain", cond=list(Year="1"), 
+            main="... + s(fac)", col='orange', rug=FALSE)
+plot_smooth(gamm_intercept, view="rain", cond=list(Year="2"), add=TRUE, col='red')
+plot_smooth(gamm_intercept, view="rain", cond=list(Year="3"), add=TRUE, col='purple')
+plot_smooth(gamm_intercept, view="rain", cond=list(Year="4"), add=TRUE, col='turquoise')
+
+
 
 # shape constrained gam
