@@ -9,6 +9,12 @@ library(mgcv)
 library(DHARMa)
 #### Data exploration ####
 data$Year <- as.factor(data$Year)
+
+# Modification of the lmg.year variable
+data$lmg.year <- as.character(data$lmg.year)
+data$lmg.year[data$lmg.year == "peak" | data$lmg.year == "inter"] <- "noCrash"
+data$lmg.year <- as.factor(data$lmg.year)
+
 # Keeping the observation more or equal than 3 min (180 s)
 data <- data[data$Obs_lenght >= 180,]
 
@@ -191,8 +197,18 @@ zip[[5]] <- gam(AD_atq ~ s(max.daily.temp) + s(Year, bs = "re") + offset(log(Obs
                 method = "REML",
                 #select = TRUE,
                 data = data)
-AIC(zip[[1]], zip[[2]], zip[[3]], zip[[4]], zip[[5]])
-
+zip[[6]] <- gam(AD_atq ~ s(max.daily.temp, by = lmg.year) +  offset(log(Obs_lenght)),
+                family = ziP(), # Have to understand more details to use the ziplss() family
+                method = "REML",
+                #select = TRUE,
+                data = data)
+zip[[7]] <- gam(AD_atq ~ s(rain, by = lmg.year) + s(max.daily.temp, by = lmg.year) + s(max.daily.speed, by = lmg.year) + s(nest.density, k = 5) + s(Year, bs = "re") + offset(log(Obs_lenght)),
+                family = ziP(), # Have to understand more details to use the ziplss() family
+                method = "REML",
+                #select = TRUE,
+                data = data)
+AIC(zip[[1]], zip[[2]], zip[[3]], zip[[4]], zip[[5]], zip[[6]], zip[[7]])
+summary(zip[[7]])
 
 anova(zip[[1]], zip[[2]])
 
