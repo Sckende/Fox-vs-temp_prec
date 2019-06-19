@@ -12,9 +12,42 @@ rm( list = ls ())
 rf<-read.table("Fox-2004-2005-fonct-essai.txt", sep = "\t", h = T)
 summary(rf)
 head(rf)
+table(rf$Observer[rf$Year == 2005], useNA = "always")
 
-rf$Duration[rf$Duration == "-"] <- 0
-rf$Duration <- as.numeric(as.character(rf$Duration))
+bloc <- read.table("FOX_2004-2005_blocs_obs.txt", sep = "\t", h = T)
+bloc <- bloc[bloc$Year == 2005,]; bloc <- droplevels(bloc)
+summary(bloc)
+table(bloc$Observateur, useNA = "always")
+bloc$Observateur <- as.character(bloc$Observateur)
+
+
+# Information about observation blocks in 2005
+rf$Lenght[rf$Year == 2005] <- NA
+rf$Start[rf$Year == 2005] <- NA
+rf$End[rf$Year == 2005] <- NA
+rf$Observer <- as.character(rf$Observer)
+
+bloc$début <- as.character(bloc$début)
+bloc$fin <- as.character(bloc$fin)
+bloc$Observateur <- as.character(bloc$Observateur)
+
+y <- split(rf, paste(rf$Year, rf$Date, rf$Observer))
+for(i in 1:length(y)){
+  if(y[[i]]$Year[1] == 2005){
+    y[[i]]$Start <- bloc$début[bloc$Date == y[[i]]$Date[1] & bloc$Observateur == y[[i]]$Observer[1]]
+    y[[i]]$End <- bloc$fin[bloc$Date == y[[i]]$Date[1] & bloc$Observateur == y[[i]]$Observer[1]]
+    y[[i]]$Lenght <- bloc$Duree[bloc$Date == y[[i]]$Date[1] & bloc$Observateur == y[[i]]$Observer[1]]
+  }
+}
+
+
+
+
+
+
+
+
+
 
 table(rf$start_obs, useNA = "always")
 rf$start_obs <- as.character(rf$start_obs)
