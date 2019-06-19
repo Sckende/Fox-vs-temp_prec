@@ -41,8 +41,8 @@ for(i in 1:length(y)){
 }
 
 
-
-
+rf <- do.call("rbind", y)
+summary(rf)
 
 
 
