@@ -4,141 +4,70 @@
 getwd ()
 setwd(dir = "C:/Users/HP_9470m/OneDrive - Université de Moncton/Doc doc doc/Ph.D. - ANALYSES/R analysis/Data")
 library("reshape2")
-
+library(dplyr)
 rm( list = ls ())
+list.files()
 
-######################## Fox - 2004 - 2005 ###########################
+
+######################## Fox - 2004 ###########################
 # Loading database
-rf<-read.table("Fox-2004-2005-fonct-essai.txt", sep = "\t", h = T)
-summary(rf)
-head(rf)
-table(rf$Observer[rf$Year == 2005], useNA = "always")
+comp.2004 <- read.table("FOXBASE_BEHAV_2004_2005.txt", sep = "\t", h = T) %>%
+  filter(YEAR == 2004) %>%
+  droplevels()
 
-bloc <- read.table("FOX_2004-2005_blocs_obs.txt", sep = "\t", h = T)
-bloc <- bloc[bloc$Year == 2005,]; bloc <- droplevels(bloc)
-summary(bloc)
-table(bloc$Observateur, useNA = "always")
-bloc$Observateur <- as.character(bloc$Observateur)
+summary(comp.2004)
+head(comp.2004)
 
+# Check if needed informations about observation hours are present
+lapply(comp.2004[, c(6, 7, 11, 12)], table, useNA = "always") # NAs for START.OBS & END.OBS
+comp.2004[is.na(comp.2004$START.OBS),] # Observation in day 175 - BLOC 22h00/00h00
 
-# Information about observation blocks in 2005
-rf$Lenght[rf$Year == 2005] <- NA
-rf$Start[rf$Year == 2005] <- NA
-rf$End[rf$Year == 2005] <- NA
-rf$Observer <- as.character(rf$Observer)
+# Addition of an approximative hour for the missing data
+comp.2004$START.OBS <- as.character(comp.2004$START.OBS)
+comp.2004$END.OBS <- as.character(comp.2004$END.OBS)
 
-bloc$début <- as.character(bloc$début)
-bloc$fin <- as.character(bloc$fin)
-bloc$Observateur <- as.character(bloc$Observateur)
-
-y <- split(rf, paste(rf$Year, rf$Date, rf$Observer))
-for(i in 1:length(y)){
-  if(y[[i]]$Year[1] == 2005){
-    y[[i]]$Start <- bloc$début[bloc$Date == y[[i]]$Date[1] & bloc$Observateur == y[[i]]$Observer[1]]
-    y[[i]]$End <- bloc$fin[bloc$Date == y[[i]]$Date[1] & bloc$Observateur == y[[i]]$Observer[1]]
-    y[[i]]$Lenght <- bloc$Duree[bloc$Date == y[[i]]$Date[1] & bloc$Observateur == y[[i]]$Observer[1]]
-  }
-}
-
-
-rf <- do.call("rbind", y)
-summary(rf)
-
-
-
-
-
-
-table(rf$start_obs, useNA = "always")
-rf$start_obs <- as.character(rf$start_obs)
-rf$start_obs[rf$start_obs == "-"] <- "22h00" # Informations obtained in the raw database
-rf <- cbind(rf, colsplit(rf$start_obs, "h", names = c("start_hour", "trash"))[1])
-rf$start_hour <- as.numeric(rf$start_hour)
-
-# Creation of variable for the start of the observation block
-for(i in 1:length(rf$start_hour)){
-  if(rf$start_hour[i] %in% 0:3){
-    rf$block.start[i] <- 0
-    rf$block.end[i] <- 4
-  }
-  if(rf$start_hour[i] %in% 4:7){
-    rf$block.start[i] <- 4
-    rf$block.end[i] <- 8
-  }
-  if(rf$start_hour[i] %in% 8:11){
-    rf$block.start[i] <- 8
-    rf$block.end[i] <- 12
-  }
-  if(rf$start_hour[i] %in% 12:15){
-    rf$block.start[i] <- 12
-    rf$block.end[i] <- 16
-  }
-  if(rf$start_hour[i] %in% 16:19){
-    rf$block.start[i] <- 16
-    rf$block.end[i] <- 20
-  }
-  if(rf$start_hour[i] %in% 20:23){
-    rf$block.start[i] <- 20
-    rf$block.end[i] <- 0
-  }
-}
+comp.2004$START.OBS[is.na(comp.2004$START.OBS)] <- "22h00"
+comp.2004$END.OBS[is.na(comp.2004$END.OBS)] <- "22h10"
 
 # Checking ID levels
-levels(rf$ID)
+levels(comp.2004$FOX.ID)
 
 # Checking behaviours levels
-levels(rf$Behavior)
+levels(comp.2004$BEHAV)
 
-# Split database depending on Date, ID and, Obs_length
-data <- split(rf, paste(rf$Year, rf$Date, rf$ID, rf$Obs_lenght))
+# Checking duration of observation
+table(comp.2004$OBS.LENGTH, useNA = "always")
 
-# Computation of "all_atq_rate" = atq rate per obs per ind for all items (lemming, goose, eggs, and gosling)
-levels(rf$Item[rf$Behavior == "attaque"]) # keep items: couple, egg, lemming, oie, young
+# Checking items which are predated and selection of which ones I want to keep
+levels(comp.2004$ITEM[comp.2004$BEHAV == "attaque"]) # keep items: couple, egg, lemming, oie, young
+table(comp.2004$ITEM,useNA = "always")
 
-data <- lapply(data, function(x){
-  for(i in 1:length(x$Behavior)){
-    if(x$Behavior[i] == "attaque" & x$Item[i] %in% c("couple", "egg", "lemming", "oie", "young")){
-        x$all_atq[i] <- 1
-      } else {
-        x$all_atq[i] <- 0
-    }
-  }
-  x$all_atq <- sum(x$all_atq)
-  x$all_atq_rate <- x$all_atq/x$Obs_lenght[1]  
-  x
-})
+atq.all.2004 <- filter(comp.2004, BEHAV %in% c("attaque"), ITEM %in% c("couple", "egg", "lemming", "oie", "young")) %>% 
+  group_by(CACHE, DATE, FOX.ID, OBS.LENGTH, OBSERVER) %>%
+  summarise(atq.all.number = sum(BEHAV == "attaque"),
+            atq.all.rate = sum(BEHAV == "attaque")/OBS.LENGTH[1]
+            )
 
-# Computation of "goo_atq_rate" = atq rate per obs per ind for goose items (goose, eggs, and gosling) & "AD_atq_rate" = atq rate only on nests with adult
-levels(rf$Item[rf$Behavior == "attaque"]) # keep items: couple, egg, oie, young
+atq.goo.2004 <- filter(comp.2004, BEHAV %in% c("attaque"), ITEM %in% c("couple", "egg", "oie", "young")) %>% 
+  group_by(CACHE, DATE, FOX.ID, OBS.LENGTH, OBSERVER) %>%
+  summarise(atq.goo.number = sum(BEHAV == "attaque"),
+            atq.goo.rate = sum(BEHAV == "attaque")/OBS.LENGTH[1]
+  )
 
-data <- lapply(data, function(x){
-  for(i in 1:length(x$Behavior)){
-    if(x$Behavior[i] == "attaque" & x$Item[i] %in% c("couple", "egg", "oie", "young")){
-      x$goo_atq[i] <- 1
-    } else {
-      x$goo_atq[i] <- 0
-    }
-    if(x$Behavior[i] == "attaque" & x$Item[i] %in% c("couple", "oie")){
-      x$AD_atq[i] <- 1
-    } else {
-      x$AD_atq[i] <- 0
-    }
-  }
-  x$goo_atq <- sum(x$goo_atq)
-  x$AD_atq <- sum(x$AD_atq)
-  x$goo_atq_rate <- x$goo_atq/x$Obs_lenght[1]
-  x$AD_atq_rate <- x$AD_atq/x$Obs_lenght[1]
-  x
-})
+atq.2004 <- left_join(atq.all.2004, atq.goo.2004, by = c("CACHE", "DATE", "FOX.ID", "OBS.LENGTH", "OBSERVER"))
+utils::View(atq.2004)
+summary(atq.2004)
+utils::View(atq.2004[is.na(atq.2004$atq.goo.number),])
+utils::View(comp.2004)
 
-FOX_ATQ <- do.call("rbind", data)
-head(FOX_ATQ)
-summary(FOX_ATQ)
-FOX_ATQ$Behavior <- as.character(FOX_ATQ$Behavior)
-FOX_ATQ$Item <- as.character(FOX_ATQ$Item)
-FOX_ATQ$Habitat <- as.character(FOX_ATQ$Habitat)
-FOX_ATQ$Cache <- as.character(FOX_ATQ$Cache)
-FOX_ATQ$ID <- as.character(FOX_ATQ$ID)
+X11()
+par(mfrow = c(1, 2))
+plot(atq.2004$atq.all.rate, bty = "n")
+plot(atq.2004$atq.goo.rate, bty = "n")
+
+
+
+
 
 ######################## Fox - 2005 ###########################
 # Loading database
