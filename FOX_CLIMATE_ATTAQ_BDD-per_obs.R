@@ -5,6 +5,7 @@ getwd ()
 setwd(dir = "C:/Users/HP_9470m/OneDrive - Université de Moncton/Doc doc doc/Ph.D. - ANALYSES/R analysis/Data")
 library("reshape2")
 library(dplyr)
+require("lubridate")
 rm( list = ls ())
 list.files()
 
@@ -214,16 +215,37 @@ hist(atq$atq.goo.rate[atq$YEAR == "2005"], col = rgb(0,0,1,alpha=0.5), breaks = 
 
 #### ---- ASSOCIATION WITH MEAN TEMPERATURE PER BLOC ---- #### 
 
+head(atq)
 
+# Setting the start.bloc & end.bloc variables as a posix object
+atq$start.bloc <- strptime(paste(atq$YEAR, atq$DATE, atq$start.bloc, sep = "-"), "%Y-%j-%Hh%M")
+atq$end.bloc <- strptime(paste(atq$YEAR, atq$DATE, atq$end.bloc, sep = "-"), "%Y-%j-%Hh%M")
 
+# Special treatment for the bloc end with +1 day (= 24*60*60 seconds for sum with a posix object) for date when 00h00 is crossed
 
+for(i in 1:nrow(atq)){
+  if(atq$start.bloc$hour[i] > atq$end.bloc$hour[i]){
+    atq$end.bloc[i] <- atq$end.bloc[i] + 24*60*60
+  }
+}
 
+table(atq$end.bloc-atq$start.bloc) # GREAT !!!!!!!
 
+# Temperature database
+temp <- read.table("TEMP_5min_temp_1993_2018.txt", h=T, sep="\t", dec=".")
+head(temp)
+summary(temp)
+temp$temp <- as.numeric(as.character(temp$temp))
 
+table(temp$temp)
+temp$date <- strptime(paste(temp$year, temp$month, temp$day, temp$hour, temp$min, sep = "-"), "%Y-%m-%d-%H-%M")
 
+# Computation of mean temperature per obs
+test <- subset(temp$temp, temp$date >= atq$start.bloc[1] & temp$date <= atq$end.bloc[1]) # concluding test !
 
-
-
+for(i in 1:nrow(atq)){ # not run yet
+  atq$mean.temp[i] <- mean(temp$temp[temp$date >= atq$start.bloc[i] & temp$date <= atq$end.bloc[i]])
+}
 
 
 
