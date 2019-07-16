@@ -213,7 +213,7 @@ x11()
 hist(atq$atq.all.rate[atq$YEAR == "2004"], col = rgb(1,0,0,alpha=0.5), xlim = c(0, 0.020),breaks = seq(0,0.02, 0.0005))
 hist(atq$atq.goo.rate[atq$YEAR == "2005"], col = rgb(0,0,1,alpha=0.5), breaks = seq(0,0.02, 0.0005), add = T)
 
-#### ---- ASSOCIATION WITH MEAN TEMPERATURE PER BLOC ---- #### 
+#### ---- ASSOCIATION WITH MEAN/MAX/MIN TEMPERATURE PER BLOC ---- #### 
 
 head(atq)
 
@@ -234,11 +234,15 @@ table(atq$end.bloc-atq$start.bloc) # GREAT !!!!!!!
 # Temperature database
 temp <- read.table("TEMP_5min_temp_1993_2018.txt", h=T, sep="\t", dec=".")
 head(temp)
-summary(temp)
 temp$temp <- as.numeric(as.character(temp$temp))
 
 table(temp$temp)
+# temp <- temp %>%
+#   filter(year %in% unique(atq$YEAR)) %>% 
+# mutate(date = strptime(paste(year, month, day, hour, min, sep = "-"), "%Y-%m-%d-%H-%M"))
+temp <- temp[temp$year %in% unique(atq$YEAR),]
 temp$date <- strptime(paste(temp$year, temp$month, temp$day, temp$hour, temp$min, sep = "-"), "%Y-%m-%d-%H-%M")
+summary(temp)
 
 # Computation of mean temperature per obs
 test <- subset(temp$temp, temp$date >= atq$start.bloc[1] & temp$date <= atq$end.bloc[1]) # concluding test !
@@ -246,7 +250,7 @@ test <- subset(temp$temp, temp$date >= atq$start.bloc[1] & temp$date <= atq$end.
 atq$mean.temp <- NULL
 atq$max.temp <- NULL
 atq$mini.temp <- NULL
-for(i in 1:nrow(atq)){ # not run yet
+for(i in 1:nrow(atq)){
   atq$mean.temp[i] <- mean(temp$temp[temp$date >= atq$start.bloc[i] & temp$date <= atq$end.bloc[i]], na.rm = T)
   atq$max.temp[i] <- max(temp$temp[temp$date >= atq$start.bloc[i] & temp$date <= atq$end.bloc[i]], na.rm = T)
   atq$mini.temp[i] <- min(temp$temp[temp$date >= atq$start.bloc[i] & temp$date <= atq$end.bloc[i]], na.rm = T)
@@ -263,4 +267,30 @@ hist(atq$max.temp, breaks = seq(trunc(min(atq$max.temp)), ceiling(max(atq$max.te
 summary(atq$mini.temp)
 hist(atq$mini.temp, breaks = seq(trunc(min(atq$mini.temp)), ceiling(max(atq$mini.temp)), 1))
 hist(atq$mini.temp, breaks = seq(trunc(min(atq$mini.temp)), ceiling(max(atq$mini.temp)), 0.1))
+
+#### ---- ASSOCIATION WITH MEAN/MAX wind PER BLOC ---- #### 
+
+wind <- read.table("WIND_5min_speed_1993_2018.txt", sep = "\t", dec = ".", h = T)
+wind <- wind[wind$year %in% unique(atq$YEAR)] 
+wind$date <- strptime(paste(wind$year, wind$month, wind$day, wind$hour, wind$min, sep = "-"), "%Y-%m-%d-%H-%M")
+summary(wind)
+wind$wind.speed <- as.numeric(as.character(wind$wind.speed))
+
+atq$mean.wind <- NULL
+atq$max.wind <- NULL
+
+for(i in 1:nrow(atq)){
+  atq$mean.wind[i] <- mean(wind$wind.speed[wind$date >= atq$start.bloc[i] & wind$date <= atq$end.bloc[i]], na.rm = T)
+  atq$max.wind[i] <- max(wind$wind.speed[wind$date >= atq$start.bloc[i] & wind$date <= atq$end.bloc[i]], na.rm = T)
+}
+
+summary(atq$mean.wind)
+hist(atq$mean.wind, breaks = seq(trunc(min(atq$mean.wind)), ceiling(max(atq$mean.wind)), 1))
+hist(atq$mean.wind, breaks = seq(trunc(min(atq$mean.wind)), ceiling(max(atq$mean.wind)), 0.1))
+
+summary(atq$max.wind)
+hist(atq$max.wind, breaks = seq(trunc(min(atq$max.wind)), ceiling(max(atq$max.wind)), 1))
+hist(atq$max.wind, breaks = seq(trunc(min(atq$max.wind)), ceiling(max(atq$max.wind)), 0.1))
+
+#write.table(atq, "FOX_PAPER_DataBase.txt")
 ######################## Fox - 1996-1999 ###########################
