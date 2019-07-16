@@ -243,13 +243,24 @@ temp$date <- strptime(paste(temp$year, temp$month, temp$day, temp$hour, temp$min
 # Computation of mean temperature per obs
 test <- subset(temp$temp, temp$date >= atq$start.bloc[1] & temp$date <= atq$end.bloc[1]) # concluding test !
 
+atq$mean.temp <- NULL
+atq$max.temp <- NULL
+atq$mini.temp <- NULL
 for(i in 1:nrow(atq)){ # not run yet
-  atq$mean.temp[i] <- mean(temp$temp[temp$date >= atq$start.bloc[i] & temp$date <= atq$end.bloc[i]])
+  atq$mean.temp[i] <- mean(temp$temp[temp$date >= atq$start.bloc[i] & temp$date <= atq$end.bloc[i]], na.rm = T)
+  atq$max.temp[i] <- max(temp$temp[temp$date >= atq$start.bloc[i] & temp$date <= atq$end.bloc[i]], na.rm = T)
+  atq$mini.temp[i] <- min(temp$temp[temp$date >= atq$start.bloc[i] & temp$date <= atq$end.bloc[i]], na.rm = T)
 }
 
+summary(atq$mean.temp)
+hist(atq$mean.temp, breaks = seq(trunc(min(atq$mean.temp)), ceiling(max(atq$mean.temp)), 1))
+hist(atq$mean.temp, breaks = seq(trunc(min(atq$mean.temp)), ceiling(max(atq$mean.temp)), 0.1))
 
+summary(atq$max.temp)
+hist(atq$max.temp, breaks = seq(trunc(min(atq$max.temp)), ceiling(max(atq$max.temp)), 1))
+hist(atq$max.temp, breaks = seq(trunc(min(atq$max.temp)), ceiling(max(atq$max.temp)), 0.1))
 
-
-
-
+summary(atq$mini.temp)
+hist(atq$mini.temp, breaks = seq(trunc(min(atq$mini.temp)), ceiling(max(atq$mini.temp)), 1))
+hist(atq$mini.temp, breaks = seq(trunc(min(atq$mini.temp)), ceiling(max(atq$mini.temp)), 0.1))
 ######################## Fox - 1996-1999 ###########################
