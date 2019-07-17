@@ -292,5 +292,5 @@ summary(atq$max.wind)
 hist(atq$max.wind, breaks = seq(trunc(min(atq$max.wind)), ceiling(max(atq$max.wind)), 1))
 hist(atq$max.wind, breaks = seq(trunc(min(atq$max.wind)), ceiling(max(atq$max.wind)), 0.1))
 
-#write.table(atq, "FOX_PAPER_DataBase.txt")
+#write.table(as.data.frame(atq), "FOX_PAPER_DataBase.txt", sep = "\t")
 ######################## Fox - 1996-1999 ###########################
