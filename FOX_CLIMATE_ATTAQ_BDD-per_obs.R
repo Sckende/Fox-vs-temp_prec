@@ -292,5 +292,119 @@ summary(atq$max.wind)
 hist(atq$max.wind, breaks = seq(trunc(min(atq$max.wind)), ceiling(max(atq$max.wind)), 1))
 hist(atq$max.wind, breaks = seq(trunc(min(atq$max.wind)), ceiling(max(atq$max.wind)), 0.1))
 
-#write.table(as.data.frame(atq), "FOX_PAPER_DataBase.txt", sep = "\t")
-######################## Fox - 1996-1999 ###########################
+#write.table(as.data.frame(atq), "FOX_PAPER_DataBase-2004-4005.txt", sep = "\t")
+######################## Fox - 1996-1999 & 2015-2017 ###########################
+# Retrieve the data coming from the first version of database script - "FOX - Réponse fonctionnelle-construction BDD - PAR OBSERVATION.R"
+#rm( list = ls ())
+
+setwd(dir = "C:/Users/HP_9470m/OneDrive - Université de Moncton/Doc doc doc/Ph.D. - ANALYSES/R analysis/Data")
+library("reshape2")
+library(dplyr)
+require("lubridate")
+
+atq <- read.table("FOX_PAPER_DataBase.txt", sep = "\t", h = T)
+names(atq)[11:14] <- c("goo.atq.number", "goo.atq.rate", "AD.atq.number", "AD.atq.rate")
+
+data <- read.table("FOX_atq.per.obs_clim.txt", h = T, sep = "\t")[!(data$Year %in% c(2004, 2005)), -c(8:11, 20:23)]
+table(data$Year)
+head(data); summary(data)
+names(data)[8:11] <- c("goo.atq.number", "AD.atq.number", "goo.atq.rate", "AD.atq.rate")
+
+# Time bloc setting
+table(data$Bloc, useNA = "always")
+data$Bloc <- as.character(data$Bloc)
+data$Bloc[data$Bloc == "0-4"] <- "00-04"
+data$Bloc[data$Bloc == "4-8"] <- "04-08"
+data$Bloc[data$Bloc == "8-12"] <- "08-12"
+data$Bloc[data$Bloc == "20-24"] <- "20-00"
+
+# Bloc start
+data$start.bloc <- strptime(paste(data$Year, data$Date, paste(substring(data$Bloc, 1, 2), "h00", sep = ""), sep = "-"), format = "%Y-%j-%Hh%M")
+# Bloc end
+data$end.bloc <- NA
+for(i in 1:nrow(data)){
+  if(data$Bloc[i] == "20-00"){
+    data$end.bloc[i] <- paste(data$Year[i], data$Date[i] + 1, paste(substring(data$Bloc[i], 4, 5), "h00", sep = ""), sep = "-")
+    }else{
+    data$end.bloc[i] <- paste(data$Year[i], data$Date[i], paste(substring(data$Bloc[i], 4, 5), "h00", sep = ""), sep = "-")
+  }
+}
+
+data$end.bloc <- strptime(data$end.bloc, format = "%Y-%j-%Hh%M")
+
+#### ---- ASSOCIATION WITH MEAN/MAX/MIN TEMPERATURE PER BLOC ---- ####
+# Temperature database
+temp <- read.table("TEMP_5min_temp_1993_2018.txt", h=T, sep="\t", dec=".")
+head(temp)
+temp$temp <- as.numeric(as.character(temp$temp))
+
+temp <- temp[temp$year %in% unique(data$Year),]
+temp$date <- strptime(paste(temp$year, temp$month, temp$day, temp$hour, temp$min, sep = "-"), "%Y-%m-%d-%H-%M")
+summary(temp)
+
+# HAVE TO REPLACE TEMPERATURE FOR MISSING DATA IN 1998
+View(data[is.na(data$mean.temp),])
+table(data$Year[is.na(data$mean.temp)])
+table(data$Date[is.na(data$mean.temp)])
+
+temp.1998 <- read.table("TEMP-PondInlet-JUIN-JUIL_1998.txt", h = T, sep = "\t", dec = ",")
+head(temp.1998)
+temp.1998$date <- strptime(temp.1998$date, format = "%Y-%m-%d %H:%M")
+
+# Use of Pond Inlet data for all observation in 1998
+data$mean.temp <- NULL
+data$max.temp <- NULL
+data$mini.temp <- NULL
+for(i in 1:nrow(data)){
+  if(data$Year[i] == 1998){
+    data$mean.temp[i] <- mean(temp.1998$Temp[temp.1998$date >= data$start.bloc[i] & temp.1998$date <= data$end.bloc[i]], na.rm = T)
+    data$max.temp[i] <- max(temp.1998$Temp[temp.1998$date >= data$start.bloc[i] & temp.1998$date <= data$end.bloc[i]], na.rm = T)
+    data$mini.temp[i] <- min(temp.1998$Temp[temp.1998$date >= data$start.bloc[i] & temp.1998$date <= data$end.bloc[i]], na.rm = T)
+  }else{
+    data$mean.temp[i] <- mean(temp$temp[temp$date >= data$start.bloc[i] & temp$date <= data$end.bloc[i]], na.rm = T)
+    data$max.temp[i] <- max(temp$temp[temp$date >= data$start.bloc[i] & temp$date <= data$end.bloc[i]], na.rm = T)
+    data$mini.temp[i] <- min(temp$temp[temp$date >= data$start.bloc[i] & temp$date <= data$end.bloc[i]], na.rm = T)
+  }
+}
+
+# Check points
+par(mfrow = c(1, 2))
+summary(data$mean.temp)
+hist(data$mean.temp, breaks = seq(trunc(min(data$mean.temp, na.rm = T)), ceiling(max(data$mean.temp, na.rm = T)), 1))
+hist(data$mean.temp, breaks = seq(trunc(min(data$mean.temp, na.rm = T)), ceiling(max(data$mean.temp, na.rm = T)), 0.1))
+
+summary(data$max.temp)
+hist(data$max.temp, breaks = seq(trunc(min(data$max.temp, na.rm = T)), ceiling(max(data$max.temp, na.rm = T)), 1))
+hist(data$max.temp, breaks = seq(trunc(min(data$max.temp, na.rm = T)), ceiling(max(data$max.temp, na.rm = T)), 0.1))
+
+summary(data$mini.temp)
+hist(data$mini.temp, breaks = seq(trunc(min(data$mini.temp, na.rm = T)), ceiling(max(data$mini.temp, na.rm = T)), 1))
+hist(data$mini.temp, breaks = seq(trunc(min(data$mini.temp, na.rm = T)), ceiling(max(data$mini.temp, na.rm = T)), 0.1))
+
+#### ---- ASSOCIATION WITH MEAN/MAX wind PER BLOC ---- #### 
+wind <- read.table("WIND_5min_speed_1993_2018.txt", sep = "\t", dec = ".", h = T)
+wind <- wind[wind$year %in% unique(data$Year),] 
+wind$date <- strptime(paste(wind$year, wind$month, wind$day, wind$hour, wind$min, sep = "-"), "%Y-%m-%d-%H-%M")
+summary(wind)
+wind$wind.speed <- as.numeric(as.character(wind$wind.speed))
+
+data$mean.wind <- NULL
+data$max.wind <- NULL
+
+for(i in 1:nrow(data)){
+  data$mean.wind[i] <- mean(wind$wind.speed[wind$date >= data$start.bloc[i] & wind$date <= data$end.bloc[i]], na.rm = T)
+  data$max.wind[i] <- max(wind$wind.speed[wind$date >= data$start.bloc[i] & wind$date <= data$end.bloc[i]], na.rm = T)
+}
+
+summary(data$mean.wind)
+hist(data$mean.wind, breaks = seq(trunc(min(data$mean.wind)), ceiling(max(data$mean.wind)), 1))
+hist(data$mean.wind, breaks = seq(trunc(min(data$mean.wind)), ceiling(max(data$mean.wind)), 0.1))
+
+summary(data$max.wind)
+hist(data$max.wind, breaks = seq(trunc(min(data$max.wind)), ceiling(max(data$max.wind)), 1))
+hist(data$max.wind, breaks = seq(trunc(min(data$max.wind)), ceiling(max(data$max.wind)), 0.1))
+#write.table(data, "FOX_PAPER_DataBase-COMPLETE.txt", sep = "\t")
+#### Merge data 2004-2005 & 1996-1999/2015-2017 ####
+names(data)
+data.1 <- data[, c(1, 2, 4:11, 16:22)]
+names(data.1)[1:6] <- c("YEAR", "DATE", "CACHE", "FOX.ID", "OBS.LENGTH", "HAB")
