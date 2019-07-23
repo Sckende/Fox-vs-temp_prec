@@ -3,8 +3,6 @@ setwd(dir = "C:/Users/HP_9470m/OneDrive - Université de Moncton/Doc doc doc/Ph.
 list.files()
 data <- read.table("FOX_atq.per.obs_clim.txt", h = T, sep = "\t") # Climatic variables per day
 
-
-data <- read.table("FOX_PAPER_Complete_database.txt", h = T, sep = ",") # ***Climatic variables per 4hours observation***
 summary(data)
 
 library(viridis) # For colors in plot
