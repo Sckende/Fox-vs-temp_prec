@@ -403,8 +403,59 @@ hist(data$mean.wind, breaks = seq(trunc(min(data$mean.wind)), ceiling(max(data$m
 summary(data$max.wind)
 hist(data$max.wind, breaks = seq(trunc(min(data$max.wind)), ceiling(max(data$max.wind)), 1))
 hist(data$max.wind, breaks = seq(trunc(min(data$max.wind)), ceiling(max(data$max.wind)), 0.1))
-#write.table(data, "FOX_PAPER_DataBase-COMPLETE.txt", sep = "\t")
+#write.table(data, "FOX_PAPER_DataBase-1996-99_2015-17.txt", sep = "\t")
 #### Merge data 2004-2005 & 1996-1999/2015-2017 ####
+d.2004 <- read.table("FOX_PAPER_DataBase-2004-2005.txt", sep = "\t", h = T, dec = ".")
+summary(d.2004)
+names(d.2004)[11:14] <- c("goo.atq.number", "goo.atq.rate", "AD.atq.number", "AD.atq.rate")
+d.2004$HAB <- NA
+
+data <- read.table("FOX_PAPER_DataBase-1996-99_2015-17.txt", sep = "\t", h = T, dec = ".")
+summary(data)
 names(data)
-data.1 <- data[, c(1, 2, 4:11, 16:22)]
-names(data.1)[1:6] <- c("YEAR", "DATE", "CACHE", "FOX.ID", "OBS.LENGTH", "HAB")
+table(data$Year)
+table(data$goo.atq.number, data$Year)
+table(data$AD.atq.number, data$Year)
+
+names(data)[c(1, 2, 4:7)] <- c("YEAR", "DATE", "CACHE", "FOX.ID", "OBS.LENGTH", "HAB")
+d.1999 <- data[, c(1, 2, 4:11, 16:22)]
+names(d.1999)
+d.1999$bloc.length <- 4
+d.1999$OBSERVER[d.1999$YEAR %in% 1996:1999] <- "JB"
+d.1999$OBSERVER[d.1999$YEAR %in% 2015:2016] <- "CCJ"
+d.1999$OBSERVER[d.1999$YEAR == 2017] <- "CCJ/MM"
+d.1999$start.obs <- NA
+
+# Merge databases together
+comp.data <- rbind.data.frame(d.1999, d.2004)
+summary(comp.data)
+sum(comp.data$AD.atq.number)
+sum(comp.data$goo.atq.number)
+
+# Distribution of data
+f <- split(comp.data, comp.data$YEAR)
+x11()
+par(mfrow = c(3, 3))
+lapply(f, function(x){
+  hist(x$AD.atq.number, main = unique(x$YEAR), xlab = "Attack number on adult geese")
+})
+
+#### Add more variables - PREC, lemming abundance, lemming year, goose nest density ####
+rain <- read.table("PREC_precipitation_Bylot_1995-2017.txt", sep = "\t", dec = ".", h = T); head(rain)
+gs <- read.table("GOOSE_breeding_informations_1989_2017.txt", sep = "\t", dec = ".", h = T); head(gs)
+lg <- read.table("LEM_1993-2017.txt", sep = "\t", dec = ".", h = T); head(lg)
+
+comp.data$lmg.abun <- lg$LMG_C1_CORR[match(comp.data$YEAR, lg$YEAR)]
+comp.data$lmg.year <- lg$LMG_YEAR[match(comp.data$YEAR, lg$YEAR)]
+comp.data$nest.dens <- gs$NEST_DENSITY[match(comp.data$YEAR, gs$YEAR)]
+
+comp.data$prec <- rain$RAIN[match(strptime(paste(comp.data$YEAR, comp.data$DATE, sep = "-"), format = "%Y-%j"), strptime(paste(rain$YEAR, rain$JJ, sep = "-"), format = "%Y-%j"))]
+
+#write.table(comp.data, "FOX_PAPER_Complete_database.txt", sep = "\t", dec = ".")
+
+h <- split(comp.data, comp.data$YEAR)
+x11()
+par(mfrow = c(3, 3))
+lapply(h, function(x){
+  hist(x$prec, main = unique(x$YEAR), xlab = "Cumulative prec per day")
+})
