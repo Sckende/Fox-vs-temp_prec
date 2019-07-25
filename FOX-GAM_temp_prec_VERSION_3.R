@@ -18,7 +18,7 @@ data$lmg.year <- as.factor(data$lmg.year)
 # Keeping the observation more or equal than 3 min (180 s)
 data <- data[data$OBS.LENGTH >= 180,]
 
-
+x11()
 par(mfrow = c(1, 2))
 boxplot(data$goo.atq.rate, bty = "n", main = "Attack rate for all predated goose items")
 boxplot(data$AD.atq.rate, bty = "n", main = "Attack rate for nests with adults")
@@ -65,6 +65,7 @@ legend("topright", legend = levels(as.factor(data$YEAR)), col = color, pch = 19,
 
 
 # Lemming abundance
+x11()
 color <- viridis_pal(option = "D")(length(unique(data$lmg.year)))
 par(mfrow = c(1, 2))
 plot(data$lmg.abun, data$AD.atq.rate, bty = "n", col = color[as.numeric(data$lmg.year)], pch = 19, cex = 1.5, main = "Nests with adults", xlab = "Lemming abundance", ylab = "Attack rate per ind. per obs.")
@@ -76,7 +77,7 @@ data$lmg.year <- as.factor(as.numeric(data$lmg.year)) # 1 = crash, 2 = noCrash
 
 
 #### Zero-inflated Poisson family in GAM-M ####
-
+#data <- data[!data$YEAR %in% 2004:2005,]
 # Full model
 zip.1 <- gam(AD.atq.number ~ s(prec) + max.temp + s(max.wind)+ s(YEAR, bs = "re") + offset(log(OBS.LENGTH)),
              family = ziP(), # Have to understand more details to use the ziplss() family
@@ -132,7 +133,7 @@ zip[[7]] <- gam(AD.atq.number ~ s(prec, by = lmg.year) + s(max.temp, by = lmg.ye
 AIC(zip[[1]], zip[[2]], zip[[3]], zip[[4]], zip[[5]], zip[[6]], zip[[7]])
 summary(zip[[7]])
 
-
+#### *** HERE I AM *** ####
 # Best model compairison with or without smooth
 
 bmod <- list()
