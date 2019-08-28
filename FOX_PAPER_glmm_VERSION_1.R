@@ -30,7 +30,7 @@ data$lmg.crash[data$lmg.year %in% c("inter", "peak")] <- "noCrash"
 #data <- data[!data$YEAR %in% 2004:2005,]
 
 # Full model
-pglmm <- glmer(AD.atq.number ~ prec + I(max.temp) + max.wind + lmg.crash + nest.dens
+pglmm <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + I(scale(max.temp)^2) + scale(max.wind) + lmg.crash + scale(nest.dens)
                  + (1|fox.year)
                  + offset(log(OBS.LENGTH)),
              family = poisson(),
@@ -39,13 +39,15 @@ pglmm <- glmer(AD.atq.number ~ prec + I(max.temp) + max.wind + lmg.crash + nest.
              data = data)
 summary(pglmm)
 
-par(mfrow = c(2, 2)); plot(pglmm.1)
-x11(); plot(simulateResiduals(pglmm.1))
-
-plot(predict(pglmm.1, type = "response"))
-par(mfrow = c(1, 2))
-hist(data$AD.atq.number, breaks = 0:50)
-hist(predict(pglmm.1, type = "response"), breaks = 0:50)
+par(mfrow = c(2, 2)); plot(pglmm)
+x11(); 
+sims <- simulateResiduals(pglmm)
+plot(sims)
+testDispersion(sims)
+testZeroInflation(sims)
+#### *** TO DO LIST ####
+# 1 - correlation between variables
+# 2 - Plot of variables !
 
 # Testing significance of random effects
 
