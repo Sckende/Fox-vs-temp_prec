@@ -148,6 +148,44 @@ summary(mod[[5]])
 #### Results plot ####
 # ------------------#
 
-plot(data$max.temp, predict(pglmm, type = "response"))
-plot(data$prec, predict(pglmm, type = "response"))
+# Atq number vs. max.temp #
+# ---------------------- #
+range(data$max.temp) # 0.595 - 15.351
 
+v <- seq(0, 16, by = 0.01)
+newdat <- data.frame(max.temp = v, prec = mean(data$prec), nest.dens = mean(data$nest.dens), OBS.LENGTH = mean(data$OBS.LENGTH))
+
+p <- predict(mod[[4]], newdata = newdat, type = "response", re.form = NA)
+
+#plot(data$max.temp, data$AD.atq.rate)
+
+# Atq number vs. prec #
+# ---------------------- #
+range(data$prec) # 0 - 20
+
+v1 <- seq(0, 20, by = 0.01)
+newdat1 <- data.frame(max.temp = mean(data$max.temp), prec = v1, nest.dens = mean(data$nest.dens), OBS.LENGTH = mean(data$OBS.LENGTH))
+
+p1 <- predict(mod[[4]], newdata = newdat1, type = "response", re.form = NA)
+
+#plot(data$max.temp, data$AD.atq.rate)
+#plot(v1, p1, type = "l", bty = "n", lwd = 2, xlab = "Cumulative precipitation")
+
+# Atq number vs. nest.dens #
+# ----------------------- #
+range(data$nest.dens) # 0.42 - 9.26
+
+v2 <- seq(0, 10, by = 0.01)
+newdat2 <- data.frame(max.temp = mean(data$max.temp), prec = mean(data$prec), nest.dens = v2, OBS.LENGTH = mean(data$OBS.LENGTH))
+
+p2 <- predict(mod[[4]], newdata = newdat2, type = "response", re.form = NA)
+
+
+# GRAPHICS #
+# ------- #
+x11(); par(mfrow = c(1, 2))
+plot(v, p, ylim = c(0, 1.5), type = "l", bty = "n", lwd = 2, xlab = "Maximal temperature & cumulative prec", col = "darkorange3")
+lines(v1, p1, type = "l", lwd = 2, col = "cyan3")
+legend("topright", legend = c("maximal temp", "cumulative prec"), col = c("darkorange3", "cyan3"), bty = "n", lwd = 2)
+
+plot(v2, p2, ylim = c(0, 1.5), type = "l", lwd = 2, bty = "n", xlab = "Goose nest density")
