@@ -16,6 +16,29 @@ library("multcomp") # For the contrast analysis
 library("emmeans") # For the contrast analysis
 library("modEvA") # For the variance explained
 
+# -------------------------------- #
+#### Correlation btw variables ####
+# ------------------------------ #
+
+panel.cor <- function(x, y, digits = 2, cex.cor, ...)
+{
+  usr <- par("usr"); on.exit(par(usr))
+  par(usr = c(0, 1, 0, 1))
+  # correlation coefficient
+  r <- cor(x, y)
+  txt <- format(c(r, 0.123456789), digits = digits)[1]
+  txt <- paste("r = ", txt, sep = "")
+  text(0.5, 0.6, txt)
+  
+  # p-value calculation
+  p <- cor.test(x, y)$p.value
+  txt2 <- format(c(p, 0.123456789), digits = digits)[1]
+  txt2 <- paste("p = ", txt2, sep = "")
+  if(p<0.01) txt2 <- paste("p = ", "< 0.01", sep = "")
+  text(0.5, 0.4, txt2)
+}
+x11(); pairs(data[, c(14, 17, 22, 24)], upper.panel = panel.cor)
+
 # ----------------------------- #
 #### Poisson family in GLM-M ####
 # ------------------------------#
@@ -38,43 +61,84 @@ pglmm <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + I(scale(max.temp)
              #select = TRUE,
              data = data)
 summary(pglmm)
+plot(pglmm)
 
-par(mfrow = c(2, 2)); plot(pglmm)
-x11(); 
 sims <- simulateResiduals(pglmm)
-plot(sims)
+
+x11(); plot(sims)
 testDispersion(sims)
 testZeroInflation(sims)
-#### *** TO DO LIST ####
-# 1 - correlation between variables
-# 2 - Plot of variables !
 
-# Testing significance of random effects
+x11(); par(mfrow = c(1, 2))
+hist(data$AD.atq.number, breaks = 0:50)
+hist(predict(pglmm, type = "response"), breaks = 0:50)
+
+# --------------------------------------- #
+# Testing significance of random effects #
+# ------------------------------------- #
 
 pglm <- glm(AD.atq.number ~ prec + I(max.temp) + max.wind + lmg.crash + nest.dens
+            + offset(log(OBS.LENGTH)),
+            family = poisson(),
+            #method = "REML",
+            #select = TRUE,
+            data = data)
+anova(pglmm, pglm) # DOESN'T WORK 
+
+# ------------------- #
+# Models compairison #
+# ----------------- #
+mod <- list()
+mod[[1]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + I(scale(max.temp)^2) + scale(max.wind) + lmg.crash + scale(nest.dens)
+               + (1|fox.year)
                + offset(log(OBS.LENGTH)),
                family = poisson(),
                #method = "REML",
                #select = TRUE,
                data = data)
-anova(pglmm, pglm) # DOESN'T WORK 
+summary
 
+mod[[2]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + I(scale(max.temp)^2) + scale(max.wind) + scale(nest.dens)
+                  + (1|fox.year)
+                  + offset(log(OBS.LENGTH)),
+                  family = poisson(),
+                  #method = "REML",
+                  #select = TRUE,
+                  data = data)
+summary(mod[[2]])
 
-# Models compairison
-pglmm <- list()
+mod[[3]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + scale(max.wind) + scale(nest.dens)
+                  + (1|fox.year)
+                  + offset(log(OBS.LENGTH)),
+                  family = poisson(),
+                  #method = "REML",
+                  #select = TRUE,
+                  data = data)
+summary(mod[[3]])
 
-# pglmm[1] <- glmer(AD.atq.number ~ 1
-#                   + offset(log(OBS.LENGTH))
-#                   + (1|fox.year),
-#                   family = poisson(),
-#                   #method = "REML", # "REstricted Maximum Likelihood"
-#                   #select = TRUE,
-#                   data = data)# DOESN'T WORK 
+mod[[4]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + scale(nest.dens)
+                  + (1|fox.year)
+                  + offset(log(OBS.LENGTH)),
+                  family = poisson(),
+                  #method = "REML",
+                  #select = TRUE,
+                  data = data)
+summary(mod[[4]])
 
-pglmm[1] <- glmer(AD.atq.number ~ prec + I(max.temp) + max.wind + lmg.crash + nest.dens
-                 + offset(log(OBS.LENGTH))
-                 + (1|fox.year),
-                 family = poisson(),
-                 #method = "REML",
-                 #select = TRUE,
-                 data = data)
+sims <- simulateResiduals(mod[[4]])
+
+x11(); plot(sims)
+testDispersion(sims)
+testZeroInflation(sims)
+
+x11(); par(mfrow = c(1, 2))
+hist(data$AD.atq.number, breaks = 0:50)
+hist(predict(mod[[4]], type = "response"), breaks = 0:50)
+
+# ------------------- #
+#### Results plot ####
+# ------------------#
+
+plot(data$max.temp, predict(pglmm, type = "response"))
+plot(data$prec, predict(pglmm, type = "response"))
+
