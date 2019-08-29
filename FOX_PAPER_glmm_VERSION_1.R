@@ -135,6 +135,15 @@ x11(); par(mfrow = c(1, 2))
 hist(data$AD.atq.number, breaks = 0:50)
 hist(predict(mod[[4]], type = "response"), breaks = 0:50)
 
+mod[[5]] <- glmer(AD.atq.number ~ 1
+                  + (1|fox.year)
+                  + offset(log(OBS.LENGTH)),
+                  family = poisson(),
+                  #method = "REML",
+                  #select = TRUE,
+                  data = data)
+summary(mod[[5]])
+
 # ------------------- #
 #### Results plot ####
 # ------------------#
