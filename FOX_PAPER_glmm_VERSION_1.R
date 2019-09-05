@@ -42,7 +42,7 @@ panel.cor <- function(x, y, digits = 2, cex.cor, ...)
   text(0.5, 0.4, txt2)
 }
 x11(); pairs(data[, c(14, 17, 22, 24)], upper.panel = panel.cor)
-
+dev.off()
 # ----------------------------- #
 #### Poisson family in GLM-M ####
 # ------------------------------#
@@ -148,6 +148,10 @@ mod[[5]] <- glmer(AD.atq.number ~ 1
                   #select = TRUE,
                   data = data)
 summary(mod[[5]])
+
+# Save the best model for rmarkdown document
+# mod <- mod[[4]]
+# save(mod, file = "FOX_attack_best_glmm.rda")
 
 # ------------------- #
 #### Results plot ####
