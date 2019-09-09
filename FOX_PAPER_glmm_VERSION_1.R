@@ -149,6 +149,14 @@ mod[[5]] <- glmer(AD.atq.number ~ 1
                   data = data)
 summary(mod[[5]])
 
+mod[[6]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + I(scale(max.temp)*scale(prec)) + scale(max.wind) + lmg.crash + scale(nest.dens)
+                  + (1|fox.year)
+                  + offset(log.obs),
+                  family = poisson(),
+                  #method = "REML",
+                  #select = TRUE,
+                  data = data)
+summary(mod[[6]])
 # Save the best model for rmarkdown document
 # mod <- mod[[4]]
 # save(mod, file = "FOX_attack_best_glmm.rda")
