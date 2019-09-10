@@ -140,7 +140,7 @@ x11(); par(mfrow = c(1, 2))
 hist(data$AD.atq.number, breaks = 0:50)
 hist(predict(mod[[4]], type = "response"), breaks = 0:50)
 
-mod[[5]] <- glmer(AD.atq.number ~ 1
+mod[[5]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp)
                   + (1|fox.year)
                   + offset(log.obs),
                   family = poisson(),
@@ -149,7 +149,7 @@ mod[[5]] <- glmer(AD.atq.number ~ 1
                   data = data)
 summary(mod[[5]])
 
-mod[[6]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + I(scale(max.temp)*scale(prec)) + scale(max.wind) + lmg.crash + scale(nest.dens)
+mod[[6]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + scale(max.wind)
                   + (1|fox.year)
                   + offset(log.obs),
                   family = poisson(),
@@ -157,7 +157,30 @@ mod[[6]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + I(scale(max.te
                   #select = TRUE,
                   data = data)
 summary(mod[[6]])
+
+mod[[7]] <- glmer(AD.atq.number ~ 1
+                  + (1|fox.year)
+                  + offset(log.obs),
+                  family = poisson(),
+                  #method = "REML",
+                  #select = TRUE,
+                  data = data)
+summary(mod[[7]])
+
+# mod[[8]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + I(scale(max.temp)*scale(prec)) + scale(max.wind) + lmg.crash + scale(nest.dens)
+#                   + (1|fox.year)
+#                   + offset(log.obs),
+#                   family = poisson(),
+#                   #method = "REML",
+#                   #select = TRUE,
+#                   data = data)
+# summary(mod[[8]])
+
+aictab(mod, modnames = NULL)
+mod[[4]]$
+
 # Save the best model for rmarkdown document
+# save(mod, file = "FOX_attack_all_glmm.rda")
 # mod <- mod[[4]]
 # save(mod, file = "FOX_attack_best_glmm.rda")
 
