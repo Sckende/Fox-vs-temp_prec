@@ -94,7 +94,7 @@ anova(pglmm, pglm) # DOESN'T WORK
 # Models compairison #
 # ----------------- #
 mod <- list()
-mod[[1]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + I(scale(max.temp)^2) + scale(max.wind) + lmg.crash + scale(nest.dens)
+mod[[1]] <- glmer(AD.atq.number ~ scale(prec) + I(scale(max.temp)^2) + scale(max.wind) + scale(nest.dens) + lmg.crash
                + (1|fox.year)
                + offset(log.obs),
                family = poisson(),
@@ -132,11 +132,13 @@ summary(mod[[4]])
 
 sims <- simulateResiduals(mod[[4]])
 
-x11(); plot(sims)
+#x11(); 
+plot(sims)
 testDispersion(sims)
 testZeroInflation(sims)
 
-x11(); par(mfrow = c(1, 2))
+#x11(); 
+par(mfrow = c(1, 2))
 hist(data$AD.atq.number, breaks = 0:50)
 hist(predict(mod[[4]], type = "response"), breaks = 0:50)
 
@@ -167,6 +169,52 @@ mod[[7]] <- glmer(AD.atq.number ~ 1
                   data = data)
 summary(mod[[7]])
 
+mod[[8]] <- glmer(AD.atq.number ~ scale(prec)*lmg.crash + scale(max.temp)*lmg.crash + scale(max.wind)*lmg.crash + scale(nest.dens)
+                  + (1|fox.year)
+                  + offset(log.obs),
+                  family = poisson(),
+                  #method = "REML",
+                  #select = TRUE,
+                  data = data)
+summary(mod[[8]])
+
+sims <- simulateResiduals(mod[[8]])
+
+x11(); 
+plot(sims)
+testDispersion(sims)
+testZeroInflation(sims)
+
+#x11(); 
+par(mfrow = c(1, 2))
+hist(data$AD.atq.number, breaks = 0:50)
+hist(predict(mod[[4]], type = "response"), breaks = 0:50)
+
+mod[[9]] <- glmer(AD.atq.number ~  scale(max.temp)*lmg.crash + scale(max.wind)*lmg.crash + scale(nest.dens)
+                  + (1|fox.year)
+                  + offset(log.obs),
+                  family = poisson(),
+                  #method = "REML",
+                  #select = TRUE,
+                  data = data)
+summary(mod[[9]])
+
+sims <- simulateResiduals(mod[[9]])
+
+x11(); 
+plot(sims)
+testDispersion(sims)
+testZeroInflation(sims)
+
+mod[[10]] <- glmer(AD.atq.number ~  scale(max.temp)*lmg.crash  + scale(nest.dens)
+                  + (1|fox.year)
+                  + offset(log.obs),
+                  family = poisson(),
+                  #method = "REML",
+                  #select = TRUE,
+                  data = data)
+summary(mod[[10]])
+
 # mod[[8]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + I(scale(max.temp)*scale(prec)) + scale(max.wind) + lmg.crash + scale(nest.dens)
 #                   + (1|fox.year)
 #                   + offset(log.obs),
@@ -177,7 +225,6 @@ summary(mod[[7]])
 # summary(mod[[8]])
 
 aictab(mod, modnames = NULL)
-mod[[4]]$
 
 # Save the best model for rmarkdown document
 # save(mod, file = "FOX_attack_all_glmm.rda")
