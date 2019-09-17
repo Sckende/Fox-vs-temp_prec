@@ -215,16 +215,54 @@ mod[[10]] <- glmer(AD.atq.number ~  scale(max.temp)*lmg.crash  + scale(nest.dens
                   data = data)
 summary(mod[[10]])
 
-# mod[[8]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + I(scale(max.temp)*scale(prec)) + scale(max.wind) + lmg.crash + scale(nest.dens)
-#                   + (1|fox.year)
-#                   + offset(log.obs),
-#                   family = poisson(),
-#                   #method = "REML",
-#                   #select = TRUE,
-#                   data = data)
-# summary(mod[[8]])
+mod[[11]] <- glmer(AD.atq.number ~ scale(prec) + I(scale(max.temp)^2) + scale(max.wind) + scale(nest.dens) + lmg.year
+                  + (1|fox.year)
+                  + offset(log.obs),
+                  family = poisson(),
+                  #method = "REML",
+                  #select = TRUE,
+                  data = data)
+summary(mod[[11]])
+
+mod[[12]] <- glmer(AD.atq.number ~ scale(max.temp) + scale(prec) + scale(max.wind) + scale(nest.dens) + lmg.year
+                   + (1|fox.year)
+                   + offset(log.obs),
+                   family = poisson(),
+                   #method = "REML",
+                   #select = TRUE,
+                   data = data)
+summary(mod[[12]])
+
+mod[[13]] <- glmer(AD.atq.number ~ scale(max.temp) + scale(nest.dens) + lmg.year
+                   + (1|fox.year)
+                   + offset(log.obs),
+                   family = poisson(),
+                   #method = "REML",
+                   #select = TRUE,
+                   data = data)
+summary(mod[[13]])
+
+mod[[14]] <- glmer(AD.atq.number ~ scale(nest.dens) + lmg.year
+                   + (1|fox.year)
+                   + offset(log.obs),
+                   family = poisson(),
+                   #method = "REML",
+                   #select = TRUE,
+                   data = data)
+summary(mod[[14]])
+
+mod[[15]] <- glmer(AD.atq.number ~ scale(prec)*lmg.year + scale(max.temp)*lmg.year + scale(max.wind)*lmg.year + scale(nest.dens)
+                  + (1|fox.year)
+                  + offset(log.obs),
+                  family = poisson(),
+                  #method = "REML",
+                  #select = TRUE,
+                  data = data)
+summary(mod[[15]])
+visreg(mod[[15]], "max.temp", by = "lmg.year")
 
 aictab(mod, modnames = NULL)
+
 
 # Save the best model for rmarkdown document
 # save(mod, file = "FOX_attack_all_glmm.rda")
