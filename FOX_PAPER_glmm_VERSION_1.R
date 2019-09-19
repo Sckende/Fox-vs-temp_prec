@@ -41,7 +41,7 @@ panel.cor <- function(x, y, digits = 2, cex.cor, ...)
   if(p<0.01) txt2 <- paste("p = ", "< 0.01", sep = "")
   text(0.5, 0.4, txt2)
 }
-x11(); pairs(data[, c(14, 17, 22, 24)], upper.panel = panel.cor)
+x11(); pairs(data[, c(2, 14, 17, 22, 24)], upper.panel = panel.cor)
 dev.off()
 # ----------------------------- #
 #### Poisson family in GLM-M ####
@@ -274,6 +274,19 @@ testZeroInflation(sims)
 par(mfrow = c(1, 2))
 hist(data$AD.atq.number, breaks = 0:50)
 hist(predict(mod[[17]], type = "response"), breaks = 0:50)
+
+
+mod[[18]] <- glmer(AD.atq.number ~ scale(prec)*lmg.crash + scale(max.temp)*lmg.crash + scale(nest.dens) + scale(DATE)
+                   + (1|fox.year)
+                   + offset(log.obs),
+                   family = poisson(),
+                   #method = "REML",
+                   #select = TRUE,
+                   data = data_test)
+summary(mod[[18]])
+visreg(mod[[18]], "max.temp", by = "lmg.crash")
+visreg(mod[[18]], "prec", by = "lmg.crash")
+visreg(mod[[18]], "DATE", by = "lmg.crash")
 
 # AIC table
 aictab(mod, modnames = NULL)
