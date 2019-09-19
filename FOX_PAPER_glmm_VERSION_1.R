@@ -93,6 +93,19 @@ anova(pglmm, pglm) # DOESN'T WORK
 # ------------------- #
 # Models compairison #
 # ----------------- #
+
+# WARNING - data_test contains a modified variable for "lmg.year"
+data_test <- data
+data_test$lmg.year <- as.character(data_test$lmg.year)
+data_test$lmg.year[data_test$lmg.abun < 1] <- "CRASH"
+data_test$lmg.year <- as.factor(data_test$lmg.year)
+
+
+data_test$lmg.crash <- as.character(data_test$lmg.crash)
+data_test$lmg.crash[data_test$lmg.year == "CRASH"] <- "crash"
+data_test$lmg.crash <- as.factor(data_test$lmg.crash)
+
+# Models
 mod <- list()
 mod[[1]] <- glmer(AD.atq.number ~ scale(prec) + I(scale(max.temp)^2) + scale(max.wind) + scale(nest.dens) + lmg.crash
                + (1|fox.year)
@@ -100,7 +113,7 @@ mod[[1]] <- glmer(AD.atq.number ~ scale(prec) + I(scale(max.temp)^2) + scale(max
                family = poisson(),
                #method = "REML",
                #select = TRUE,
-               data = data)
+               data = data_test)
 summary(mod[[1]])
 
 mod[[2]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + I(scale(max.temp)^2) + scale(max.wind) + scale(nest.dens)
@@ -109,7 +122,7 @@ mod[[2]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + I(scale(max.te
                   family = poisson(),
                   #method = "REML",
                   #select = TRUE,
-                  data = data)
+                  data = data_test)
 summary(mod[[2]])
 
 mod[[3]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + scale(max.wind) + scale(nest.dens)
@@ -118,7 +131,7 @@ mod[[3]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + scale(max.wind
                   family = poisson(),
                   #method = "REML",
                   #select = TRUE,
-                  data = data)
+                  data = data_test)
 summary(mod[[3]])
 
 mod[[4]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + scale(nest.dens)
@@ -127,20 +140,8 @@ mod[[4]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + scale(nest.den
                   family = poisson(),
                   #method = "REML",
                   #select = TRUE,
-                  data = data)
+                  data = data_test)
 summary(mod[[4]])
-
-sims <- simulateResiduals(mod[[4]])
-
-#x11(); 
-plot(sims)
-testDispersion(sims)
-testZeroInflation(sims)
-
-#x11(); 
-par(mfrow = c(1, 2))
-hist(data$AD.atq.number, breaks = 0:50)
-hist(predict(mod[[4]], type = "response"), breaks = 0:50)
 
 mod[[5]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp)
                   + (1|fox.year)
@@ -148,7 +149,7 @@ mod[[5]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp)
                   family = poisson(),
                   #method = "REML",
                   #select = TRUE,
-                  data = data)
+                  data = data_test)
 summary(mod[[5]])
 
 mod[[6]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + scale(max.wind)
@@ -157,7 +158,7 @@ mod[[6]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + scale(max.wind
                   family = poisson(),
                   #method = "REML",
                   #select = TRUE,
-                  data = data)
+                  data = data_test)
 summary(mod[[6]])
 
 mod[[7]] <- glmer(AD.atq.number ~ 1
@@ -166,7 +167,7 @@ mod[[7]] <- glmer(AD.atq.number ~ 1
                   family = poisson(),
                   #method = "REML",
                   #select = TRUE,
-                  data = data)
+                  data = data_test)
 summary(mod[[7]])
 
 mod[[8]] <- glmer(AD.atq.number ~ scale(prec)*lmg.crash + scale(max.temp)*lmg.crash + scale(max.wind)*lmg.crash + scale(nest.dens)
@@ -175,20 +176,8 @@ mod[[8]] <- glmer(AD.atq.number ~ scale(prec)*lmg.crash + scale(max.temp)*lmg.cr
                   family = poisson(),
                   #method = "REML",
                   #select = TRUE,
-                  data = data)
+                  data = data_test)
 summary(mod[[8]])
-
-sims <- simulateResiduals(mod[[8]])
-
-x11(); 
-plot(sims)
-testDispersion(sims)
-testZeroInflation(sims)
-
-#x11(); 
-par(mfrow = c(1, 2))
-hist(data$AD.atq.number, breaks = 0:50)
-hist(predict(mod[[4]], type = "response"), breaks = 0:50)
 
 mod[[9]] <- glmer(AD.atq.number ~  scale(max.temp)*lmg.crash + scale(max.wind)*lmg.crash + scale(nest.dens)
                   + (1|fox.year)
@@ -196,15 +185,8 @@ mod[[9]] <- glmer(AD.atq.number ~  scale(max.temp)*lmg.crash + scale(max.wind)*l
                   family = poisson(),
                   #method = "REML",
                   #select = TRUE,
-                  data = data)
+                  data = data_test)
 summary(mod[[9]])
-
-sims <- simulateResiduals(mod[[9]])
-
-x11(); 
-plot(sims)
-testDispersion(sims)
-testZeroInflation(sims)
 
 mod[[10]] <- glmer(AD.atq.number ~  scale(max.temp)*lmg.crash  + scale(nest.dens)
                   + (1|fox.year)
@@ -212,7 +194,7 @@ mod[[10]] <- glmer(AD.atq.number ~  scale(max.temp)*lmg.crash  + scale(nest.dens
                   family = poisson(),
                   #method = "REML",
                   #select = TRUE,
-                  data = data)
+                  data = data_test)
 summary(mod[[10]])
 
 mod[[11]] <- glmer(AD.atq.number ~ scale(prec) + I(scale(max.temp)^2) + scale(max.wind) + scale(nest.dens) + lmg.year
@@ -221,7 +203,7 @@ mod[[11]] <- glmer(AD.atq.number ~ scale(prec) + I(scale(max.temp)^2) + scale(ma
                   family = poisson(),
                   #method = "REML",
                   #select = TRUE,
-                  data = data)
+                  data = data_test)
 summary(mod[[11]])
 
 mod[[12]] <- glmer(AD.atq.number ~ scale(max.temp) + scale(prec) + scale(max.wind) + scale(nest.dens) + lmg.year
@@ -230,7 +212,7 @@ mod[[12]] <- glmer(AD.atq.number ~ scale(max.temp) + scale(prec) + scale(max.win
                    family = poisson(),
                    #method = "REML",
                    #select = TRUE,
-                   data = data)
+                   data = data_test)
 summary(mod[[12]])
 
 mod[[13]] <- glmer(AD.atq.number ~ scale(max.temp) + scale(nest.dens) + lmg.year
@@ -239,7 +221,7 @@ mod[[13]] <- glmer(AD.atq.number ~ scale(max.temp) + scale(nest.dens) + lmg.year
                    family = poisson(),
                    #method = "REML",
                    #select = TRUE,
-                   data = data)
+                   data = data_test)
 summary(mod[[13]])
 
 mod[[14]] <- glmer(AD.atq.number ~ scale(nest.dens) + lmg.year
@@ -248,19 +230,52 @@ mod[[14]] <- glmer(AD.atq.number ~ scale(nest.dens) + lmg.year
                    family = poisson(),
                    #method = "REML",
                    #select = TRUE,
-                   data = data)
+                   data = data_test)
 summary(mod[[14]])
 
 mod[[15]] <- glmer(AD.atq.number ~ scale(prec)*lmg.year + scale(max.temp)*lmg.year + scale(max.wind)*lmg.year + scale(nest.dens)
                   + (1|fox.year)
                   + offset(log.obs),
                   family = poisson(),
-                  #method = "REML",
+                  method = "REML",
                   #select = TRUE,
-                  data = data)
+                  data = data_test)
 summary(mod[[15]])
 visreg(mod[[15]], "max.temp", by = "lmg.year")
+visreg(mod[[15]], "prec", by = "lmg.year")
+visreg(mod[[15]], "max.wind", by = "lmg.year")
 
+mod[[16]] <- glmer(AD.atq.number ~ scale(prec)*lmg.year + scale(max.temp)*lmg.year  + scale(nest.dens)
+                   + (1|fox.year)
+                   + offset(log.obs),
+                   family = poisson(),
+                   #method = "REML",
+                   #select = TRUE,
+                   data = data_test)
+summary(mod[[16]])
+
+mod[[17]] <- glmer(AD.atq.number ~ scale(prec)*lmg.crash + scale(max.temp)*lmg.crash + scale(nest.dens)
+                  + (1|fox.year)
+                  + offset(log.obs),
+                  family = poisson(),
+                  #method = "REML",
+                  #select = TRUE,
+                  data = data_test)
+summary(mod[[17]])
+visreg(mod[[17]], "max.temp", by = "lmg.crash")
+visreg(mod[[17]], "prec", by = "lmg.crash")
+
+# Tests with DHARma package
+sims <- simulateResiduals(mod[[17]])
+plot(sims)
+testDispersion(sims)
+testZeroInflation(sims)
+# Check for the distribution of predictions vs. raw data
+par(mfrow = c(1, 2))
+hist(data$AD.atq.number, breaks = 0:50)
+hist(predict(mod[[17]], type = "response"), breaks = 0:50)
+
+# AIC table
 aictab(mod, modnames = NULL)
 
 
