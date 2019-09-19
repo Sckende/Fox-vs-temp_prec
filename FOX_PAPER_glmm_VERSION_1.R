@@ -284,18 +284,18 @@ mod[[18]] <- glmer(AD.atq.number ~ scale(prec)*lmg.crash + scale(max.temp)*lmg.c
                    #select = TRUE,
                    data = data_test)
 summary(mod[[18]])
-visreg(mod[[18]], "max.temp", by = "lmg.crash")
-visreg(mod[[18]], "prec", by = "lmg.crash")
-visreg(mod[[18]], "DATE", by = "lmg.crash")
+# visreg(mod[[18]], "max.temp", by = "lmg.crash")
+# visreg(mod[[18]], "prec", by = "lmg.crash")
+# visreg(mod[[18]], "DATE", by = "lmg.crash")
 
 # AIC table
 aictab(mod, modnames = NULL)
 
 
 # Save the best model for rmarkdown document
-# save(mod, file = "FOX_attack_all_glmm.rda")
-# mod <- mod[[4]]
-# save(mod, file = "FOX_attack_best_glmm.rda")
+ save(mod, file = "FOX_attack_all_glmm.rda")
+ bestMod <- mod[[18]]
+ save(bestMod, file = "FOX_attack_best_glmm.rda")
 
 # ------------------- #
 #### Results plot ####
