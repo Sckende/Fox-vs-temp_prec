@@ -284,9 +284,9 @@ mod[[18]] <- glmer(AD.atq.number ~ scale(prec)*lmg.crash + scale(max.temp)*lmg.c
                    #select = TRUE,
                    data = data_test)
 summary(mod[[18]])
-# visreg(mod[[18]], "max.temp", by = "lmg.crash")
-# visreg(mod[[18]], "prec", by = "lmg.crash")
-# visreg(mod[[18]], "DATE", by = "lmg.crash")
+visreg(mod[[18]], "max.temp", by = "lmg.crash")
+visreg(mod[[18]], "prec", by = "lmg.crash")
+visreg(mod[[18]], "DATE", by = "lmg.crash")
 
 # AIC table
 aictab(mod, modnames = NULL)
