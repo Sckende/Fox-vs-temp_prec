@@ -44,9 +44,9 @@ panel.cor <- function(x, y, digits = 2, cex.cor, ...)
   text(0.5, 0.4, txt2)
 }
 x11(); 
-pairs(data[, c(2, 14, 17, 22, 24)], upper.panel = panel.cor)
+pairs(data[, c(2, 14, 17, 21, 22, 24)], upper.panel = panel.cor)
 
-ggpairs(data[, c(2, 14, 17, 22, 24)])
+ggpairs(data[, c(2, 14, 17, 21, 22, 24)])
 graphics.off()
 # ------------------------------- #
 #### Creation of the database ####
