@@ -266,9 +266,81 @@ visreg(mod[[18]], "prec", by = "lmg.crash")
 visreg(mod[[18]], "DATE", by = "lmg.crash")
 visreg(mod[[18]], "nest.dens")
 
+mod[[19]] <- glmer(AD.atq.number ~ scale(prec)*lmg.crash + scale(max.temp)*lmg.crash + scale(nest.dens)*lmg.crash + scale(DATE)
+                   + (1|fox.year)
+                   + offset(log.obs),
+                   family = poisson(),
+                   #method = "REML",
+                   #select = TRUE,
+                   data = data_test)
+summary(mod[[19]])
+
+mod[[20]] <- glmer(AD.atq.number ~ scale(prec)*lmg.crash + scale(max.temp)*lmg.crash + scale(nest.dens) + scale(DATE)*lmg.crash
+                   + (1|fox.year)
+                   + offset(log.obs),
+                   family = poisson(),
+                   #method = "REML",
+                   #select = TRUE,
+                   data = data_test)
+summary(mod[[20]])
+x11()
+visreg(mod[[20]], "max.temp", by = "lmg.crash")
+visreg(mod[[20]], "prec", by = "lmg.crash")
+visreg(mod[[20]], "DATE", by = "lmg.crash")
+visreg(mod[[20]], "nest.dens")
+
+mod[[21]] <- glmer(AD.atq.number ~ scale(prec)*lmg.crash + scale(max.temp)*lmg.crash + scale(nest.dens)*lmg.crash + scale(DATE)*lmg.crash
+                   + (1|fox.year)
+                   + offset(log.obs),
+                   family = poisson(),
+                   #method = "REML",
+                   #select = TRUE,
+                   data = data_test)
+summary(mod[[21]])
+visreg(mod[[21]], "max.temp", by = "lmg.crash")
+visreg(mod[[21]], "prec", by = "lmg.crash")
+visreg(mod[[21]], "DATE", by = "lmg.crash")
+visreg(mod[[21]], "nest.dens")
+
+#####################################
+mod[[22]] <- glmer(AD.atq.number ~ scale(prec)*lmg.abun + scale(max.temp)*lmg.abun + scale(nest.dens)*lmg.abun + scale(DATE)
+                   + (1|fox.year)
+                   + offset(log.obs),
+                   family = poisson(),
+                   #method = "REML",
+                   #select = TRUE,
+                   data = data_test)
+summary(mod[[22]])
+
+mod[[23]] <- glmer(AD.atq.number ~ scale(prec)*lmg.abun + scale(max.temp)*lmg.abun + scale(nest.dens) + scale(DATE)*lmg.abun
+                   + (1|fox.year)
+                   + offset(log.obs),
+                   family = poisson(),
+                   #method = "REML",
+                   #select = TRUE,
+                   data = data_test)
+summary(mod[[23]])
+
+mod[[24]] <- glmer(AD.atq.number ~ scale(prec)*lmg.abun + scale(max.temp)*lmg.abun + scale(nest.dens)*lmg.abun + scale(DATE)*lmg.abun
+                   + (1|fox.year)
+                   + offset(log.obs),
+                   family = poisson(),
+                   #method = "REML",
+                   #select = TRUE,
+                   data = data_test)
+summary(mod[[24]])
+
+mod[[25]] <- glmer(AD.atq.number ~ scale(prec)*lmg.abun + scale(max.temp)*lmg.abun + scale(nest.dens) + scale(DATE)
+                   + (1|fox.year)
+                   + offset(log.obs),
+                   family = poisson(),
+                   #method = "REML",
+                   #select = TRUE,
+                   data = data_test)
+summary(mod[[25]])
+
 # AIC table
 aictab(mod, modnames = NULL)
-
 
 # Save the best model for rmarkdown document
  # save(mod, file = "FOX_attack_all_glmm.rda")
