@@ -52,6 +52,9 @@ graphics.off()
 #### Creation of the database ####
 # ------------------------------#
 
+# Keeping the observation more or equal than 3 min (180 s)
+data <- data[data$OBS.LENGTH >= 180,]
+
 # Creation of the random variable fox.year
 data$fox.year <- paste(data$FOX.ID, data$YEAR, sep = "-")
 data$fox.year <- as.factor(data$fox.year)
@@ -81,6 +84,8 @@ summary(data_test)
 # ------------------- #
 # Models compairison #
 # ----------------- #
+
+control <- glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 2000000)) # Helping the convergence with "maxfun" increasing the number of iterations 
 
 # Models
 mod <- list()
@@ -330,10 +335,12 @@ mod[[24]] <- glmer(AD.atq.number ~ scale(prec)*lmg.abun + scale(max.temp)*lmg.ab
                    data = data_test)
 summary(mod[[24]])
 
+
 mod[[25]] <- glmer(AD.atq.number ~ scale(prec)*lmg.abun + scale(max.temp)*lmg.abun + scale(nest.dens) + scale(DATE)
                    + (1|fox.year)
                    + offset(log.obs),
                    family = poisson(),
+                   control = control,
                    #method = "REML",
                    #select = TRUE,
                    data = data_test)
