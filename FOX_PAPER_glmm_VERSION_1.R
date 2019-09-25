@@ -66,6 +66,9 @@ data$lmg.crash[data$lmg.year %in% c("inter", "peak")] <- "noCrash"
 # Creation of the variable for the offset
 data$log.obs <- log(data$OBS.LENGTH)
 
+# Log transformation of lemming abundance variable
+data$log.lmgAbun <- log(data$lmg.abun)
+
 # WARNING - data_test contains a modified variable for "lmg.year"
 data_test <- data
 data_test$lmg.year <- as.character(data_test$lmg.year)
@@ -78,6 +81,11 @@ data_test$lmg.crash <- as.factor(data_test$lmg.crash)
 
 summary(data_test)
 
+# Scaled data
+scaleData <- apply(data_test[,c(2, 14, 17, 21, 22, 24, 28)], MARGIN = 2, scale)
+
+scaleData <- cbind(scaleData, data_test[, c(7, 8, 23, 25:27)])
+summary(scaleData)
 # ----------------------------- #
 #### Poisson family in GLM-M ####
 # ------------------------------#
@@ -89,58 +97,58 @@ control <- glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 2000000)) 
 
 # Models
 mod <- list()
-mod[[1]] <- glmer(AD.atq.number ~ scale(prec) + I(scale(max.temp)^2) + scale(max.wind) + scale(nest.dens) + lmg.crash
+mod[[1]] <- glmer(AD.atq.number ~ prec + I(max.temp^2) + max.wind + nest.dens + lmg.crash
                + (1|fox.year)
                + offset(log.obs),
                family = poisson(),
                #method = "REML",
                #select = TRUE,
-               data = data_test)
+               data = scaleData)
 summary(mod[[1]])
 
-mod[[2]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + I(scale(max.temp)^2) + scale(max.wind) + scale(nest.dens)
+mod[[2]] <- glmer(AD.atq.number ~ prec + max.temp + I(max.temp^2) + max.wind + nest.dens
                   + (1|fox.year)
                   + offset(log.obs),
                   family = poisson(),
                   #method = "REML",
                   #select = TRUE,
-                  data = data_test)
+                  data = scaleData)
 summary(mod[[2]])
 
-mod[[3]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + scale(max.wind) + scale(nest.dens)
+mod[[3]] <- glmer(AD.atq.number ~ prec + max.temp + max.wind + nest.dens
                   + (1|fox.year)
                   + offset(log.obs),
                   family = poisson(),
                   #method = "REML",
                   #select = TRUE,
-                  data = data_test)
+                  data = scaleData)
 summary(mod[[3]])
 
-mod[[4]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + scale(nest.dens)
+mod[[4]] <- glmer(AD.atq.number ~ prec + max.temp + nest.dens
                   + (1|fox.year)
                   + offset(log.obs),
                   family = poisson(),
                   #method = "REML",
                   #select = TRUE,
-                  data = data_test)
+                  data = scaleData)
 summary(mod[[4]])
 
-mod[[5]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp)
+mod[[5]] <- glmer(AD.atq.number ~ prec + max.temp
                   + (1|fox.year)
                   + offset(log.obs),
                   family = poisson(),
                   #method = "REML",
                   #select = TRUE,
-                  data = data_test)
+                  data = scaleData)
 summary(mod[[5]])
 
-mod[[6]] <- glmer(AD.atq.number ~ scale(prec) + scale(max.temp) + scale(max.wind)
+mod[[6]] <- glmer(AD.atq.number ~ prec + max.temp + max.wind
                   + (1|fox.year)
                   + offset(log.obs),
                   family = poisson(),
                   #method = "REML",
                   #select = TRUE,
-                  data = data_test)
+                  data = scaleData)
 summary(mod[[6]])
 
 mod[[7]] <- glmer(AD.atq.number ~ 1
@@ -149,100 +157,104 @@ mod[[7]] <- glmer(AD.atq.number ~ 1
                   family = poisson(),
                   #method = "REML",
                   #select = TRUE,
-                  data = data_test)
+                  data = scaleData)
 summary(mod[[7]])
 
-mod[[8]] <- glmer(AD.atq.number ~ scale(prec)*lmg.crash + scale(max.temp)*lmg.crash + scale(max.wind)*lmg.crash + scale(nest.dens)
+mod[[8]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + max.wind*lmg.crash + nest.dens
                   + (1|fox.year)
                   + offset(log.obs),
                   family = poisson(),
+                  control = control,
                   #method = "REML",
                   #select = TRUE,
-                  data = data_test)
+                  data = scaleData)
 summary(mod[[8]])
 
-mod[[9]] <- glmer(AD.atq.number ~  scale(max.temp)*lmg.crash + scale(max.wind)*lmg.crash + scale(nest.dens)
+mod[[9]] <- glmer(AD.atq.number ~  max.temp*lmg.crash + max.wind*lmg.crash + nest.dens
                   + (1|fox.year)
                   + offset(log.obs),
                   family = poisson(),
                   #method = "REML",
                   #select = TRUE,
-                  data = data_test)
+                  data = scaleData)
 summary(mod[[9]])
 
-mod[[10]] <- glmer(AD.atq.number ~  scale(max.temp)*lmg.crash  + scale(nest.dens)
+mod[[10]] <- glmer(AD.atq.number ~  max.temp*lmg.crash  + nest.dens
                   + (1|fox.year)
                   + offset(log.obs),
                   family = poisson(),
                   #method = "REML",
                   #select = TRUE,
-                  data = data_test)
+                  data = scaleData)
 summary(mod[[10]])
 
-mod[[11]] <- glmer(AD.atq.number ~ scale(prec) + I(scale(max.temp)^2) + scale(max.wind) + scale(nest.dens) + lmg.year
+mod[[11]] <- glmer(AD.atq.number ~ prec + I(max.temp^2) + max.wind + nest.dens + lmg.year
                   + (1|fox.year)
                   + offset(log.obs),
                   family = poisson(),
                   #method = "REML",
                   #select = TRUE,
-                  data = data_test)
+                  data = scaleData)
 summary(mod[[11]])
 
-mod[[12]] <- glmer(AD.atq.number ~ scale(max.temp) + scale(prec) + scale(max.wind) + scale(nest.dens) + lmg.year
+mod[[12]] <- glmer(AD.atq.number ~ max.temp + prec + max.wind + nest.dens + lmg.year
                    + (1|fox.year)
                    + offset(log.obs),
                    family = poisson(),
                    #method = "REML",
                    #select = TRUE,
-                   data = data_test)
+                   data = scaleData)
 summary(mod[[12]])
 
-mod[[13]] <- glmer(AD.atq.number ~ scale(max.temp) + scale(nest.dens) + lmg.year
+mod[[13]] <- glmer(AD.atq.number ~ max.temp + nest.dens + lmg.year
                    + (1|fox.year)
                    + offset(log.obs),
                    family = poisson(),
                    #method = "REML",
                    #select = TRUE,
-                   data = data_test)
+                   data = scaleData)
 summary(mod[[13]])
 
-mod[[14]] <- glmer(AD.atq.number ~ scale(nest.dens) + lmg.year
+mod[[14]] <- glmer(AD.atq.number ~ nest.dens + lmg.year
                    + (1|fox.year)
                    + offset(log.obs),
                    family = poisson(),
                    #method = "REML",
                    #select = TRUE,
-                   data = data_test)
+                   data = scaleData)
 summary(mod[[14]])
 
-mod[[15]] <- glmer(AD.atq.number ~ scale(prec)*lmg.year + scale(max.temp)*lmg.year + scale(max.wind)*lmg.year + scale(nest.dens)
+mod[[15]] <- glmer(AD.atq.number ~ prec*lmg.year + max.temp*lmg.year + max.wind*lmg.year + nest.dens
                   + (1|fox.year)
                   + offset(log.obs),
                   family = poisson(),
-                  method = "REML",
+                  control = control,
+                  #method = "REML",
                   #select = TRUE,
-                  data = data_test)
+                  data = scaleData)
 summary(mod[[15]])
 visreg(mod[[15]], "max.temp", by = "lmg.year")
 visreg(mod[[15]], "prec", by = "lmg.year")
 visreg(mod[[15]], "max.wind", by = "lmg.year")
 
-mod[[16]] <- glmer(AD.atq.number ~ scale(prec)*lmg.year + scale(max.temp)*lmg.year  + scale(nest.dens)
+mod[[16]] <- glmer(AD.atq.number ~ prec*lmg.year + max.temp*lmg.year  + nest.dens
                    + (1|fox.year)
                    + offset(log.obs),
                    family = poisson(),
+                   control = control,
                    #method = "REML",
                    #select = TRUE,
-                   data = data_test)
+                   data = scaleData)
 summary(mod[[16]])
 
-mod[[17]] <- glmer(AD.atq.number ~ scale(prec)*lmg.crash + scale(max.temp)*lmg.crash + scale(nest.dens)
+mod[[17]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.dens
                   + (1|fox.year)
                   + offset(log.obs),
                   family = poisson(),
+                  control = control,
                   #method = "REML",
                   #select = TRUE,
-                  data = data_test)
+                  data = scaleData)
 summary(mod[[17]])
 visreg(mod[[17]], "max.temp", by = "lmg.crash")
 visreg(mod[[17]], "prec", by = "lmg.crash")
@@ -258,92 +270,99 @@ hist(data$AD.atq.number, breaks = 0:50)
 hist(predict(mod[[17]], type = "response"), breaks = 0:50)
 
 
-mod[[18]] <- glmer(AD.atq.number ~ scale(prec)*lmg.crash + scale(max.temp)*lmg.crash + scale(nest.dens) + scale(DATE)
+mod[[18]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.dens + DATE
                    + (1|fox.year)
                    + offset(log.obs),
                    family = poisson(),
                    #method = "REML",
                    #select = TRUE,
-                   data = data_test)
+                   data = scaleData)
 summary(mod[[18]])
 visreg(mod[[18]], "max.temp", by = "lmg.crash")
 visreg(mod[[18]], "prec", by = "lmg.crash")
 visreg(mod[[18]], "DATE", by = "lmg.crash")
 visreg(mod[[18]], "nest.dens")
 
-mod[[19]] <- glmer(AD.atq.number ~ scale(prec)*lmg.crash + scale(max.temp)*lmg.crash + scale(nest.dens)*lmg.crash + scale(DATE)
-                   + (1|fox.year)
-                   + offset(log.obs),
-                   family = poisson(),
-                   #method = "REML",
-                   #select = TRUE,
-                   data = data_test)
-summary(mod[[19]])
-
-mod[[20]] <- glmer(AD.atq.number ~ scale(prec)*lmg.crash + scale(max.temp)*lmg.crash + scale(nest.dens) + scale(DATE)*lmg.crash
-                   + (1|fox.year)
-                   + offset(log.obs),
-                   family = poisson(),
-                   #method = "REML",
-                   #select = TRUE,
-                   data = data_test)
-summary(mod[[20]])
-x11()
-visreg(mod[[20]], "max.temp", by = "lmg.crash")
-visreg(mod[[20]], "prec", by = "lmg.crash")
-visreg(mod[[20]], "DATE", by = "lmg.crash")
-visreg(mod[[20]], "nest.dens")
-
-mod[[21]] <- glmer(AD.atq.number ~ scale(prec)*lmg.crash + scale(max.temp)*lmg.crash + scale(nest.dens)*lmg.crash + scale(DATE)*lmg.crash
-                   + (1|fox.year)
-                   + offset(log.obs),
-                   family = poisson(),
-                   #method = "REML",
-                   #select = TRUE,
-                   data = data_test)
-summary(mod[[21]])
-visreg(mod[[21]], "max.temp", by = "lmg.crash")
-visreg(mod[[21]], "prec", by = "lmg.crash")
-visreg(mod[[21]], "DATE", by = "lmg.crash")
-visreg(mod[[21]], "nest.dens")
-
-#####################################
-mod[[22]] <- glmer(AD.atq.number ~ scale(prec)*lmg.abun + scale(max.temp)*lmg.abun + scale(nest.dens)*lmg.abun + scale(DATE)
-                   + (1|fox.year)
-                   + offset(log.obs),
-                   family = poisson(),
-                   #method = "REML",
-                   #select = TRUE,
-                   data = data_test)
-summary(mod[[22]])
-
-mod[[23]] <- glmer(AD.atq.number ~ scale(prec)*lmg.abun + scale(max.temp)*lmg.abun + scale(nest.dens) + scale(DATE)*lmg.abun
-                   + (1|fox.year)
-                   + offset(log.obs),
-                   family = poisson(),
-                   #method = "REML",
-                   #select = TRUE,
-                   data = data_test)
-summary(mod[[23]])
-
-mod[[24]] <- glmer(AD.atq.number ~ scale(prec)*lmg.abun + scale(max.temp)*lmg.abun + scale(nest.dens)*lmg.abun + scale(DATE)*lmg.abun
-                   + (1|fox.year)
-                   + offset(log.obs),
-                   family = poisson(),
-                   #method = "REML",
-                   #select = TRUE,
-                   data = data_test)
-summary(mod[[24]])
-
-
-mod[[25]] <- glmer(AD.atq.number ~ scale(prec)*lmg.abun + scale(max.temp)*lmg.abun + scale(nest.dens) + scale(DATE)
+mod[[19]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.dens*lmg.crash + DATE
                    + (1|fox.year)
                    + offset(log.obs),
                    family = poisson(),
                    control = control,
                    #method = "REML",
                    #select = TRUE,
-                   data = data_test)
+                   data = scaleData)
+summary(mod[[19]])
+
+mod[[20]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.dens + DATE*lmg.crash
+                   + (1|fox.year)
+                   + offset(log.obs),
+                   family = poisson(),
+                   control = control,
+                   #method = "REML",
+                   #select = TRUE,
+                   data = scaleData)
+summary(mod[[20]])
+x11(); par(mfrow = c(2, 2))
+visreg(mod[[20]], "max.temp", by = "lmg.crash", overlay = T)
+visreg(mod[[20]], "prec", by = "lmg.crash", overlay = T)
+visreg(mod[[20]], "DATE", by = "lmg.crash", overlay = T)
+visreg(mod[[20]], "nest.dens")
+
+mod[[21]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.dens*lmg.crash + DATE*lmg.crash
+                   + (1|fox.year)
+                   + offset(log.obs),
+                   family = poisson(),
+                   control = control,
+                   #method = "REML",
+                   #select = TRUE,
+                   data = scaleData)
+summary(mod[[21]])
+X11(); par(mfrow = c(2, 2))
+visreg(mod[[21]], "max.temp", by = "lmg.crash", overlay = T)
+visreg(mod[[21]], "prec", by = "lmg.crash", overlay = T)
+visreg(mod[[21]], "DATE", by = "lmg.crash", overlay = T)
+visreg(mod[[21]], "nest.dens", by = "lmg.crash", overlay = T)
+
+#####################################
+mod[[22]] <- glmer(AD.atq.number ~ prec*lmg.abun + max.temp*lmg.abun + nest.dens*lmg.abun + DATE
+                   + (1|fox.year)
+                   + offset(log.obs),
+                   family = poisson(),
+                   control = control,
+                   #method = "REML",
+                   #select = TRUE,
+                   data = scaleData)
+summary(mod[[22]])
+
+mod[[23]] <- glmer(AD.atq.number ~ prec*lmg.abun + max.temp*lmg.abun + nest.dens + DATE*lmg.abun
+                   + (1|fox.year)
+                   + offset(log.obs),
+                   family = poisson(),
+                   control = control,
+                   #method = "REML",
+                   #select = TRUE,
+                   data = scaleData)
+summary(mod[[23]])
+
+mod[[24]] <- glmer(AD.atq.number ~ prec*lmg.abun + max.temp*lmg.abun + nest.dens*lmg.abun + DATE*lmg.abun
+                   + (1|fox.year)
+                   + offset(log.obs),
+                   family = poisson(),
+                   control = control,
+                   #method = "REML",
+                   #select = TRUE,
+                   data = scaleData)
+summary(mod[[24]])
+
+
+mod[[25]] <- glmer(AD.atq.number ~ prec*lmg.abun + max.temp*lmg.abun + nest.dens + DATE
+                   + (1|fox.year)
+                   + offset(log.obs),
+                   family = poisson(),
+                   control = control,
+                   #method = "REML",
+                   #select = TRUE,
+                   data = scaleData)
 summary(mod[[25]])
 
 # AIC table
