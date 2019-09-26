@@ -48,6 +48,7 @@ pairs(data[, c(2, 14, 17, 21, 22, 24)], upper.panel = panel.cor)
 
 ggpairs(data[, c(2, 14, 17, 21, 22, 24)])
 graphics.off()
+
 # ------------------------------- #
 #### Creation of the database ####
 # ------------------------------#
@@ -89,6 +90,67 @@ summary(scaleData)
 # ----------------------------- #
 #### Poisson family in GLM-M ####
 # ------------------------------#
+
+# ---------------------------- #
+# Choice between lmg variables#
+# -------------------------- #
+
+control <- glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 2000000)) # Helping the convergence with "maxfun" increasing the number of iterations 
+
+lmgMod <- list()
+
+lmgMod[[1]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.dens + DATE*lmg.crash
+                     + (1|fox.year)
+                     + offset(log.obs),
+                     family = poisson(),
+                     control = control,
+                     #method = "REML",
+                     #select = TRUE,
+                     data = scaleData)
+lmgMod[[2]] <- glmer(AD.atq.number ~ prec*lmg.year + max.temp*lmg.year + nest.dens + DATE*lmg.year
+                     + (1|fox.year)
+                     + offset(log.obs),
+                     family = poisson(),
+                     control = control,
+                     #method = "REML",
+                     #select = TRUE,
+                     data = scaleData)
+lmgMod[[3]] <- glmer(AD.atq.number ~ prec*lmg.abun + max.temp*lmg.abun + nest.dens + DATE*lmg.abun
+                     + (1|fox.year)
+                     + offset(log.obs),
+                     family = poisson(),
+                     control = control,
+                     #method = "REML",
+                     #select = TRUE,
+                     data = scaleData)
+lmgMod[[4]] <- glmer(AD.atq.number ~ prec + max.temp + nest.dens + DATE + lmg.crash
+                     + (1|fox.year)
+                     + offset(log.obs),
+                     family = poisson(),
+                     control = control,
+                     #method = "REML",
+                     #select = TRUE,
+                     data = scaleData)
+lmgMod[[5]] <- glmer(AD.atq.number ~ prec + max.temp + nest.dens + DATE + lmg.year
+                     + (1|fox.year)
+                     + offset(log.obs),
+                     family = poisson(),
+                     control = control,
+                     #method = "REML",
+                     #select = TRUE,
+                     data = scaleData)
+lmgMod[[6]] <- glmer(AD.atq.number ~ prec + max.temp + nest.dens + DATE + lmg.abun
+                     + (1|fox.year)
+                     + offset(log.obs),
+                     family = poisson(),
+                     control = control,
+                     #method = "REML",
+                     #select = TRUE,
+                     data = scaleData)
+aictab(lmgMod)
+
+# The best variable to use for lemming abundance is "lmg.crash"
+
 # ------------------- #
 # Models compairison #
 # ----------------- #
