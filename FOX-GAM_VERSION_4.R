@@ -176,7 +176,7 @@ lmgGamm[[7]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + s(max.temp, by = 
                     data = scaleData)
 summary(lmgGamm[[7]])
 
-plot(lmgGamm[[7]], page = 1, all.terms = TRUE, residuals = TRUE)
+x11(); plot(lmgGamm[[7]], page = 1, all.terms = TRUE, residuals = TRUE)
 
 
 ### ---- ###
@@ -185,3 +185,49 @@ plot(lmgGamm[[7]], page = 1, all.terms = TRUE, residuals = TRUE)
 
 AIC(lmgGamm[[1]], lmgGamm[[2]], lmgGamm[[3]], lmgGamm[[4]], lmgGamm[[5]], lmgGamm[[6]], lmgGamm[[7]])
 
+### ------------------------------ ###
+### k variation in the best model ###
+### ---------------------------- ###
+
+kMod <- list()
+kMod[[1]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + s(max.temp, by = lmg.crash) + lmg.crash + s(DATE, by = lmg.crash) + nest.dens
+                 + s(fox.year, bs = "re") 
+                 + offset(log.obs),
+                 family = poisson(),
+                 method = "REML", # Automatic selection of the lambda term (trade-off between likelihood and wiggliness)
+                 #select = TRUE,
+                 data = scaleData)
+
+kMod[[2]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + s(max.temp, by = lmg.crash, k = 3) + lmg.crash + s(DATE, by = lmg.crash) + nest.dens
+                 + s(fox.year, bs = "re") 
+                 + offset(log.obs),
+                 family = poisson(),
+                 method = "REML", # Automatic selection of the lambda term (trade-off between likelihood and wiggliness)
+                 #select = TRUE,
+                 data = scaleData)
+#gam.check(kMod[[2]])
+#x11()
+plot(kMod[[2]], page = 1, all.terms = TRUE)
+
+kMod[[3]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + s(max.temp, by = lmg.crash, k = 3) + lmg.crash + s(DATE, by = lmg.crash, k = 3) + nest.dens
+                 + s(fox.year, bs = "re") 
+                 + offset(log.obs),
+                 family = poisson(),
+                 method = "REML", # Automatic selection of the lambda term (trade-off between likelihood and wiggliness)
+                 #select = TRUE,
+                 data = scaleData)
+#gam.check(kMod[[2]])
+#x11()
+plot(kMod[[3]], page = 1, all.terms = TRUE)
+
+kMod[[4]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash, k = 3) + s(max.temp, by = lmg.crash, k = 3) + lmg.crash + s(DATE, by = lmg.crash) + nest.dens
+                 + s(fox.year, bs = "re") 
+                 + offset(log.obs),
+                 family = poisson(),
+                 method = "REML", # Automatic selection of the lambda term (trade-off between likelihood and wiggliness)
+                 #select = TRUE,
+                 data = scaleData)
+
+plot(kMod[[4]], page = 1, all.terms = TRUE)
+
+AIC(kMod[[1]], kMod[[2]], kMod[[3]], kMod[[4]])
