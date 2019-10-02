@@ -206,8 +206,19 @@ kMod[[2]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + s(max.temp, by = lmg
                  #select = TRUE,
                  data = scaleData)
 #gam.check(kMod[[2]])
-#x11()
+x11()
 plot(kMod[[2]], page = 1, all.terms = TRUE)
+plot(kMod[[2]], select = 9, all.terms = TRUE)
+summary(kMod[[2]])
+
+x11(); par(mfrow = c(2, 2))
+j <- visreg(kMod[[2]], "prec", "lmg.crash", overlay = T, plot = F)
+plot(j$fit$visregFit[j$fit$lmg.crash == "crash"], type = "l")
+lines(j$fit$visregFit[j$fit$lmg.crash == "noCrash"])
+points(j$res$visregRes)
+visreg(kMod[[2]], "max.temp", "lmg.crash", overlay = T)
+visreg(kMod[[2]], "DATE", "lmg.crash", overlay = T)
+visreg(kMod[[2]], "nest.dens", "lmg.crash", overlay = T)
 
 kMod[[3]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + s(max.temp, by = lmg.crash, k = 3) + lmg.crash + s(DATE, by = lmg.crash, k = 3) + nest.dens
                  + s(fox.year, bs = "re") 
@@ -228,6 +239,7 @@ kMod[[4]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash, k = 3) + s(max.temp, b
                  #select = TRUE,
                  data = scaleData)
 
+x11()
 plot(kMod[[4]], page = 1, all.terms = TRUE)
 
 AIC(kMod[[1]], kMod[[2]], kMod[[3]], kMod[[4]])
