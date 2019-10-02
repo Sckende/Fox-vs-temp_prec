@@ -21,6 +21,7 @@ library("modEvA") # For the variance explained
 library("scales") # For the colour transparency
 library("ggplot2")
 library("GGally") # correlation panels
+library("MuMIn")
 
 # -------------------------------- #
 #### Correlation btw variables ####
@@ -429,6 +430,10 @@ summary(mod[[25]])
 
 # AIC table
 aictab(mod, modnames = NULL)
+
+# Computation of R squared
+r.squaredGLMM(mod[[20]])
+r.squaredGLMM(mod[[20]], mod[[7]]) # Check the method !
 
 # Save the best model for rmarkdown document
  # save(mod, file = "FOX_attack_all_glmm.rda")
