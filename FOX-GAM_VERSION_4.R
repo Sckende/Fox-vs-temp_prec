@@ -101,7 +101,7 @@ lmgGamm[[1]] <- gam(AD.atq.number ~ s(max.temp, by = lmg.crash) + lmg.crash
                     family = poisson(),
                     method = "REML", # Automatic selection of the lambda term (trade-off between likelihood and wiggliness)
                     #select = TRUE,
-                    data = scaleData)
+                    data = data_test)
 summary(lmgGamm[[1]])
 
 plot(lmgGamm[[1]], page = 1, all.terms = TRUE, residuals = TRUE)
@@ -113,7 +113,7 @@ lmgGamm[[2]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + lmg.crash
                     family = poisson(),
                     method = "REML", # Automatic selection of the lambda term (trade-off between likelihood and wiggliness)
                     #select = TRUE,
-                    data = scaleData)
+                    data = data_test)
 summary(lmgGamm[[2]])
 
 plot(lmgGamm[[2]], page = 1, all.terms = TRUE, residuals = TRUE)
@@ -125,7 +125,7 @@ lmgGamm[[3]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + s(max.temp, by = 
                     family = poisson(),
                     method = "REML", # Automatic selection of the lambda term (trade-off between likelihood and wiggliness)
                     #select = TRUE,
-                    data = scaleData)
+                    data = data_test)
 summary(lmgGamm[[3]])
 
 plot(lmgGamm[[3]], page = 1, all.terms = TRUE, residuals = TRUE)
@@ -137,7 +137,7 @@ lmgGamm[[4]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + s(max.temp, by = 
                     family = poisson(),
                     method = "REML", # Automatic selection of the lambda term (trade-off between likelihood and wiggliness)
                     #select = TRUE,
-                    data = scaleData)
+                    data = data_test)
 summary(lmgGamm[[4]])
 
 plot(lmgGamm[[4]], page = 1, all.terms = TRUE, residuals = TRUE)
@@ -149,7 +149,7 @@ lmgGamm[[5]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + s(max.temp, by = 
                     family = poisson(),
                     method = "REML", # Automatic selection of the lambda term (trade-off between likelihood and wiggliness)
                     #select = TRUE,
-                    data = scaleData)
+                    data = data_test)
 summary(lmgGamm[[5]])
 
 plot(lmgGamm[[5]], page = 1, all.terms = TRUE, residuals = TRUE)
@@ -161,7 +161,7 @@ lmgGamm[[6]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + s(max.temp, by = 
                     family = poisson(),
                     method = "REML", # Automatic selection of the lambda term (trade-off between likelihood and wiggliness)
                     #select = TRUE,
-                    data = scaleData)
+                    data = data_test)
 summary(lmgGamm[[6]])
 
 plot(lmgGamm[[6]], page = 1, all.terms = TRUE, residuals = TRUE)
@@ -173,11 +173,22 @@ lmgGamm[[7]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + s(max.temp, by = 
                     family = poisson(),
                     method = "REML", # Automatic selection of the lambda term (trade-off between likelihood and wiggliness)
                     #select = TRUE,
-                    data = scaleData)
+                    data = data_test)
 summary(lmgGamm[[7]])
 
 x11(); plot(lmgGamm[[7]], page = 1, all.terms = TRUE, residuals = TRUE)
+# Tests with DHARma package
+sims <- simulateResiduals(lmgGamm[[7]])
+x11();plot(sims)
 
+# plot.gam(lmgGamm[[7]], select = 1)
+x11(); par(mfrow = c(2, 2))
+visreg(lmgGamm[[7]], "max.temp", "lmg.crash", overlay = T, scale = "response")
+visreg(lmgGamm[[7]], "prec", "lmg.crash", overlay = T, scale = "response")
+visreg(lmgGamm[[7]], "DATE", "lmg.crash", overlay = T, bty = "n", scale = "response")
+visreg(lmgGamm[[7]], "nest.dens", "lmg.crash", overlay = T, bty = "n", scale = "response")
+
+graphics.off()
 
 ### ---- ###
 ### AIC ###
@@ -196,7 +207,7 @@ kMod[[1]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + s(max.temp, by = lmg
                  family = poisson(),
                  method = "REML", # Automatic selection of the lambda term (trade-off between likelihood and wiggliness)
                  #select = TRUE,
-                 data = scaleData)
+                 data = data_test)
 
 kMod[[2]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + s(max.temp, by = lmg.crash, k = 3) + lmg.crash + s(DATE, by = lmg.crash) + nest.dens
                  + s(fox.year, bs = "re") 
@@ -204,7 +215,7 @@ kMod[[2]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + s(max.temp, by = lmg
                  family = poisson(),
                  method = "REML", # Automatic selection of the lambda term (trade-off between likelihood and wiggliness)
                  #select = TRUE,
-                 data = scaleData)
+                 data = data_test)
 #gam.check(kMod[[2]])
 x11()
 plot(kMod[[2]], page = 1, all.terms = TRUE)
@@ -226,7 +237,7 @@ kMod[[3]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + s(max.temp, by = lmg
                  family = poisson(),
                  method = "REML", # Automatic selection of the lambda term (trade-off between likelihood and wiggliness)
                  #select = TRUE,
-                 data = scaleData)
+                 data = data_test)
 #gam.check(kMod[[2]])
 #x11()
 plot(kMod[[3]], page = 1, all.terms = TRUE)
@@ -237,9 +248,309 @@ kMod[[4]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash, k = 3) + s(max.temp, b
                  family = poisson(),
                  method = "REML", # Automatic selection of the lambda term (trade-off between likelihood and wiggliness)
                  #select = TRUE,
-                 data = scaleData)
+                 data = data_test)
 
 x11()
 plot(kMod[[4]], page = 1, all.terms = TRUE)
 
 AIC(kMod[[1]], kMod[[2]], kMod[[3]], kMod[[4]])
+
+### ----------------------------------- ###
+### Plot the best model - lmgGamm[[7]] ###
+### --------------------------------- ###
+graphics.off()
+
+range(data_test$max.temp) # 0.595 - 15.351
+
+v <- seq(0, 16, by = 0.01)
+newdat.crash <- data.frame(max.temp = v,
+                           prec = mean(data_test$prec),
+                           nest.dens = mean(data_test$nest.dens),
+                           DATE = mean(data_test$DATE),
+                           lmg.crash = "crash",
+                           log.obs = mean(data_test$log.obs),
+                           fox.year = data_test$fox.year[1])
+newdat.noCrash <- data.frame(max.temp = v,
+                             prec = mean(data_test$prec),
+                             nest.dens = mean(data_test$nest.dens),
+                             DATE = mean(data_test$DATE),
+                             lmg.crash = "noCrash",
+                             log.obs = mean(data_test$log.obs),
+                             fox.year = data_test$fox.year[1])
+
+p.crash <- predict(lmgGamm[[7]], newdata = newdat.crash, type = "response", re.form = NA, se.fit = TRUE)
+p.noCrash <- predict(lmgGamm[[7]], newdata = newdat.noCrash, se.fit = TRUE, type = "response", re.form = NA)
+
+# Atq number vs. prec #
+# ---------------------- #
+range(data_test$prec) # 0 - 20
+
+v1 <- seq(0, 20, by = 0.01)
+newdat1.crash <- data.frame(max.temp = mean(data_test$max.temp),
+                            prec = v1,
+                            nest.dens = mean(data_test$nest.dens),
+                            lmg.crash = "crash",
+                            DATE = mean(data_test$DATE),
+                            log.obs = mean(data_test$log.obs),
+                            fox.year = data_test$fox.year[1])
+
+p1.crash <- predict(lmgGamm[[7]], newdata = newdat1.crash, se.fit = TRUE, type = "response", re.form = NA)
+
+# ----- #
+newdat1.noCrash <- data.frame(max.temp = mean(data_test$max.temp),
+                              prec = v1,
+                              nest.dens = mean(data_test$nest.dens),
+                              lmg.crash = "noCrash",
+                              DATE = mean(data_test$DATE),
+                              log.obs = mean(data_test$log.obs),
+                              fox.year = data_test$fox.year[1])
+
+p1.noCrash <- predict(lmgGamm[[7]], newdata = newdat1.noCrash, se.fit = TRUE, type = "response", re.form = NA)
+
+# Atq number vs. nest.dens #
+# ----------------------- #
+range(data_test$nest.dens) # 0.42 - 9.26
+
+v2 <- seq(0, 10, by = 0.01)
+newdat2 <- data.frame(max.temp = mean(data_test$max.temp),
+                      prec = mean(data_test$prec),
+                      nest.dens = v2,
+                      DATE = mean(data_test$DATE),
+                      lmg.crash = "noCrash",
+                      log.obs = mean(data$log.obs),
+                      fox.year = data_test$fox.year[1])
+
+p2 <- predict(lmgGamm[[7]], newdata = newdat2, se.fit = TRUE, type = "response", re.form = NA)
+
+# Atq number vs. date #
+# ------------------- #
+range(data_test$DATE) # 159 - 205
+
+v3 <- seq(159, 205, by = 1)
+newdat3.noCrash <- data.frame(max.temp = mean(data_test$max.temp),
+                      prec = mean(data_test$prec),
+                      nest.dens = mean(data_test$nest.dens),
+                      DATE = v3,
+                      lmg.crash = "noCrash",
+                      log.obs = mean(data$log.obs),
+                      fox.year = data_test$fox.year[1])
+
+p3.noCrash <- predict(lmgGamm[[7]], newdata = newdat3.noCrash, se.fit = TRUE, type = "response", re.form = NA)
+
+newdat3.crash <- data.frame(max.temp = mean(data_test$max.temp),
+                              prec = mean(data_test$prec),
+                              nest.dens = mean(data_test$nest.dens),
+                              DATE = v3,
+                              lmg.crash = "crash",
+                              log.obs = mean(data$log.obs),
+                              fox.year = data_test$fox.year[1])
+
+p3.crash <- predict(lmgGamm[[7]], newdata = newdat3.crash, se.fit = TRUE, type = "response", re.form = NA)
+
+# --------- #
+# GRAPHICS #
+# ------- #
+
+# -------------------- #
+# Temperature effect...
+# ------------------- #
+x11()
+par(mfrow = c(2, 2))
+
+# ------ #
+plot(v, p.crash$fit, ylim = c(-2, 5), type = "l", bty = "n", lwd = 2.5, xlab = "Maximal temperature", ylab = "Fox attack number per hour", col = "darkorange4")
+lines(v, p.noCrash$fit, lwd = 2.5, col = "darkorange3")
+legend("topright", legend = c("Lemming crash", "No lemming crash"), fill = c("darkorange4", "darkorange3"), border = NA, bty = "n")
+
+# Confident intervals
+# lines(v, (p.crash$fit - 1.96*(p.crash$se.fit)), type = "b", col = "darkorange4", lwd = 1)
+# lines(v, (p.crash$fit + 1.96*(p.crash$se.fit)), type = "b", col = "darkorange4", lwd = 1)
+# 
+# lines(v, (p.noCrash$fit - 1.96*(p.noCrash$se.fit)), type = "b", col = "darkorange3", lwd = 1)
+# lines(v, (p.noCrash$fit + 1.96*(p.noCrash$se.fit)), type = "b", col = "darkorange3", lwd = 1)
+
+### OR ###
+
+polygon(x = c(v, rev(v)),
+        y = c((p.crash$fit - 1.96*(p.crash$se.fit)), (rev(p.crash$fit) + 1.96*(rev(p.crash$se.fit)))),
+        col = alpha("darkorange4", 0.25),
+        border = NA)
+
+polygon(x = c(v, rev(v)),
+        y = c((p.noCrash$fit - 1.96*(p.noCrash$se.fit)), (rev(p.noCrash$fit) + 1.96*(rev(p.noCrash$se.fit)))),
+        col = alpha("darkorange3", 0.25),
+        border = NA)
+
+# ... & associated random effects 
+# re <- unique(data_test$fox.year)
+# for(i in re){
+#   nd2.crash <- data.frame(max.temp = v,
+#                           prec = mean(data_test$prec),
+#                           nest.dens = mean(data_test$nest.dens),
+#                           DATE = mean(data_test$DATE),
+#                           lmg.crash = "crash",
+#                           log.obs = mean(data_test$log.obs),
+#                           fox.year = i)
+#   pp.crash <- predict(lmgGamm[[7]], newdata = nd2.crash, type = "response")
+#   lines(v, pp.crash, type = "l", lwd = 1, col = alpha("darkorange", 0.25))
+# }
+# points(data_test$max.temp, 3600*data_test$AD.atq.rate,col = "darkorange4") # WARNINGS ! points are missing on the plot because their value is really high
+
+# ------ #
+# plot(v, p.noCrash, ylim = c(0, 7), type = "l", bty = "n", lwd = 2.5, xlab = "Maximal temperature", ylab = "Fox attack number per hour", col = "darkorange4", main = "No crash of lemming")
+# # ... & associated random effects 
+# re <- unique(data_test$fox.year)
+# for(i in re){
+#   nd2.noCrash <- data.frame(max.temp = v,
+#                             prec = mean(data_test$prec),
+#                             nest.dens = mean(data_test$nest.dens),
+#                             DATE = mean(data_test$DATE),
+#                             lmg.crash = "noCrash",
+#                             log.obs = mean(data_test$log.obs),
+#                             fox.year = i)
+#   pp.noCrash <- predict(lmgGamm[[7]], newdata = nd2.noCrash, type = "response")
+#   lines(v, pp.noCrash, type = "l", lwd = 1, col = alpha("darkorange", 0.25))
+# }
+# points(data_test$max.temp, 3600*data_test$AD.atq.rate,col = "darkorange4") # WARNINGS ! points are missing on the plot because their value is really high
+
+# ------------------------ #
+# Precipitation effects....#
+# ------------------------ #
+# x11()
+# par(mfrow = c(1, 2))
+# ----- #
+plot(v1, p1.crash$fit, type = "l", ylim = c(-2, 5), lwd = 2, col = "skyblue4", bty = "n", ylab = "Fox attack number per hour", xlab = "Cumulative precipitation (mm)")
+
+lines(v1, p1.noCrash$fit, lwd = 2, col = "skyblue3")
+
+legend("topright", legend = c("Lemming crash", "No lemming crash"), fill = c("skyblue4", "skyblue3"), border = NA, bty = "n")
+
+# Confident intervals
+polygon(x = c(v1, rev(v1)),
+        y = c((p1.crash$fit - 1.96*(p1.crash$se.fit)), (rev(p1.crash$fit) + 1.96*(rev(p1.crash$se.fit)))),
+        col = alpha("skyblue4", 0.25),
+        border = NA)
+
+polygon(x = c(v1, rev(v1)),
+        y = c((p1.noCrash$fit - 1.96*(p1.noCrash$se.fit)), (rev(p1.noCrash$fit) + 1.96*(rev(p1.noCrash$se.fit)))),
+        col = alpha("skyblue3", 0.25),
+        border = NA)
+
+
+
+# ... & associated random effects
+# re <- unique(data_test$fox.year)
+# for(i in re){
+#   nd3.crash <- data.frame(max.temp = mean(data_test$max.temp),
+#                           prec = v1,
+#                           nest.dens = mean(data_test$nest.dens),
+#                           DATE = mean(data_test$DATE),
+#                           lmg.crash = "crash",
+#                           log.obs = mean(data_test$log.obs),
+#                           fox.year = i)
+#   pp.crash <- predict(lmgGamm[[7]], newdata = nd3.crash, type = "response")
+#   lines(v1, pp.crash, type = "l", lwd = 1, col = alpha("skyblue3", 0.25))
+# }
+# points(data_test$prec, 3600*data_test$AD.atq.rate, col = "skyblue4") # WARNINGS ! points are missing on the plot because their value is really high
+
+# ----- #
+# plot(v1, p1.noCrash, type = "l", ylim = c(0, 4), lwd = 2, col = "skyblue4", bty = "n", ylab = "Fox attack number per hour", xlab = "Cumulative precipitation (mm)", main = "No crash of lemmings")
+# 
+# # ... & associated random effects
+# re <- unique(data_test$fox.year)
+# for(i in re){
+#   nd3.noCrash <- data.frame(max.temp = mean(data_test$max.temp),
+#                             prec = v1,
+#                             nest.dens = mean(data_test$nest.dens),
+#                             DATE = mean(data_test$DATE),
+#                             lmg.crash = "noCrash",
+#                             log.obs = mean(data_test$log.obs),
+#                             fox.year = i)
+#   pp.noCrash <- predict(lmgGamm[[7]], newdata = nd3.noCrash, type = "response")
+#   lines(v1, pp.noCrash, type = "l", lwd = 1, col = alpha("skyblue3", 0.25))
+# }
+# points(data_test$prec, 3600*data_test$AD.atq.rate, col = "skyblue4") # WARNINGS ! points are missing on the plot because their value is really high
+
+# --------------- #
+# Date effect ...#
+# ------------- #
+plot(v3, p3.crash$fit, ylim = c(-3, 9), type = "l", lwd = 2, bty = "n", xlab = "Date of observations", col = "plum4", ylab = "Fox attack number per hour")
+
+lines(v3, p3.noCrash$fit, lwd = 2, col = "plum3")
+
+legend("topright", legend = c("Lemming crash", "No lemming crash"), fill = c("plum4", "plum3"), border = NA, bty = "n")
+
+# Confident intervals
+polygon(x = c(v3, rev(v3)),
+        y = c((p3.crash$fit - 1.96*(p3.crash$se.fit)), (rev(p3.crash$fit) + 1.96*(rev(p3.crash$se.fit)))),
+        col = alpha("plum4", 0.25),
+        border = NA)
+
+polygon(x = c(v3, rev(v3)),
+        y = c((p3.noCrash$fit - 1.96*(p3.noCrash$se.fit)), (rev(p3.noCrash$fit) + 1.96*(rev(p3.noCrash$se.fit)))),
+        col = alpha("plum3", 0.25),
+        border = NA)
+
+
+# ... & associated random effects
+# re <- unique(data_test$fox.year)
+# for(i in re){
+#   nd5 <- data.frame(max.temp = mean(data_test$max.temp),
+#                     prec = mean(data_test$prec),
+#                     nest.dens = mean(data_test$nest.dens),
+#                     DATE = v3,
+#                     lmg.crash = "crash", 
+#                     log.obs = mean(data_test$log.obs),
+#                     fox.year = i)
+#   pp <- predict(lmgGamm[[7]], newdata = nd5, type = "response")
+#   lines(v3, pp, type = "l", lwd = 1, col = alpha("plum3", 0.25))
+# }
+# points(data_test$DATE, 3600*data_test$AD.atq.rate, col = "plum4") # WARNINGS ! points are missing on the plot because their value is really high
+
+# plot(v3, p3.noCrash, ylim = c(0, 6), type = "l", lwd = 2, bty = "n", xlab = "Date of observations", col = "plum4", ylab = "Fox attack number per hour")
+
+# ... & associated random effects
+# re <- unique(data_test$fox.year)
+# for(i in re){
+#   nd5 <- data.frame(max.temp = mean(data_test$max.temp),
+#                     prec = mean(data_test$prec),
+#                     nest.dens = mean(data_test$nest.dens),
+#                     DATE = v3,
+#                     lmg.crash = "noCrash", 
+#                     log.obs = mean(data_test$log.obs),
+#                     fox.year = i)
+#   pp <- predict(lmgGamm[[7]], newdata = nd5, type = "response")
+#   lines(v3, pp, type = "l", lwd = 1, col = alpha("plum3", 0.25))
+# }
+# points(data_test$DATE, 3600*data_test$AD.atq.rate, col = "plum4") # WARNINGS ! points are missing on the plot because their value is really high
+
+# ----------------------- #
+# Nest density effect ...#
+# --------------------- #
+#x11()
+
+plot(v2, p2$fit, ylim = c(-1, 5), type = "l", lwd = 2, bty = "n", xlab = "Goose nest density", col = "darkgreen", ylab = "Fox attack number per hour")
+
+# Confident intervals
+polygon(x = c(v2, rev(v2)),
+        y = c((p2$fit - 1.96*(p2$se.fit)), (rev(p2$fit) + 1.96*(rev(p2$se.fit)))),
+        col = alpha("darkgreen", 0.25),
+        border = NA)
+
+# ... & associated random effects
+# re <- unique(data_test$fox.year)
+# for(i in re){
+#   nd4 <- data.frame(max.temp = mean(data_test$max.temp),
+#                     prec = mean(data_test$prec),
+#                     nest.dens = v2,
+#                     DATE = mean(data_test$DATE),
+#                     lmg.crash = "noCrash", 
+#                     log.obs = mean(data$log.obs),
+#                     fox.year = i)
+#   pp <- predict(lmgGamm[[7]], newdata = nd4, type = "response")
+#   lines(v2, pp, type = "l", lwd = 1, col = alpha("green", 0.25))
+# }
+# points(data_test$nest.dens, 3600*data_test$AD.atq.rate, col = "darkgreen") # WARNINGS ! points are missing on the plot because their value is really high
+
+graphics.off()
+
