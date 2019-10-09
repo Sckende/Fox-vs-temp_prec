@@ -341,10 +341,10 @@ mod[[18]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.de
                    #select = TRUE,
                    data = scaleData)
 summary(mod[[18]])
-visreg(mod[[18]], "max.temp", by = "lmg.crash")
-visreg(mod[[18]], "prec", by = "lmg.crash")
-visreg(mod[[18]], "DATE", by = "lmg.crash")
-visreg(mod[[18]], "nest.dens")
+visreg(mod[[18]], "max.temp", by = "lmg.crash", scale = "response", overlay = TRUE, bty = "n")
+visreg(mod[[18]], "prec", by = "lmg.crash", scale = "response", overlay = TRUE, bty = "n")
+visreg(mod[[18]], "DATE", by = "lmg.crash", scale = "response", overlay = TRUE, bty = "n")
+visreg(mod[[18]], "nest.dens", by = "lmg.crash", scale = "response", overlay = TRUE, bty = "n")
 
 mod[[19]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.dens*lmg.crash + DATE
                    + (1|fox.year)
