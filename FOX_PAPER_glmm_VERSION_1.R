@@ -333,7 +333,7 @@ hist(data$AD.atq.number, breaks = 0:50)
 hist(predict(mod[[17]], type = "response"), breaks = 0:50)
 
 
-mod[[18]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.dens + DATE
+mod[[18]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.dens + ns(DATE, 5)*lmg.crash
                    + (1|fox.year)
                    + offset(log.obs),
                    family = poisson(),
@@ -427,6 +427,14 @@ mod[[25]] <- glmer(AD.atq.number ~ prec*lmg.abun + max.temp*lmg.abun + nest.dens
                    #select = TRUE,
                    data = scaleData)
 summary(mod[[25]])
+
+mod[[26]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.dens + DATE + DATE
+                   + (1|fox.year)
+                   + offset(log.obs),
+                   family = poisson(),
+                   #method = "REML",
+                   #select = TRUE,
+                   data = scaleData)
 
 # AIC table
 aictab(mod, modnames = NULL)
