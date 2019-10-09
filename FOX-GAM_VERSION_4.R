@@ -364,6 +364,7 @@ newD4$tranFit <- predict(lmgGamm[[7]], newdata = newD4, type = "response", se.fi
 # Confindent intervals
 
 newD4$maxIC <- exp(newD4$fit + 1.96*(newD4$se.fit))
+#newD4$maxIC2 <- lmgGamm[[7]]$family$linkinv(newD4$fit + 1.96*(newD4$se.fit))
 newD4$minIC <- exp(newD4$fit - 1.96*(newD4$se.fit))
                    
 # --------- #
@@ -388,7 +389,7 @@ par(mfrow = c(2, 2))
 
 plot(v,
      newD1$tranFit[newD1$lmg.crash == "crash"],
-     ylim = c(0, 4),
+     ylim = c(0, 2),
      type = "l",
      bty = "n",
      lwd = 2.5,
@@ -430,7 +431,7 @@ polygon(x = c(v, rev(v)),
 # ----- #
 plot(v1,
      newD2$tranFit[newD2$lmg.crash == "crash"],
-     ylim = c(0, 4),
+     ylim = c(0, 2.5),
      type = "l",
      bty = "n",
      lwd = 2.5,
@@ -470,7 +471,7 @@ polygon(x = c(v1, rev(v1)),
 
 plot(v3,
      newD3$tranFit[newD3$lmg.crash == "crash"],
-     ylim = c(0, 4),
+     ylim = c(0, 12),
      type = "l",
      bty = "n",
      lwd = 2.5,
@@ -511,7 +512,7 @@ polygon(x = c(v3, rev(v3)),
 
 plot(v2,
      newD4$tranFit[newD4$lmg.crash == "crash"],
-     ylim = c(0, 4),
+     ylim = c(0, 2.5),
      type = "l",
      bty = "n",
      lwd = 2.5,
@@ -524,7 +525,7 @@ lines(v2,
       col = "chartreuse3")
 legend("topright", legend = c("Lemming crash", "No lemming crash"), fill = c("forestgreen", "chartreuse3"), border = NA, bty = "n")
 
-# Confindent intervalls
+# Confidence intervals
 polygon(x = c(v2, rev(v2)),
         y = c(newD4$minIC[newD4$lmg.crash == "crash"], rev(newD4$maxIC[newD4$lmg.crash == "crash"])),
         col = alpha("forestgreen", 0.25),
