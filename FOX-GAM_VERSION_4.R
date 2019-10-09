@@ -260,6 +260,11 @@ AIC(kMod[[1]], kMod[[2]], kMod[[3]], kMod[[4]])
 ### -------------------------------------------- ###
 graphics.off()
 
+# In order to obtain correct confindent intervals
+# 1 - Computation predictions without type = response cause SEs are not back transformed in this case
+# 2 - Computation of min & max values of CI
+# 3 - Back transformation of obtained values
+
 range(data_test$max.temp) # 0.595 - 15.351
 
 v <- seq(0, 16, by = 0.01)
@@ -278,8 +283,29 @@ newdat.noCrash <- data.frame(max.temp = v,
                              log.obs = mean(data_test$log.obs),
                              fox.year = data_test$fox.year[1])
 
-p.crash <- predict(lmgGamm[[7]], newdata = newdat.crash, type = "response", re.form = NA, se.fit = TRUE)
-p.noCrash <- predict(lmgGamm[[7]], newdata = newdat.noCrash, se.fit = TRUE, type = "response", re.form = NA)
+p.crash <- predict(lmgGamm[[7]], newdata = newdat.crash, type = "link", re.form = NA, se.fit = TRUE)
+p.noCrash <- predict(lmgGamm[[7]], newdata = newdat.noCrash, se.fit = TRUE, type = "link", re.form = NA)
+
+#######################
+
+temp_newData <- data.frame(max.temp = rep(v, 2),
+                       prec = mean(data_test$prec),
+                       nest.dens = mean(data_test$nest.dens),
+                       DATE = mean(data_test$DATE),
+                       lmg.crash = c(rep("crash", 1601), rep("noCrash", 1601)),
+                       log.obs = mean(data_test$log.obs),
+                       fox.year = data_test$fox.year[1])
+temp_newData$tempPred <- predict(lmgGamm[[7]], newdata = temp_newData, type = "link", se.fit = TRUE)[[1]]
+temp_newData$tempPred_se <- predict(lmgGamm[[7]], newdata = temp_newData, type = "link", se.fit = TRUE)[[2]]
+temp_newData$transf_tempPred <- predict(lmgGamm[[7]], newdata = temp_newData, type = "response", se.fit = FALSE)
+temp_newData$transf_tempPred_2 <- 10^temp_newData$tempPred 
+
+# Confindent intervals
+
+temp_newData$maxIC <- 10^(temp_newData$tempPred + 1.96*(temp_newData$tempPred_se))
+temp_newData$minIC <- 10^(temp_newData$tempPred - 1.96*(temp_newData$tempPred_se))
+
+
 
 # Atq number vs. prec #
 # ---------------------- #
@@ -294,7 +320,7 @@ newdat1.crash <- data.frame(max.temp = mean(data_test$max.temp),
                             log.obs = mean(data_test$log.obs),
                             fox.year = data_test$fox.year[1])
 
-p1.crash <- predict(lmgGamm[[7]], newdata = newdat1.crash, se.fit = TRUE, type = "response", re.form = NA)
+p1.crash <- predict(lmgGamm[[7]], newdata = newdat1.crash, se.fit = TRUE, type = "link", re.form = NA)
 
 # ----- #
 newdat1.noCrash <- data.frame(max.temp = mean(data_test$max.temp),
@@ -305,7 +331,7 @@ newdat1.noCrash <- data.frame(max.temp = mean(data_test$max.temp),
                               log.obs = mean(data_test$log.obs),
                               fox.year = data_test$fox.year[1])
 
-p1.noCrash <- predict(lmgGamm[[7]], newdata = newdat1.noCrash, se.fit = TRUE, type = "response", re.form = NA)
+p1.noCrash <- predict(lmgGamm[[7]], newdata = newdat1.noCrash, se.fit = TRUE, type = "link", re.form = NA)
 
 # Atq number vs. nest.dens #
 # ----------------------- #
@@ -320,7 +346,7 @@ newdat2.noCrash <- data.frame(max.temp = mean(data_test$max.temp),
                       log.obs = mean(data$log.obs),
                       fox.year = data_test$fox.year[1])
 
-p2.noCrash <- predict(lmgGamm[[7]], newdata = newdat2.noCrash, se.fit = TRUE, type = "response", re.form = NA)
+p2.noCrash <- predict(lmgGamm[[7]], newdata = newdat2.noCrash, se.fit = TRUE, type = "link", re.form = NA)
 
 newdat2.crash <- data.frame(max.temp = mean(data_test$max.temp),
                               prec = mean(data_test$prec),
@@ -330,7 +356,7 @@ newdat2.crash <- data.frame(max.temp = mean(data_test$max.temp),
                               log.obs = mean(data$log.obs),
                               fox.year = data_test$fox.year[1])
 
-p2.crash <- predict(lmgGamm[[7]], newdata = newdat2.crash, se.fit = TRUE, type = "response", re.form = NA)
+p2.crash <- predict(lmgGamm[[7]], newdata = newdat2.crash, se.fit = TRUE, type = "link", re.form = NA)
 
 # Atq number vs. date #
 # ------------------- #
@@ -345,7 +371,7 @@ newdat3.noCrash <- data.frame(max.temp = mean(data_test$max.temp),
                       log.obs = mean(data$log.obs),
                       fox.year = data_test$fox.year[1])
 
-p3.noCrash <- predict(lmgGamm[[7]], newdata = newdat3.noCrash, se.fit = TRUE, type = "response", re.form = NA)
+p3.noCrash <- predict(lmgGamm[[7]], newdata = newdat3.noCrash, se.fit = TRUE, type = "link", re.form = NA)
 
 newdat3.crash <- data.frame(max.temp = mean(data_test$max.temp),
                               prec = mean(data_test$prec),
@@ -355,7 +381,8 @@ newdat3.crash <- data.frame(max.temp = mean(data_test$max.temp),
                               log.obs = mean(data$log.obs),
                               fox.year = data_test$fox.year[1])
 
-p3.crash <- predict(lmgGamm[[7]], newdata = newdat3.crash, se.fit = TRUE, type = "response", re.form = NA)
+p3.crash <- predict(lmgGamm[[7]], newdata = newdat3.crash, se.fit = TRUE, type = "link", re.form = NA)
+
 
 # --------- #
 # GRAPHICS #
@@ -376,18 +403,35 @@ par(mfrow = c(2, 2))
 #     bg="transparent")
 
 # ------ #
-plot(v, p.crash$fit, ylim = c(-1, 2), type = "l", bty = "n", lwd = 2.5, xlab = "Maximal temperature (C)", ylab = "Fox attack number per hour", col = "darkorange4")
-lines(v, p.noCrash$fit, lwd = 2.5, col = "darkorange3")
+plot(v, 10^p.crash$fit, ylim = c(0, 10), type = "l", bty = "n", lwd = 2.5, xlab = "Maximal temperature (C)", ylab = "Fox attack number per hour", col = "darkorange4")
+lines(v, 10^p.noCrash$fit, lwd = 2.5, col = "darkorange3")
 legend("topright", legend = c("Lemming crash", "No lemming crash"), fill = c("darkorange4", "darkorange3"), border = NA, bty = "n")
 
 # Confindent intervalls
 polygon(x = c(v, rev(v)),
-        y = c((p.crash$fit - 1.96*(p.crash$se.fit)), (rev(p.crash$fit) + 1.96*(rev(p.crash$se.fit)))),
+        y = c(10^(p.crash$fit - 1.96*(p.crash$se.fit)), 10^(rev(p.crash$fit) + 1.96*(rev(p.crash$se.fit)))),
         col = alpha("darkorange4", 0.25),
         border = NA)
 
 polygon(x = c(v, rev(v)),
-        y = c((p.noCrash$fit - 1.96*(p.noCrash$se.fit)), (rev(p.noCrash$fit) + 1.96*(rev(p.noCrash$se.fit)))),
+        y = c(10^(p.noCrash$fit - 1.96*(p.noCrash$se.fit)), 10^(rev(p.noCrash$fit) + 1.96*(rev(p.noCrash$se.fit)))),
+        col = alpha("darkorange3", 0.25),
+        border = NA)
+
+
+##########################
+plot(v, temp_newData$transf_tempPred_2[temp_newData$lmg.crash == "crash"], ylim = c(0, 10), type = "l", bty = "n", lwd = 2.5, xlab = "Maximal temperature (C)", ylab = "Fox attack number per hour", col = "darkorange4")
+lines(v, temp_newData$transf_tempPred_2[temp_newData$lmg.crash == "noCrash"], lwd = 2.5, col = "darkorange3")
+legend("topright", legend = c("Lemming crash", "No lemming crash"), fill = c("darkorange4", "darkorange3"), border = NA, bty = "n")
+
+# Confindent intervalls
+polygon(x = c(v, rev(v)),
+        y = c(temp_newData$minIC[temp_newData$lmg.crash == "crash"], rev(temp_newData$maxIC[temp_newData$lmg.crash == "crash"])),
+        col = alpha("darkorange4", 0.25),
+        border = NA)
+
+polygon(x = c(v, rev(v)),
+        y = c(temp_newData$minIC[temp_newData$lmg.crash == "noCrash"], rev(temp_newData$maxIC[temp_newData$lmg.crash == "noCrash"])),
         col = alpha("darkorange3", 0.25),
         border = NA)
 #dev.off()
