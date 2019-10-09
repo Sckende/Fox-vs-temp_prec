@@ -275,7 +275,7 @@ newD1 <- data.frame(max.temp = rep(v, 2),
                        DATE = mean(data_test$DATE),
                        lmg.crash = c(rep("crash", 1601), rep("noCrash", 1601)),
                        log.obs = mean(data_test$log.obs),
-                       fox.year = data_test$fox.year[1])
+                       fox.year = "Big one-2004")
 
 newD1$fit <- predict(lmgGamm[[7]], newdata = newD1, type = "link", se.fit = TRUE)[[1]]
 newD1$se.fit <- predict(lmgGamm[[7]], newdata = newD1, type = "link", se.fit = TRUE)[[2]]
@@ -302,7 +302,7 @@ newD2 <- data.frame(max.temp = mean(data_test$max.temp),
                     DATE = mean(data_test$DATE),
                     lmg.crash = c(rep("crash", 2001), rep("noCrash", 2001)),
                     log.obs = mean(data_test$log.obs),
-                    fox.year = data_test$fox.year[1])
+                    fox.year = "Big one-2004")
 
 newD2$fit <- predict(lmgGamm[[7]], newdata = newD2, type = "link", se.fit = TRUE)[[1]]
 newD2$se.fit <- predict(lmgGamm[[7]], newdata = newD2, type = "link", se.fit = TRUE)[[2]]
@@ -327,7 +327,7 @@ newD3 <- data.frame(max.temp = mean(data_test$max.temp),
                     DATE = rep(v3, 2),
                     lmg.crash = c(rep("crash", 47), rep("noCrash", 47)),
                     log.obs = mean(data_test$log.obs),
-                    fox.year = data_test$fox.year[1])
+                    fox.year = "Big one-2004")
 
 newD3$fit <- predict(lmgGamm[[7]], newdata = newD3, type = "link", se.fit = TRUE)[[1]]
 newD3$se.fit <- predict(lmgGamm[[7]], newdata = newD3, type = "link", se.fit = TRUE)[[2]]
@@ -353,7 +353,7 @@ newD4 <- data.frame(max.temp = mean(data_test$max.temp),
                     DATE = mean(data_test$DATE),
                     lmg.crash = c(rep("crash", 1001), rep("noCrash", 1001)),
                     log.obs = mean(data_test$log.obs),
-                    fox.year = data_test$fox.year[1])
+                    fox.year = "Big one-2004")
 
 newD4$fit <- predict(lmgGamm[[7]], newdata = newD4, type = "link", se.fit = TRUE)[[1]]
 newD4$se.fit <- predict(lmgGamm[[7]], newdata = newD4, type = "link", se.fit = TRUE)[[2]]
