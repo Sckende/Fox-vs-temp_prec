@@ -541,3 +541,128 @@ polygon(x = c(v2, rev(v2)),
 
 graphics.off()
 
+# ------------------------------------------------ #
+# Comparing smooths in factor-smooth interactions #
+# ---------------------------------------------- #
+
+# Method on https://www.fromthebottomoftheheap.net/2017/10/10/difference-splines-i/
+
+summary(lmgGamm[[7]])
+
+# Packages loading
+library('readr')
+library('dplyr')
+library('ggplot2')
+library('mgcv')
+
+# Function
+
+
+smooth_diff <- function(model, newdata, f1, f2, var, alpha = 0.05,
+                        unconditional = FALSE) {
+  xp <- predict(model, newdata = newdata, type = 'lpmatrix')
+  c1 <- grepl(f1, colnames(xp))
+  c2 <- grepl(f2, colnames(xp))
+  r1 <- newdata[[var]] == f1
+  r2 <- newdata[[var]] == f2
+  ## difference rows of xp for data from comparison
+  X <- xp[r1, ] - xp[r2, ]
+  ## zero out cols of X related to splines for other lochs
+  X[, ! (c1 | c2)] <- 0
+  ## zero out the parametric cols
+  X[, !grepl('^s\\(', colnames(xp))] <- 0
+  dif <- X %*% coef(model)
+  se <- sqrt(rowSums((X %*% vcov(model, unconditional = unconditional)) * X))
+  crit <- qt(alpha/2, df.residual(model), lower.tail = FALSE)
+  upr <- dif + (crit * se)
+  lwr <- dif - (crit * se)
+  data.frame(pair = paste(f1, f2, sep = '-'),
+             diff = dif,
+             se = se,
+             upper = upr,
+             lower = lwr)
+}
+
+# Pairwise comparison of the estimated smooths
+
+# Max.temp
+comp1 <- smooth_diff(lmgGamm[[7]], newD1, 'crash', 'noCrash', 'lmg.crash')
+x11(); par(mfrow = c(2, 2))
+plot(v,
+     comp1$diff,
+     ylim = c(min(comp1$lower), max(comp1$upper)),
+     type = "l",
+     bty = "n",
+     lwd = 2.5,
+     xlab = "max.temp",
+     ylab = "difference btw crash/noCrash smooth",
+     col = "darkorange4")
+
+polygon(x = c(v, rev(v)),
+        y = c(comp1$upper, rev(comp1$lower)),
+        col = alpha("darkorange4", 0.25),
+        border = NA)
+abline(h = 0, col = "grey", lwd = 2.5, lty = 4)
+
+
+# Prec
+comp2 <- smooth_diff(lmgGamm[[7]], newD2, 'crash', 'noCrash', 'lmg.crash')
+
+plot(v1,
+     comp2$diff,
+     ylim = c(min(comp2$lower), max(comp2$upper)),
+     type = "l",
+     bty = "n",
+     lwd = 2.5,
+     xlab = "prec",
+     ylab = "difference btw crash/noCrash smooth",
+     col = "skyblue4")
+
+polygon(x = c(v1, rev(v1)),
+        y = c(comp2$upper, rev(comp2$lower)),
+        col = alpha("skyblue4", 0.25),
+        border = NA)
+abline(h = 0, col = "grey", lwd = 2.5, lty = 4)
+
+# DATE
+comp3 <- smooth_diff(lmgGamm[[7]], newD3, 'crash', 'noCrash', 'lmg.crash')
+
+plot(v3,
+     comp3$diff,
+     ylim = c(min(comp3$lower), max(comp3$upper)),
+     type = "l",
+     bty = "n",
+     lwd = 2.5,
+     xlab = "DATE",
+     ylab = "difference btw crash/noCrash smooth",
+     col = "plum4")
+
+polygon(x = c(v3, rev(v3)),
+        y = c(comp3$upper, rev(comp3$lower)),
+        col = alpha("plum4", 0.25),
+        border = NA)
+abline(h = 0, col = "grey", lwd = 2.5, lty = 4)
+
+# nest.dens
+comp4 <- smooth_diff(lmgGamm[[7]], newD4, 'crash', 'noCrash', 'lmg.crash')
+
+plot(v2,
+     comp4$diff,
+     ylim = c(min(comp4$lower), max(comp4$upper)),
+     type = "l",
+     bty = "n",
+     lwd = 2.5,
+     xlab = "nest.dens",
+     ylab = "difference btw crash/noCrash smooth",
+     col = "forestgreen")
+
+polygon(x = c(v2, rev(v2)),
+        y = c(comp4$upper, rev(comp4$lower)),
+        col = alpha("forestgreen", 0.25),
+        border = NA)
+abline(h = 0, col = "grey", lwd = 2.5, lty = 4)
+
+
+
+
+
