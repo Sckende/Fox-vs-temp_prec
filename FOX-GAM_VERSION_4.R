@@ -375,16 +375,16 @@ newD4$minIC <- exp(newD4$fit - 1.96*(newD4$se.fit))
 # Temperature effect...
 # ------------------- #
 x11()
-par(mfrow = c(2, 2))
+
 
 # png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_temp.tiff",
 #     res=300,
-#     width=25,
-#     height= 15,
+#     width=30,
+#     height= 20,
 #     pointsize=12,
 #     unit="cm",
 #     bg="transparent")
-
+# par(mfrow = c(1, 2))
 # ------ #
 
 plot(v,
@@ -418,15 +418,16 @@ polygon(x = c(v, rev(v)),
 # Precipitation effects....#
 # ------------------------ #
 # x11()
-# par(mfrow = c(1, 2))
+
 
 # png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_prec.tiff",
 #     res=300,
-#     width=25,
-#     height= 15,
+#     width=30,
+#     height= 20,
 #     pointsize=12,
 #     unit="cm",
 #     bg="transparent")
+# par(mfrow = c(1, 2))
 
 # ----- #
 plot(v1,
@@ -463,11 +464,12 @@ polygon(x = c(v1, rev(v1)),
 
 # png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_date.tiff",
 #     res=300,
-#     width=25,
-#     height= 15,
+#     width=30,
+#     height= 20,
 #     pointsize=12,
 #     unit="cm",
 #     bg="transparent")
+# par(mfrow = c(1, 2))
 
 plot(v3,
      newD3$tranFit[newD3$lmg.crash == "crash"],
@@ -504,11 +506,12 @@ polygon(x = c(v3, rev(v3)),
  
 # png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_nest_dens.tiff",
 #     res=300,
-#     width=25,
-#     height= 15,
+#     width=30,
+#     height= 20,
 #     pointsize=12,
 #     unit="cm",
 #     bg="transparent")
+# par(mfrow = c(1, 2))
 
 plot(v2,
      newD4$tranFit[newD4$lmg.crash == "crash"],
