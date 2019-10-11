@@ -188,13 +188,23 @@ visreg(lmgGamm[[7]], "prec", "lmg.crash", overlay = T, scale = "response")
 visreg(lmgGamm[[7]], "DATE", "lmg.crash", overlay = T, bty = "n", scale = "response")
 visreg(lmgGamm[[7]], "nest.dens", "lmg.crash", overlay = T, bty = "n", scale = "response")
 
+# ----- #
+lmgGamm[[8]] <- gam(AD.atq.number ~ 1
+                    + s(fox.year, bs = "re") 
+                    + offset(log.obs),
+                    family = poisson(),
+                    method = "REML", # Automatic selection of the lambda term (trade-off between likelihood and wiggliness)
+                    #select = TRUE,
+                    data = data_test)
+summary(lmgGamm[[1]])
+
 graphics.off()
 
 ### ---- ###
 ### AIC ###
 ### -- ###
 
-AIC(lmgGamm[[1]], lmgGamm[[2]], lmgGamm[[3]], lmgGamm[[4]], lmgGamm[[5]], lmgGamm[[6]], lmgGamm[[7]])
+AIC(lmgGamm[[1]], lmgGamm[[2]], lmgGamm[[3]], lmgGamm[[4]], lmgGamm[[5]], lmgGamm[[6]], lmgGamm[[7]], lmgGamm[[8]])
 
 ### ------------------------------ ###
 ### k variation in the best model ###
