@@ -292,6 +292,9 @@ newD1$se.fit <- predict(lmgGamm[[7]], newdata = newD1, type = "link", se.fit = T
 newD1$tranFit <- predict(lmgGamm[[7]], newdata = newD1, type = "response", se.fit = FALSE)
 #newD1$tranFit2 <- 10^newD1$fit 
 #newD1$tranFit3 <- exp(newD1$fit)
+newD1$residuals <- residuals(lmgGamm[[7]], type = "working") + j[[1]]
+k <- visreg(lmgGamm[[7]], "max.temp", "lmg.crash", plot = F)
+plot(k, overlay = T)
 
 # Confindent intervals
 
@@ -384,18 +387,6 @@ newD4$minIC <- exp(newD4$fit - 1.96*(newD4$se.fit))
 # -------------------- #
 # Temperature effect...
 # ------------------- #
-x11()
-
-
-# png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_temp.tiff",
-#     res=300,
-#     width=30,
-#     height= 20,
-#     pointsize=12,
-#     unit="cm",
-#     bg="transparent")
-# par(mfrow = c(1, 2))
-# ------ #
 
 plot(v,
      newD1$tranFit[newD1$lmg.crash == "crash"],
@@ -422,24 +413,11 @@ polygon(x = c(v, rev(v)),
         y = c(newD1$minIC[newD1$lmg.crash == "noCrash"], rev(newD1$maxIC[newD1$lmg.crash == "noCrash"])),
         col = alpha("darkorange3", 0.25),
         border = NA)
-#dev.off()
 
 # ------------------------ #
 # Precipitation effects....#
 # ------------------------ #
-# x11()
 
-
-# png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_prec.tiff",
-#     res=300,
-#     width=30,
-#     height= 20,
-#     pointsize=12,
-#     unit="cm",
-#     bg="transparent")
-# par(mfrow = c(1, 2))
-
-# ----- #
 plot(v1,
      newD2$tranFit[newD2$lmg.crash == "crash"],
      ylim = c(0, 2.5),
@@ -466,20 +444,9 @@ polygon(x = c(v1, rev(v1)),
         col = alpha("skyblue3", 0.25),
         border = NA)
 
-#dev.off()
-
 # --------------- #
 # Date effect ...#
 # ------------- #
-
-# png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_date.tiff",
-#     res=300,
-#     width=30,
-#     height= 20,
-#     pointsize=12,
-#     unit="cm",
-#     bg="transparent")
-# par(mfrow = c(1, 2))
 
 plot(v3,
      newD3$tranFit[newD3$lmg.crash == "crash"],
@@ -512,16 +479,6 @@ polygon(x = c(v3, rev(v3)),
 # ----------------------- #
 # Nest density effect ...#
 # --------------------- #
-#x11()
- 
-# png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_nest_dens.tiff",
-#     res=300,
-#     width=30,
-#     height= 20,
-#     pointsize=12,
-#     unit="cm",
-#     bg="transparent")
-# par(mfrow = c(1, 2))
 
 plot(v2,
      newD4$tranFit[newD4$lmg.crash == "crash"],
@@ -548,8 +505,6 @@ polygon(x = c(v2, rev(v2)),
         y = c(newD4$minIC[newD4$lmg.crash == "noCrash"], rev(newD4$maxIC[newD4$lmg.crash == "noCrash"])),
         col = alpha("chartreuse3", 0.25),
         border = NA)
-
-#dev.off()
 
 
 graphics.off()
@@ -600,10 +555,11 @@ smooth_diff <- function(model, newdata, f1, f2, var, alpha = 0.05,
 
 # Max.temp
 comp1 <- smooth_diff(lmgGamm[[7]], newD1, 'crash', 'noCrash', 'lmg.crash')
-x11(); par(mfrow = c(2, 2))
-plot(v,
-     comp1$diff,
+#x11(); par(mfrow = c(2, 2))
+plot(v[comp1$upper >= 0],
+     comp1$diff[comp1$upper >= 0],
      ylim = c(min(comp1$lower), max(comp1$upper)),
+     xlim = c(min(v), max(v)),
      type = "l",
      bty = "n",
      lwd = 2.5,
@@ -611,31 +567,52 @@ plot(v,
      ylab = "difference btw crash/noCrash smooth",
      col = "darkorange4")
 
-polygon(x = c(v, rev(v)),
-        y = c(comp1$upper, rev(comp1$lower)),
+lines(v[comp1$upper < 0],
+     comp1$diff[comp1$upper < 0],
+     ylim = c(min(comp1$lower), max(comp1$upper)),
+     lwd = 2.5,
+     col = "darkorange2")
+
+polygon(x = c(v[comp1$upper >= 0], rev(v[comp1$upper >= 0])),
+        y = c(comp1$upper[comp1$upper >= 0], rev(comp1$lower[comp1$upper >= 0])),
         col = alpha("darkorange4", 0.25),
         border = NA)
-abline(h = 0, col = "grey", lwd = 2.5, lty = 4)
+polygon(x = c(v[comp1$upper < 0], rev(v[comp1$upper < 0])),
+        y = c(comp1$upper[comp1$upper < 0], rev(comp1$lower[comp1$upper < 0])),
+        col = alpha("darkorange2", 0.25),
+        border = NA)
+#abline(h = 0, col = "grey", lwd = 2.5, lty = 4)
+legend("topright", legend = c("Non significant difference", "Significant difference"), fill = c("darkorange4", "darkorange2"), border = NA, bty = "n")
 
 
 # Prec
 comp2 <- smooth_diff(lmgGamm[[7]], newD2, 'crash', 'noCrash', 'lmg.crash')
 
-plot(v1,
-     comp2$diff,
+plot(v1[comp2$upper >= 0],
+     comp2$diff[comp2$upper >= 0],
      ylim = c(min(comp2$lower), max(comp2$upper)),
+     xlim = c(min(v1), max(v1)),
      type = "l",
      bty = "n",
      lwd = 2.5,
      xlab = "prec",
      ylab = "difference btw crash/noCrash smooth",
      col = "skyblue4")
+lines(v1[comp2$upper < 0],
+     comp2$diff[comp2$upper < 0],
+     lwd = 2.5,
+     col = "skyblue2")
 
-polygon(x = c(v1, rev(v1)),
-        y = c(comp2$upper, rev(comp2$lower)),
+polygon(x = c(v1[comp2$upper >= 0], rev(v1[comp2$upper >= 0])),
+        y = c(comp2$upper[comp2$upper >= 0], rev(comp2$lower[comp2$upper >= 0])),
         col = alpha("skyblue4", 0.25),
         border = NA)
-abline(h = 0, col = "grey", lwd = 2.5, lty = 4)
+polygon(x = c(v1[comp2$upper < 0], rev(v1[comp2$upper < 0])),
+        y = c(comp2$upper[comp2$upper < 0], rev(comp2$lower[comp2$upper < 0])),
+        col = alpha("skyblue2", 0.25),
+        border = NA)
+#abline(h = 0, col = "grey", lwd = 2.5, lty = 4)
+legend("topright", legend = c("Non significant difference", "Significant difference"), fill = c("skyblue4", "skyblue2"), border = NA, bty = "n")
 
 # DATE
 comp3 <- smooth_diff(lmgGamm[[7]], newD3, 'crash', 'noCrash', 'lmg.crash')
@@ -643,6 +620,7 @@ comp3 <- smooth_diff(lmgGamm[[7]], newD3, 'crash', 'noCrash', 'lmg.crash')
 plot(v3,
      comp3$diff,
      ylim = c(min(comp3$lower), max(comp3$upper)),
+     xlim = c(min(v3), max(v3)),
      type = "l",
      bty = "n",
      lwd = 2.5,
@@ -650,11 +628,25 @@ plot(v3,
      ylab = "difference btw crash/noCrash smooth",
      col = "plum4")
 
-polygon(x = c(v3, rev(v3)),
-        y = c(comp3$upper, rev(comp3$lower)),
+lines(v3[v3 >= 165 & v3 <= 177],
+      comp3$diff[v3 >= 165 & v3 <= 177],
+      lwd = 2.5,
+      col = "plum2")
+
+polygon(x = c(v3[v3 <= 165], rev(v3[v3 <= 165])),
+        y = c(comp3$upper[v3 <= 165], rev(comp3$lower[v3 <= 165])),
         col = alpha("plum4", 0.25),
         border = NA)
-abline(h = 0, col = "grey", lwd = 2.5, lty = 4)
+polygon(x = c(v3[v3 >= 177], rev(v3[v3 >= 177])),
+        y = c(comp3$upper[v3 >= 177], rev(comp3$lower[v3 >= 177])),
+        col = alpha("plum4", 0.25),
+        border = NA)
+polygon(x = c(v3[v3 >= 165 & v3 <= 177], rev(v3[v3 >= 165 & v3 <= 177])),
+        y = c(comp3$upper[v3 >= 165 & v3 <= 177], rev(comp3$lower[v3 >= 165 & v3 <= 177])),
+        col = alpha("plum2", 0.25),
+        border = NA)
+#abline(h = 0, col = "grey", lwd = 2.5, lty = 4)
+legend("topright", legend = c("Non significant difference", "SIgnificant difference"), fill = c("plum4", "plum2"), border = NA, bty = "n")
 
 # nest.dens
 comp4 <- smooth_diff(lmgGamm[[7]], newD4, 'crash', 'noCrash', 'lmg.crash')
@@ -675,7 +667,305 @@ polygon(x = c(v2, rev(v2)),
         border = NA)
 abline(h = 0, col = "grey", lwd = 2.5, lty = 4)
 
+### ----------- ###
+### Paper plots ###
+### ----------- ###
+
+# Temperatures #
+
+png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_temp.tiff",
+    res=300,
+    width=30,
+    height= 20,
+    pointsize=12,
+    unit="cm",
+    bg="transparent")
+par(mfrow = c(1, 2))
+
+# --- #
+k <- visreg(lmgGamm[[7]], "max.temp", "lmg.crash", plot = F)
+
+plot(v,
+     newD1$tranFit[newD1$lmg.crash == "crash"],
+     ylim = c(min(k$res$visregRes), max(k$res$visregRes)),
+     type = "l",
+     bty = "n",
+     lwd = 2.5,
+     xlab = "Maximal temperature (C)",
+     ylab = "Fox attack number per hour",
+     col = "darkorange4")
+lines(v,
+      newD1$tranFit[newD1$lmg.crash == "noCrash"],
+      lwd = 2.5,
+      col = "darkorange3")
+legend("topright", legend = c("Lemming crash", "No lemming crash"), fill = c("darkorange4", "darkorange3"), border = NA, bty = "n")
 
 
+points(k$res$max.temp[k$res$lmg.crash == "crash"],
+       k$res$visregRes[k$res$lmg.crash == "crash"],
+       col = "darkorange4",
+       pch = ".",
+       cex = 2)
+points(k$res$max.temp[k$res$lmg.crash == "noCrash"],
+       k$res$visregRes[k$res$lmg.crash == "noCrash"],
+       col = "darkorange3",
+       pch = ".",
+       cex = 2)
+
+polygon(x = c(v, rev(v)),
+        y = c(newD1$minIC[newD1$lmg.crash == "crash"], rev(newD1$maxIC[newD1$lmg.crash == "crash"])),
+        col = alpha("darkorange4", 0.25),
+        border = NA)
+
+polygon(x = c(v, rev(v)),
+        y = c(newD1$minIC[newD1$lmg.crash == "noCrash"], rev(newD1$maxIC[newD1$lmg.crash == "noCrash"])),
+        col = alpha("darkorange3", 0.25),
+        border = NA)
+# --- #
+
+plot(v[comp1$upper >= 0],
+     comp1$diff[comp1$upper >= 0],
+     ylim = c(min(comp1$lower), max(comp1$upper)),
+     xlim = c(min(v), max(v)),
+     type = "l",
+     bty = "n",
+     lwd = 2.5,
+     xlab = "max.temp",
+     ylab = "difference btw crash/noCrash smooth",
+     col = "darkorange4")
+
+lines(v[comp1$upper < 0],
+      comp1$diff[comp1$upper < 0],
+      ylim = c(min(comp1$lower), max(comp1$upper)),
+      lwd = 2.5,
+      col = "darkorange2")
+
+polygon(x = c(v[comp1$upper >= 0], rev(v[comp1$upper >= 0])),
+        y = c(comp1$upper[comp1$upper >= 0], rev(comp1$lower[comp1$upper >= 0])),
+        col = alpha("darkorange4", 0.25),
+        border = NA)
+polygon(x = c(v[comp1$upper < 0], rev(v[comp1$upper < 0])),
+        y = c(comp1$upper[comp1$upper < 0], rev(comp1$lower[comp1$upper < 0])),
+        col = alpha("darkorange2", 0.25),
+        border = NA)
+
+legend("topright", legend = c("Non significant difference", "Significant difference"), fill = c("darkorange4", "darkorange2"), border = NA, bty = "n")
+
+# --- #
+dev.off()
+
+# Precipitations #
+
+png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_prec.tiff",
+    res=300,
+    width=30,
+    height= 20,
+    pointsize=12,
+    unit="cm",
+    bg="transparent")
+par(mfrow = c(1, 2))
+
+# ----- #
+l <- visreg(lmgGamm[[7]], "prec", "lmg.crash", plot = F)
+
+plot(v1,
+     newD2$tranFit[newD2$lmg.crash == "crash"],
+     ylim = c(min(l$res$visregRes), max(l$res$visregRes)),
+     type = "l",
+     bty = "n",
+     lwd = 2.5,
+     xlab = "Cumulative precipitation (mm)",
+     ylab = "Fox attack number per hour",
+     col = "skyblue4")
+lines(v1,
+      newD2$tranFit[newD2$lmg.crash == "noCrash"],
+      lwd = 2.5,
+      col = "skyblue3")
+legend("topright", legend = c("Lemming crash", "No lemming crash"), fill = c("skyblue4", "skyblue3"), border = NA, bty = "n")
 
 
+points(l$res$prec[l$res$lmg.crash == "crash"],
+       l$res$visregRes[l$res$lmg.crash == "crash"],
+       col = "skyblue4",
+       pch = ".",
+       cex = 2)
+points(l$res$prec[l$res$lmg.crash == "noCrash"],
+       l$res$visregRes[l$res$lmg.crash == "noCrash"],
+       col = "skyblue3",
+       pch = ".",
+       cex = 2)
+
+polygon(x = c(v1, rev(v1)),
+        y = c(newD2$minIC[newD2$lmg.crash == "crash"], rev(newD2$maxIC[newD2$lmg.crash == "crash"])),
+        col = alpha("skyblue4", 0.25),
+        border = NA)
+
+polygon(x = c(v1, rev(v1)),
+        y = c(newD2$minIC[newD2$lmg.crash == "noCrash"], rev(newD2$maxIC[newD2$lmg.crash == "noCrash"])),
+        col = alpha("skyblue3", 0.25),
+        border = NA)
+# --- #
+plot(v1[comp2$upper >= 0],
+     comp2$diff[comp2$upper >= 0],
+     ylim = c(min(comp2$lower), max(comp2$upper)),
+     xlim = c(min(v1), max(v1)),
+     type = "l",
+     bty = "n",
+     lwd = 2.5,
+     xlab = "prec",
+     ylab = "difference btw crash/noCrash smooth",
+     col = "skyblue4")
+lines(v1[comp2$upper < 0],
+      comp2$diff[comp2$upper < 0],
+      lwd = 2.5,
+      col = "skyblue2")
+
+polygon(x = c(v1[comp2$upper >= 0], rev(v1[comp2$upper >= 0])),
+        y = c(comp2$upper[comp2$upper >= 0], rev(comp2$lower[comp2$upper >= 0])),
+        col = alpha("skyblue4", 0.25),
+        border = NA)
+polygon(x = c(v1[comp2$upper < 0], rev(v1[comp2$upper < 0])),
+        y = c(comp2$upper[comp2$upper < 0], rev(comp2$lower[comp2$upper < 0])),
+        col = alpha("skyblue2", 0.25),
+        border = NA)
+
+legend("topright", legend = c("Non significant difference", "Significant difference"), fill = c("skyblue4", "skyblue2"), border = NA, bty = "n")
+# --- #
+dev.off()
+
+# Dates #
+
+png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_date.tiff",
+    res=300,
+    width=30,
+    height= 20,
+    pointsize=12,
+    unit="cm",
+    bg="transparent")
+par(mfrow = c(1, 2))
+
+# --- #
+m <- visreg(lmgGamm[[7]], "DATE", "lmg.crash", plot = F)
+
+plot(v3,
+     newD3$tranFit[newD3$lmg.crash == "crash"],
+     ylim = c(min(m$res$visregRes), 12),
+     type = "l",
+     bty = "n",
+     lwd = 2.5,
+     xlab = "Date (julian date)",
+     ylab = "Fox attack number per hour",
+     col = "plum4")
+lines(v3,
+      newD3$tranFit[newD3$lmg.crash == "noCrash"],
+      lwd = 2.5,
+      col = "plum3")
+legend("topright", legend = c("Lemming crash", "No lemming crash"), fill = c("plum4", "plum3"), border = NA, bty = "n")
+
+
+points(m$res$DATE[m$res$lmg.crash == "crash"],
+       m$res$visregRes[m$res$lmg.crash == "crash"],
+       col = "plum4",
+       pch = ".",
+       cex = 2)
+points(m$res$DATE[m$res$lmg.crash == "noCrash"],
+       m$res$visregRes[m$res$lmg.crash == "noCrash"],
+       col = "plum3",
+       pch = ".",
+       cex = 2)
+
+polygon(x = c(v3, rev(v3)),
+        y = c(newD3$minIC[newD3$lmg.crash == "crash"], rev(newD3$maxIC[newD3$lmg.crash == "crash"])),
+        col = alpha("plum4", 0.25),
+        border = NA)
+
+polygon(x = c(v3, rev(v3)),
+        y = c(newD3$minIC[newD3$lmg.crash == "noCrash"], rev(newD3$maxIC[newD3$lmg.crash == "noCrash"])),
+        col = alpha("plum3", 0.25),
+        border = NA)
+# --- #
+plot(v3,
+     comp3$diff,
+     ylim = c(min(comp3$lower), max(comp3$upper)),
+     xlim = c(min(v3), max(v3)),
+     type = "l",
+     bty = "n",
+     lwd = 2.5,
+     xlab = "DATE",
+     ylab = "difference btw crash/noCrash smooth",
+     col = "plum4")
+
+lines(v3[v3 >= 165 & v3 <= 177],
+      comp3$diff[v3 >= 165 & v3 <= 177],
+      lwd = 2.5,
+      col = "plum2")
+
+polygon(x = c(v3[v3 <= 165], rev(v3[v3 <= 165])),
+        y = c(comp3$upper[v3 <= 165], rev(comp3$lower[v3 <= 165])),
+        col = alpha("plum4", 0.25),
+        border = NA)
+polygon(x = c(v3[v3 >= 177], rev(v3[v3 >= 177])),
+        y = c(comp3$upper[v3 >= 177], rev(comp3$lower[v3 >= 177])),
+        col = alpha("plum4", 0.25),
+        border = NA)
+polygon(x = c(v3[v3 >= 165 & v3 <= 177], rev(v3[v3 >= 165 & v3 <= 177])),
+        y = c(comp3$upper[v3 >= 165 & v3 <= 177], rev(comp3$lower[v3 >= 165 & v3 <= 177])),
+        col = alpha("plum2", 0.25),
+        border = NA)
+
+legend("topright", legend = c("Non significant difference", "SIgnificant difference"), fill = c("plum4", "plum2"), border = NA, bty = "n")
+# --- #
+dev.off()
+
+# Goose nest density #
+
+png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_nest_dens.tiff",
+    res=300,
+    width=30,
+    height= 20,
+    pointsize=12,
+    unit="cm",
+    bg="transparent")
+
+# --- #
+
+n <- visreg(lmgGamm[[7]], "nest.dens", "lmg.crash", plot = F)
+
+plot(v2,
+     newD4$tranFit[newD4$lmg.crash == "crash"],
+     ylim = c(min(n$res$visregRes), max(n$res$visregRes)),
+     type = "l",
+     bty = "n",
+     lwd = 2.5,
+     xlab = "Goose nest density (nb/ha)",
+     ylab = "Fox attack number per hour",
+     col = "forestgreen")
+lines(v2,
+      newD4$tranFit[newD4$lmg.crash == "noCrash"],
+      lwd = 2.5,
+      col = "chartreuse3")
+legend("topright", legend = c("Lemming crash", "No lemming crash"), fill = c("forestgreen", "chartreuse3"), border = NA, bty = "n")
+
+
+points(n$res$nest.dens[n$res$lmg.crash == "crash"],
+       n$res$visregRes[n$res$lmg.crash == "crash"],
+       col = "forestgreen",
+       pch = ".",
+       cex = 2)
+points(l$res$nest.dens[n$res$lmg.crash == "noCrash"],
+       n$res$visregRes[n$res$lmg.crash == "noCrash"],
+       col = "chartreuse4",
+       pch = ".",
+       cex = 2)
+
+polygon(x = c(v2, rev(v2)),
+        y = c(newD4$minIC[newD4$lmg.crash == "crash"], rev(newD4$maxIC[newD4$lmg.crash == "crash"])),
+        col = alpha("forestgreen", 0.25),
+        border = NA)
+
+polygon(x = c(v2, rev(v2)),
+        y = c(newD4$minIC[newD4$lmg.crash == "noCrash"], rev(newD4$maxIC[newD4$lmg.crash == "noCrash"])),
+        col = alpha("chartreuse3", 0.25),
+        border = NA)
+# --- #
+dev.off()
