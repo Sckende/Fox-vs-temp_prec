@@ -390,6 +390,23 @@ newD4$tranFit <- predict(lmgGamm[[7]], newdata = newD4, type = "response", se.fi
 newD4$maxIC <- exp(newD4$fit + 1.96*(newD4$se.fit))
 #newD4$maxIC2 <- lmgGamm[[7]]$family$linkinv(newD4$fit + 1.96*(newD4$se.fit))
 newD4$minIC <- exp(newD4$fit - 1.96*(newD4$se.fit))
+
+# With no lemming interaction
+newD5 <- data.frame(max.temp = mean(data_test$max.temp),
+                    prec = mean(data_test$prec),
+                    nest.dens = v2,
+                    DATE = mean(data_test$DATE),
+                    lmg.crash = "noCrash",
+                    log.obs = mean(data_test$log.obs),
+                    fox.year = "Big one-2004")
+newD5$fit <- predict(lmgGamm[[7]], newdata = newD5, type = "link", se.fit = TRUE)[[1]]
+newD5$se.fit <- predict(lmgGamm[[7]], newdata = newD5, type = "link", se.fit = TRUE)[[2]]
+newD5$tranFit <- predict(lmgGamm[[7]], newdata = newD5, type = "response", se.fit = FALSE)
+
+# Confindent intervals
+
+newD5$maxIC <- exp(newD5$fit + 1.96*(newD5$se.fit))
+newD5$minIC <- exp(newD5$fit - 1.96*(newD5$se.fit))
                    
 # --------- #
 # GRAPHICS #
@@ -934,13 +951,13 @@ legend(x = 179, y = -6.5, legend = c("Non significant difference", "Significant 
 
 # Goose nest density #
 
-png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_nest_dens_V2.tiff",
-    res=300,
-    width=30,
-    height= 20,
-    pointsize=12,
-    unit="cm",
-    bg="transparent")
+# png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_nest_dens_V3.tiff",
+#     res=300,
+#     width=30,
+#     height= 20,
+#     pointsize=12,
+#     unit="cm",
+#     bg="transparent")
 
 # --- #
 
@@ -982,5 +999,23 @@ polygon(x = c(v2, rev(v2)),
         y = c(newD4$minIC[newD4$lmg.crash == "noCrash"], rev(newD4$maxIC[newD4$lmg.crash == "noCrash"])),
         col = alpha("chartreuse3", 0.25),
         border = NA)
+
+# without lemming abundance
+
+plot(v2,
+     newD5$tranFit,
+     ylim = c(min(newD5$minIC), max(newD5$maxIC)),
+     type = "l",
+     bty = "n",
+     lwd = 2.5,
+     xlab = "Goose nest density (nb/ha)",
+     ylab = "Fox attack number per hour",
+     col = "forestgreen")
+
+polygon(x = c(v2, rev(v2)),
+        y = c(newD5$minIC, rev(newD5$maxIC)),
+        col = alpha("forestgreen", 0.25),
+        border = NA)
+
 # --- #
 dev.off()
