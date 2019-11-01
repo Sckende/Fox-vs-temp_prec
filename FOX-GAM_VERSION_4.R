@@ -731,13 +731,13 @@ plot(v,
      bty = "n",
      lwd = 2.5,
      xlab = "Maximal temperature (°C)",
-     ylab = "Fox attack number per hour",
+     ylab = "Number of fox attacks per hour",
      col = "darkorange4")
 lines(v,
       newD1$tranFit[newD1$lmg.crash == "noCrash"],
       lwd = 2.5,
       col = "darkorange3")
-legend(x = 7, y = 2.0, legend = c("Lemming crash", "No lemming crash"), fill = c("darkorange4", "darkorange3"), border = NA, bty = "n")
+legend(x = 7, y = 2.0, legend = c("Lemming crash", "Lemming presence"), fill = c("darkorange4", "darkorange3"), border = NA, bty = "n")
 
 
 # points(k$res$max.temp[k$res$lmg.crash == "crash"],
@@ -815,13 +815,13 @@ plot(v1,
      bty = "n",
      lwd = 2.5,
      xlab = "Cumulative precipitation (mm)",
-     ylab = "Fox attack number per hour",
+     ylab = "Number of fox attacks per hour",
      col = "skyblue4")
 lines(v1,
       newD2$tranFit[newD2$lmg.crash == "noCrash"],
       lwd = 2.5,
       col = "skyblue3")
-legend(x = 10, y = 2.7, legend = c("Lemming crash", "No lemming crash"), fill = c("skyblue4", "skyblue3"), border = NA, bty = "n")
+legend(x = 10, y = 2.7, legend = c("Lemming crash", "Lemming presence"), fill = c("skyblue4", "skyblue3"), border = NA, bty = "n")
 
 
 # points(l$res$prec[l$res$lmg.crash == "crash"],
@@ -895,13 +895,13 @@ plot(v3,
      bty = "n",
      lwd = 2.5,
      xlab = "Date (Julian date)",
-     ylab = "Fox attack number per hour",
+     ylab = "Number of fox attacks per hour",
      col = "plum4")
 lines(v3,
       newD3$tranFit[newD3$lmg.crash == "noCrash"],
       lwd = 2.5,
       col = "plum3")
-legend("topright", legend = c("Lemming crash", "No lemming crash"), fill = c("plum4", "plum3"), border = NA, bty = "n")
+legend("topright", legend = c("Lemming crash", "Lemming presence"), fill = c("plum4", "plum3"), border = NA, bty = "n")
 
 # 
 # points(m$res$DATE[m$res$lmg.crash == "crash"],
@@ -974,20 +974,20 @@ legend(x = 179, y = -6.5, legend = c("Non significant difference", "Significant 
 
 #n <- visreg(lmgGamm[[7]], "nest.dens", "lmg.crash", plot = F)
 
-plot(v2,
-     newD4$tranFit[newD4$lmg.crash == "crash"],
-     ylim = c(min(newD4$minIC), max(newD4$maxIC)),
-     type = "l",
-     bty = "n",
-     lwd = 2.5,
-     xlab = "Goose nest density (nb/ha)",
-     ylab = "Fox attack number per hour",
-     col = "forestgreen")
-lines(v2,
-      newD4$tranFit[newD4$lmg.crash == "noCrash"],
-      lwd = 2.5,
-      col = "chartreuse3")
-legend("topright", legend = c("Lemming crash", "No lemming crash"), fill = c("forestgreen", "chartreuse3"), border = NA, bty = "n")
+# plot(v2,
+#      newD4$tranFit[newD4$lmg.crash == "crash"],
+#      ylim = c(min(newD4$minIC), max(newD4$maxIC)),
+#      type = "l",
+#      bty = "n",
+#      lwd = 2.5,
+#      xlab = "Goose nest density (nb/ha)",
+#      ylab = "Number of fox attacks per hour",
+#      col = "forestgreen")
+# lines(v2,
+#       newD4$tranFit[newD4$lmg.crash == "noCrash"],
+#       lwd = 2.5,
+#       col = "chartreuse3")
+# legend("topright", legend = c("Lemming crash", "Lemming presence"), fill = c("forestgreen", "chartreuse3"), border = NA, bty = "n")
 
 
 # points(n$res$nest.dens[n$res$lmg.crash == "crash"],
@@ -1001,15 +1001,15 @@ legend("topright", legend = c("Lemming crash", "No lemming crash"), fill = c("fo
 #        pch = ".",
 #        cex = 2)
 
-polygon(x = c(v2, rev(v2)),
-        y = c(newD4$minIC[newD4$lmg.crash == "crash"], rev(newD4$maxIC[newD4$lmg.crash == "crash"])),
-        col = alpha("forestgreen", 0.25),
-        border = NA)
-
-polygon(x = c(v2, rev(v2)),
-        y = c(newD4$minIC[newD4$lmg.crash == "noCrash"], rev(newD4$maxIC[newD4$lmg.crash == "noCrash"])),
-        col = alpha("chartreuse3", 0.25),
-        border = NA)
+# polygon(x = c(v2, rev(v2)),
+#         y = c(newD4$minIC[newD4$lmg.crash == "crash"], rev(newD4$maxIC[newD4$lmg.crash == "crash"])),
+#         col = alpha("forestgreen", 0.25),
+#         border = NA)
+# 
+# polygon(x = c(v2, rev(v2)),
+#         y = c(newD4$minIC[newD4$lmg.crash == "noCrash"], rev(newD4$maxIC[newD4$lmg.crash == "noCrash"])),
+#         col = alpha("chartreuse3", 0.25),
+#         border = NA)
 
 # without lemming abundance
 
@@ -1020,7 +1020,7 @@ plot(v2,
      bty = "n",
      lwd = 2.5,
      xlab = "Goose nest density (nb/ha)",
-     ylab = "Fox attack number per hour",
+     ylab = "Number of fox attacks per hour",
      col = "forestgreen")
 
 polygon(x = c(v2, rev(v2)),
@@ -1029,4 +1029,4 @@ polygon(x = c(v2, rev(v2)),
         border = NA)
 
 # --- #
-dev.off()
+#dev.off()
