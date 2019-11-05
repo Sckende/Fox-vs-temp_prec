@@ -225,7 +225,16 @@ graphics.off()
 ### ------ ###
 #### AIC ####
 ### ---- ###
-
+# h <- lapply(lmgGamm, function(x){
+#   j <- print(x$formula)
+#   j
+# })
+# h <- as.vector(as.character(h))
+# 
+# 
+# Modnames <- paste(paste("mod", 1:length(lmgGamm), sep = " "), h, sep = "-")
+# AIC <- aictab(cand.set = lmgGamm, modnames = Modnames, sort = TRUE)
+# print(AIC, digit = 2)
 AIC(lmgGamm[[1]], lmgGamm[[2]], lmgGamm[[3]], lmgGamm[[4]], lmgGamm[[5]], lmgGamm[[6]], lmgGamm[[7]], lmgGamm[[8]], lmgGamm[[9]], lmgGamm[[10]])
 
 ### -------------------------------- ###
