@@ -721,14 +721,14 @@ abline(h = 0, col = "grey", lwd = 2.5, lty = 4)
 
 # Temperatures #
 
-# png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_temp_V2.tiff",
-#     res=300,
-#     width=30,
-#     height= 20,
-#     pointsize=12,
-#     unit="cm",
-#     bg="transparent")
-# par(mfrow = c(1, 2))
+png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_temp_V3.tiff",
+    res=300,
+    width=30,
+    height= 20,
+    pointsize=12,
+    unit="cm",
+    bg="transparent")
+par(mfrow = c(1, 2))
 
 # --- #
 #k <- visreg(lmgGamm[[7]], "max.temp", "lmg.crash", plot = F)
@@ -745,8 +745,8 @@ plot(v,
 lines(v,
       newD1$tranFit[newD1$lmg.crash == "noCrash"],
       lwd = 2.5,
-      col = "darkorange3")
-legend(x = 7, y = 2.0, legend = c("Lemming crash", "Lemming presence"), fill = c("darkorange4", "darkorange3"), border = NA, bty = "n")
+      col = "darkorange1")
+legend(x = 7, y = 2.0, legend = c("Lemming crash", "Lemming presence"), fill = c("darkorange4", "darkorange1"), border = NA, bty = "n")
 
 
 # points(k$res$max.temp[k$res$lmg.crash == "crash"],
@@ -767,7 +767,7 @@ polygon(x = c(v, rev(v)),
 
 polygon(x = c(v, rev(v)),
         y = c(newD1$minIC[newD1$lmg.crash == "noCrash"], rev(newD1$maxIC[newD1$lmg.crash == "noCrash"])),
-        col = alpha("darkorange3", 0.25),
+        col = alpha("darkorange1", 0.25),
         border = NA)
 # --- #
 
@@ -786,7 +786,7 @@ lines(v[comp1$upper < 0],
       comp1$diff[comp1$upper < 0],
       ylim = c(min(comp1$lower), max(comp1$upper)),
       lwd = 2.5,
-      col = "darkorange2")
+      col = "darkorange1")
 
 polygon(x = c(v[comp1$upper >= 0], rev(v[comp1$upper >= 0])),
         y = c(comp1$upper[comp1$upper >= 0], rev(comp1$lower[comp1$upper >= 0])),
@@ -794,14 +794,14 @@ polygon(x = c(v[comp1$upper >= 0], rev(v[comp1$upper >= 0])),
         border = NA)
 polygon(x = c(v[comp1$upper < 0], rev(v[comp1$upper < 0])),
         y = c(comp1$upper[comp1$upper < 0], rev(comp1$lower[comp1$upper < 0])),
-        col = alpha("darkorange2", 0.25),
+        col = alpha("darkorange1", 0.25),
         border = NA)
 abline(v = v[comp1$upper < 0][1], col = "darkgrey", lwd = 2, lty = "dotdash")
 
-legend("bottomleft", legend = c("Non significant difference", "Significant difference"), fill = c("darkorange4", "darkorange2"), border = NA, bty = "n")
+legend("bottomleft", legend = c("Non significant difference", "Significant difference"), fill = c("darkorange4", "darkorange1"), border = NA, bty = "n")
 
 # --- #
-#dev.off()
+dev.off()
 
 # Precipitations #
 
