@@ -721,14 +721,14 @@ abline(h = 0, col = "grey", lwd = 2.5, lty = 4)
 
 # Temperatures #
 
-png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_temp_V3.tiff",
-    res=300,
-    width=30,
-    height= 20,
-    pointsize=12,
-    unit="cm",
-    bg="transparent")
-par(mfrow = c(1, 2))
+# png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_temp_V3.tiff",
+#     res=300,
+#     width=30,
+#     height= 20,
+#     pointsize=12,
+#     unit="cm",
+#     bg="transparent")
+# par(mfrow = c(1, 2))
 
 # --- #
 #k <- visreg(lmgGamm[[7]], "max.temp", "lmg.crash", plot = F)
@@ -801,7 +801,7 @@ abline(v = v[comp1$upper < 0][1], col = "darkgrey", lwd = 2, lty = "dotdash")
 legend("bottomleft", legend = c("Non significant difference", "Significant difference"), fill = c("darkorange4", "darkorange1"), border = NA, bty = "n")
 
 # --- #
-dev.off()
+#dev.off()
 
 # Precipitations #
 
