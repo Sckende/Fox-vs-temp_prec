@@ -220,6 +220,18 @@ lmgGamm[[10]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + max.temp*lmg.cra
 summary(lmgGamm[[10]])
 visreg(lmgGamm[[10]], "max.temp", "lmg.crash", overlay = T)
 
+# ----- #
+lmgGamm[[11]] <- gam(AD.atq.number ~ te(prec , max.temp) + lmg.crash + s(DATE, by = lmg.crash) + nest.dens
+                     + s(fox.year, bs = "re") 
+                     + offset(log.obs),
+                     family = poisson(),
+                     method = "REML", # Automatic selection of the lambda term (trade-off between likelihood and wiggliness)
+                     #select = TRUE,
+                     data = data_test)
+summary(lmgGamm[[11]])
+visreg(lmgGamm[[11]],"prec" , "max.temp", overlay = T)
+visreg(lmgGamm[[11]], "max.temp", "prec", overlay = T)
+
 graphics.off()
 
 ### ------ ###
@@ -235,8 +247,9 @@ graphics.off()
 # Modnames <- paste(paste("mod", 1:length(lmgGamm), sep = " "), h, sep = "-")
 # AIC <- aictab(cand.set = lmgGamm, modnames = Modnames, sort = TRUE)
 # print(AIC, digit = 2)
-AIC(lmgGamm[[1]], lmgGamm[[2]], lmgGamm[[3]], lmgGamm[[4]], lmgGamm[[5]], lmgGamm[[6]], lmgGamm[[7]], lmgGamm[[8]], lmgGamm[[9]], lmgGamm[[10]])
-
+comp_aic <- AIC(lmgGamm[[1]], lmgGamm[[2]], lmgGamm[[3]], lmgGamm[[4]], lmgGamm[[5]], lmgGamm[[6]], lmgGamm[[7]], lmgGamm[[8]], lmgGamm[[9]], lmgGamm[[10]], lmgGamm[[11]])
+comp_aic$delta <- round(comp_aic$AIC - min(comp_aic$AIC), digits = 2)
+comp_aic[order(comp_aic$AIC), ]
 ### -------------------------------- ###
 #### k variation in the best model ####
 ### ------------------------------ ###
@@ -323,7 +336,7 @@ newD1$se.fit <- predict(lmgGamm[[7]], newdata = newD1, type = "link", se.fit = T
 newD1$tranFit <- predict(lmgGamm[[7]], newdata = newD1, type = "response", se.fit = FALSE)
 #newD1$tranFit2 <- 10^newD1$fit 
 #newD1$tranFit3 <- exp(newD1$fit)
-newD1$residuals <- residuals(lmgGamm[[7]], type = "working") + j[[1]]
+#newD1$residuals <- residuals(lmgGamm[[7]], type = "working") + j[[1]]
 k <- visreg(lmgGamm[[7]], "max.temp", "lmg.crash", plot = F)
 plot(k, overlay = T)
 
@@ -746,7 +759,7 @@ lines(v,
       newD1$tranFit[newD1$lmg.crash == "noCrash"],
       lwd = 2.5,
       col = "darkorange1")
-legend(x = 7, y = 2.0, legend = c("Lemming crash", "Lemming presence"), fill = c("darkorange4", "darkorange1"), border = NA, bty = "n")
+legend(x = 7, y = 2.0, legend = c("Low lemming density", "High lemming density"), fill = c("darkorange4", "darkorange1"), border = NA, bty = "n")
 
 
 # points(k$res$max.temp[k$res$lmg.crash == "crash"],
@@ -780,25 +793,25 @@ plot(v[comp1$upper >= 0],
      lwd = 2.5,
      xlab = "Maximal temperature (°C)",
      ylab = "Difference between the fitted trends",
-     col = "darkorange4")
+     col = "darkgreen")
 
 lines(v[comp1$upper < 0],
       comp1$diff[comp1$upper < 0],
       ylim = c(min(comp1$lower), max(comp1$upper)),
       lwd = 2.5,
-      col = "darkorange1")
+      col = "red")
 
 polygon(x = c(v[comp1$upper >= 0], rev(v[comp1$upper >= 0])),
         y = c(comp1$upper[comp1$upper >= 0], rev(comp1$lower[comp1$upper >= 0])),
-        col = alpha("darkorange4", 0.25),
+        col = alpha("darkgreen", 0.25),
         border = NA)
 polygon(x = c(v[comp1$upper < 0], rev(v[comp1$upper < 0])),
         y = c(comp1$upper[comp1$upper < 0], rev(comp1$lower[comp1$upper < 0])),
-        col = alpha("darkorange1", 0.25),
+        col = alpha("red", 0.25),
         border = NA)
 abline(v = v[comp1$upper < 0][1], col = "darkgrey", lwd = 2, lty = "dotdash")
 
-legend("bottomleft", legend = c("Non significant difference", "Significant difference"), fill = c("darkorange4", "darkorange1"), border = NA, bty = "n")
+legend("bottomleft", legend = c("Non significant difference", "Significant difference"), fill = c("darkgreen", "red"), border = NA, bty = "n")
 
 # --- #
 #dev.off()
@@ -830,7 +843,7 @@ lines(v1,
       newD2$tranFit[newD2$lmg.crash == "noCrash"],
       lwd = 2.5,
       col = "skyblue3")
-legend(x = 10, y = 2.7, legend = c("Lemming crash", "Lemming presence"), fill = c("skyblue4", "skyblue3"), border = NA, bty = "n")
+legend(x = 10, y = 2.7, legend = c("Low lemming density", "High lemming density"), fill = c("skyblue4", "skyblue3"), border = NA, bty = "n")
 
 
 # points(l$res$prec[l$res$lmg.crash == "crash"],
@@ -863,23 +876,23 @@ plot(v1[comp2$upper >= 0],
      lwd = 2.5,
      xlab = "Cumulative precipitation (mm)",
      ylab = "Difference between the fitted trends",
-     col = "skyblue4")
+     col = "darkgreen")
 lines(v1[comp2$upper < 0],
       comp2$diff[comp2$upper < 0],
       lwd = 2.5,
-      col = "skyblue2")
+      col = "red")
 
 polygon(x = c(v1[comp2$upper >= 0], rev(v1[comp2$upper >= 0])),
         y = c(comp2$upper[comp2$upper >= 0], rev(comp2$lower[comp2$upper >= 0])),
-        col = alpha("skyblue4", 0.25),
+        col = alpha("darkgreen", 0.25),
         border = NA)
 polygon(x = c(v1[comp2$upper < 0], rev(v1[comp2$upper < 0])),
         y = c(comp2$upper[comp2$upper < 0], rev(comp2$lower[comp2$upper < 0])),
-        col = alpha("skyblue2", 0.25),
+        col = alpha("red", 0.25),
         border = NA)
 abline(v = v1[comp2$upper < 0][1], col = "darkgrey", lwd = 2, lty = "dotdash")
 
-legend("topright", legend = c("Non significant difference", "Significant difference"), fill = c("skyblue4", "skyblue2"), border = NA, bty = "n")
+legend("topright", legend = c("Non significant difference", "Significant difference"), fill = c("darkgreen", "red"), border = NA, bty = "n")
 # --- #
 #dev.off()
 
@@ -910,7 +923,7 @@ lines(v3,
       newD3$tranFit[newD3$lmg.crash == "noCrash"],
       lwd = 2.5,
       col = "plum3")
-legend("topright", legend = c("Lemming crash", "Lemming presence"), fill = c("plum4", "plum3"), border = NA, bty = "n")
+legend("topright", legend = c("Low lemming density", "High lemming density"), fill = c("plum4", "plum3"), border = NA, bty = "n")
 
 # 
 # points(m$res$DATE[m$res$lmg.crash == "crash"],
@@ -943,29 +956,29 @@ plot(v3,
      lwd = 2.5,
      xlab = "Date (Julian date)",
      ylab = "Difference between the fitted trends",
-     col = "plum4")
+     col = "darkgreen")
 
 lines(v3[v3 >= 165 & v3 <= 177],
       comp3$diff[v3 >= 165 & v3 <= 177],
       lwd = 2.5,
-      col = "plum2")
+      col = "red")
 
 polygon(x = c(v3[v3 <= 165], rev(v3[v3 <= 165])),
         y = c(comp3$upper[v3 <= 165], rev(comp3$lower[v3 <= 165])),
-        col = alpha("plum4", 0.25),
+        col = alpha("darkgreen", 0.25),
         border = NA)
 polygon(x = c(v3[v3 >= 177], rev(v3[v3 >= 177])),
         y = c(comp3$upper[v3 >= 177], rev(comp3$lower[v3 >= 177])),
-        col = alpha("plum4", 0.25),
+        col = alpha("darkgreen", 0.25),
         border = NA)
 polygon(x = c(v3[v3 >= 165 & v3 <= 177], rev(v3[v3 >= 165 & v3 <= 177])),
         y = c(comp3$upper[v3 >= 165 & v3 <= 177], rev(comp3$lower[v3 >= 165 & v3 <= 177])),
-        col = alpha("plum2", 0.25),
+        col = alpha("red", 0.25),
         border = NA)
 abline(v = 165, col = "darkgrey", lwd = 2, lty = "dotdash")
 abline(v = 177, col = "darkgrey", lwd = 2, lty = "dotdash")
 
-legend(x = 179, y = -6.5, legend = c("Non significant difference", "Significant difference"), fill = c("plum4", "plum2"), border = NA, bty = "n")
+legend(x = 179, y = -6.5, legend = c("Non significant difference", "Significant difference"), fill = c("darkgreen", "red"), border = NA, bty = "n")
 # --- #
 #dev.off()
 
