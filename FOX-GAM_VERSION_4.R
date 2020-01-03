@@ -183,10 +183,12 @@ x11();plot(sims)
 
 # plot.gam(lmgGamm[[7]], select = 1)
 x11(); par(mfrow = c(2, 2))
-visreg(lmgGamm[[7]], "max.temp", "lmg.crash", overlay = T, scale = "response")
+visreg(lmgGamm[[7]], "max.temp", "lmg.crash", overlay = T, scale = "response", cond = list(log.obs = log(3600)))
 visreg(lmgGamm[[7]], "prec", "lmg.crash", overlay = T, scale = "response")
 visreg(lmgGamm[[7]], "DATE", "lmg.crash", overlay = T, bty = "n", scale = "response")
 visreg(lmgGamm[[7]], "nest.dens", "lmg.crash", overlay = T, bty = "n", scale = "response")
+
+predict(lmgGamm[[7]], type = "response")
 
 # ----- #
 lmgGamm[[8]] <- gam(AD.atq.number ~ 1
