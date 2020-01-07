@@ -183,8 +183,17 @@ x11();plot(sims)
 
 # plot.gam(lmgGamm[[7]], select = 1)
 x11(); par(mfrow = c(2, 2))
-visreg(lmgGamm[[7]], "max.temp", "lmg.crash", overlay = T, scale = "response", cond = list(log.obs = log(3600)))
-visreg(lmgGamm[[7]], "prec", "lmg.crash", overlay = T, scale = "response")
+visreg(lmgGamm[[7]], "max.temp", "lmg.crash", overlay = T, scale = "response", cond = list(log.obs = log(3600)),
+       #log = "y", 
+       ylim = c(0.01, 70), bty = "n")
+y <- ((data_test$goo.atq.number/data_test$OBS.LENGTH)*3600) + 0.01
+points(x = data_test$max.temp, y = y, col = ifelse(data_test$lmg.crash == "crash", "red", "blue"))
+
+visreg(lmgGamm[[7]], "max.temp", "lmg.crash", overlay = T, scale = "linear", cond = list(log.obs = log(3600)), points = list(cex = 1), bty = "n")
+
+
+visreg(lmgGamm[[7]], "prec", "lmg.crash", overlay = T, scale =
+         "response")
 visreg(lmgGamm[[7]], "DATE", "lmg.crash", overlay = T, bty = "n", scale = "response")
 visreg(lmgGamm[[7]], "nest.dens", "lmg.crash", overlay = T, bty = "n", scale = "response")
 
@@ -317,7 +326,7 @@ AIC(kMod[[1]], kMod[[2]], kMod[[3]], kMod[[4]])
 graphics.off()
 
 # In order to obtain correct confindent intervals
-# 1 - Computation predictions without type = response cause SEs are not back transformed in this case
+# 1 - Computation predictions without type = response cause SEs are not back transformed in this case and per hour => log.obs = log(3600)
 # 2 - Computation of min & max values of CI
 # 3 - Back transformation of obtained values
 
@@ -330,7 +339,7 @@ newD1 <- data.frame(max.temp = rep(v, 2),
                        nest.dens = mean(data_test$nest.dens),
                        DATE = mean(data_test$DATE),
                        lmg.crash = c(rep("crash", 1601), rep("noCrash", 1601)),
-                       log.obs = mean(data_test$log.obs),
+                       log.obs = log(3600),
                        fox.year = "Big one-2004")
 
 newD1$fit <- predict(lmgGamm[[7]], newdata = newD1, type = "link", se.fit = TRUE)[[1]]
@@ -360,7 +369,7 @@ newD2 <- data.frame(max.temp = mean(data_test$max.temp),
                     nest.dens = mean(data_test$nest.dens),
                     DATE = mean(data_test$DATE),
                     lmg.crash = c(rep("crash", 2001), rep("noCrash", 2001)),
-                    log.obs = mean(data_test$log.obs),
+                    log.obs = log(3600),
                     fox.year = "Big one-2004")
 
 newD2$fit <- predict(lmgGamm[[7]], newdata = newD2, type = "link", se.fit = TRUE)[[1]]
@@ -385,7 +394,7 @@ newD3 <- data.frame(max.temp = mean(data_test$max.temp),
                     nest.dens = mean(data_test$nest.dens),
                     DATE = rep(v3, 2),
                     lmg.crash = c(rep("crash", 47), rep("noCrash", 47)),
-                    log.obs = mean(data_test$log.obs),
+                    log.obs = log(3600),
                     fox.year = "Big one-2004")
 
 newD3$fit <- predict(lmgGamm[[7]], newdata = newD3, type = "link", se.fit = TRUE)[[1]]
@@ -411,7 +420,7 @@ newD4 <- data.frame(max.temp = mean(data_test$max.temp),
                     nest.dens = rep(v2, 2),
                     DATE = mean(data_test$DATE),
                     lmg.crash = c(rep("crash", 1001), rep("noCrash", 1001)),
-                    log.obs = mean(data_test$log.obs),
+                    log.obs = log(3600),
                     fox.year = "Big one-2004")
 
 newD4$fit <- predict(lmgGamm[[7]], newdata = newD4, type = "link", se.fit = TRUE)[[1]]
@@ -432,7 +441,7 @@ newD5 <- data.frame(max.temp = mean(data_test$max.temp),
                     nest.dens = v2,
                     DATE = mean(data_test$DATE),
                     lmg.crash = "noCrash",
-                    log.obs = mean(data_test$log.obs),
+                    log.obs = log(3600),
                     fox.year = "Big one-2004")
 newD5$fit <- predict(lmgGamm[[7]], newdata = newD5, type = "link", se.fit = TRUE)[[1]]
 newD5$se.fit <- predict(lmgGamm[[7]], newdata = newD5, type = "link", se.fit = TRUE)[[2]]
@@ -453,7 +462,7 @@ newD5$minIC <- exp(newD5$fit - 1.96*(newD5$se.fit))
 
 plot(v,
      newD1$tranFit[newD1$lmg.crash == "crash"],
-     ylim = c(0, 2),
+     ylim = c(0, max(newD1$maxIC)),
      type = "l",
      bty = "n",
      lwd = 2.5,
@@ -736,7 +745,7 @@ abline(h = 0, col = "grey", lwd = 2.5, lty = 4)
 
 # Temperatures #
 
-# png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_temp_V3.tiff",
+# png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_temp_V4.tiff",
 #     res=300,
 #     width=30,
 #     height= 20,
@@ -746,22 +755,22 @@ abline(h = 0, col = "grey", lwd = 2.5, lty = 4)
 # par(mfrow = c(1, 2))
 
 # --- #
-#k <- visreg(lmgGamm[[7]], "max.temp", "lmg.crash", plot = F)
 
 plot(v,
      newD1$tranFit[newD1$lmg.crash == "crash"],
-     ylim = c(min(newD1$minIC), max(newD1$maxIC)),
+     ylim = c(min(newD1$minIC), max(newD1$maxIC)+2),
      type = "l",
      bty = "n",
      lwd = 2.5,
      xlab = "Maximal temperature (°C)",
      ylab = "Number of fox attacks per hour",
-     col = "darkorange4")
+     col = "darkorange1")
 lines(v,
       newD1$tranFit[newD1$lmg.crash == "noCrash"],
       lwd = 2.5,
-      col = "darkorange1")
-legend(x = 7, y = 2.0, legend = c("Low lemming density", "High lemming density"), fill = c("darkorange4", "darkorange1"), border = NA, bty = "n")
+      col = "darkorange4")
+legend(x = 7, y = 12.0, legend = c("High lemming density", "Low lemming density"), fill = c("darkorange4", "darkorange1"), border = NA, bty = "n")
+legend("topleft", "(a)", bty = "n")
 
 
 # points(k$res$max.temp[k$res$lmg.crash == "crash"],
@@ -777,12 +786,12 @@ legend(x = 7, y = 2.0, legend = c("Low lemming density", "High lemming density")
 
 polygon(x = c(v, rev(v)),
         y = c(newD1$minIC[newD1$lmg.crash == "crash"], rev(newD1$maxIC[newD1$lmg.crash == "crash"])),
-        col = alpha("darkorange4", 0.25),
+        col = alpha("darkorange1", 0.25),
         border = NA)
 
 polygon(x = c(v, rev(v)),
         y = c(newD1$minIC[newD1$lmg.crash == "noCrash"], rev(newD1$maxIC[newD1$lmg.crash == "noCrash"])),
-        col = alpha("darkorange1", 0.25),
+        col = alpha("darkorange4", 0.25),
         border = NA)
 # --- #
 
@@ -814,13 +823,15 @@ polygon(x = c(v[comp1$upper < 0], rev(v[comp1$upper < 0])),
 abline(v = v[comp1$upper < 0][1], col = "darkgrey", lwd = 2, lty = "dotdash")
 
 legend("bottomleft", legend = c("Non significant difference", "Significant difference"), fill = c("darkgreen", "red"), border = NA, bty = "n")
+legend("topleft", "(b)", bty = "n")
+
 
 # --- #
 #dev.off()
 
 # Precipitations #
 
-# png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_prec_V2.tiff",
+# png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_prec_V4.tiff",
 #     res=300,
 #     width=30,
 #     height= 20,
@@ -840,12 +851,14 @@ plot(v1,
      lwd = 2.5,
      xlab = "Cumulative precipitation (mm)",
      ylab = "Number of fox attacks per hour",
-     col = "skyblue4")
+     col = "skyblue3")
 lines(v1,
       newD2$tranFit[newD2$lmg.crash == "noCrash"],
       lwd = 2.5,
-      col = "skyblue3")
-legend(x = 10, y = 2.7, legend = c("Low lemming density", "High lemming density"), fill = c("skyblue4", "skyblue3"), border = NA, bty = "n")
+      col = "skyblue4")
+legend(x = 1, y = 14, legend = c("High lemming density", "Low lemming density"), fill = c("skyblue4", "skyblue3"), border = NA, bty = "n")
+
+legend("topleft", bty = "n", "(a)")
 
 
 # points(l$res$prec[l$res$lmg.crash == "crash"],
@@ -871,7 +884,7 @@ polygon(x = c(v1, rev(v1)),
 # --- #
 plot(v1[comp2$upper >= 0],
      comp2$diff[comp2$upper >= 0],
-     ylim = c(min(comp2$lower), max(comp2$upper)),
+     ylim = c(min(comp2$lower), max(comp2$upper)+1),
      xlim = c(min(v1), max(v1)),
      type = "l",
      bty = "n",
@@ -894,20 +907,22 @@ polygon(x = c(v1[comp2$upper < 0], rev(v1[comp2$upper < 0])),
         border = NA)
 abline(v = v1[comp2$upper < 0][1], col = "darkgrey", lwd = 2, lty = "dotdash")
 
-legend("topright", legend = c("Non significant difference", "Significant difference"), fill = c("darkgreen", "red"), border = NA, bty = "n")
+legend(x = 10, y = 1, legend = c("Non significant difference", "Significant difference"), fill = c("darkgreen", "red"), border = NA, bty = "n")
+
+legend("topleft", bty = "n", "(b)")
 # --- #
 #dev.off()
 
 # Dates #
 
-# png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_date_V2.tiff",
-#     res=300,
-#     width=30,
-#     height= 20,
-#     pointsize=12,
-#     unit="cm",
-#     bg="transparent")
-# par(mfrow = c(1, 2))
+png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_date_V4.tiff",
+    res=300,
+    width=30,
+    height= 20,
+    pointsize=12,
+    unit="cm",
+    bg="transparent")
+par(mfrow = c(1, 2))
 
 # --- #
 #m <- visreg(lmgGamm[[7]], "DATE", "lmg.crash", plot = F)
@@ -920,12 +935,15 @@ plot(v3,
      lwd = 2.5,
      xlab = "Date (Julian date)",
      ylab = "Number of fox attacks per hour",
-     col = "plum4")
+     col = "plum3")
 lines(v3,
       newD3$tranFit[newD3$lmg.crash == "noCrash"],
       lwd = 2.5,
-      col = "plum3")
-legend("topright", legend = c("Low lemming density", "High lemming density"), fill = c("plum4", "plum3"), border = NA, bty = "n")
+      col = "plum4")
+legend(x = 185, y = max(newD3$maxIC), legend = c("High lemming density", "Low lemming density"), fill = c("plum4", "plum3"), border = NA, bty = "n")
+
+legend("topleft", "(a)", bty = "n", adj = c(1, 0))
+
 
 # 
 # points(m$res$DATE[m$res$lmg.crash == "crash"],
@@ -980,13 +998,15 @@ polygon(x = c(v3[v3 >= 165 & v3 <= 177], rev(v3[v3 >= 165 & v3 <= 177])),
 abline(v = 165, col = "darkgrey", lwd = 2, lty = "dotdash")
 abline(v = 177, col = "darkgrey", lwd = 2, lty = "dotdash")
 
-legend(x = 179, y = -6.5, legend = c("Non significant difference", "Significant difference"), fill = c("darkgreen", "red"), border = NA, bty = "n")
+legend(x = 179, y = -6, legend = c("Non significant difference", "Significant difference"), fill = c("darkgreen", "red"), border = NA, bty = "n")
+
+legend("topleft", "(b)", bty = "n", adj = c(1, 0))
 # --- #
 #dev.off()
 
 # Goose nest density #
 
-# png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_nest_dens_V3.tiff",
+# png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_nest_dens_V4.tiff",
 #     res=300,
 #     width=30,
 #     height= 20,
@@ -1053,4 +1073,117 @@ polygon(x = c(v2, rev(v2)),
         border = NA)
 
 # --- #
+#dev.off()
+
+### ------------------- ###
+#### Paper appendices ####
+### ----------------- ###
+
+### Temp - partial residuals
+# png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_Annexe_temp.tiff",
+#     res=300,
+#     width=30,
+#     height= 20,
+#     pointsize=12,
+#     unit="cm",
+#     bg="transparent")
+
+visreg(lmgGamm[[7]],
+       "max.temp",
+       "lmg.crash",
+       overlay = T,
+       scale = "linear",
+       cond = list(log.obs = log(3600)),
+       jitter = T,
+       bty = "n",
+       xlab = "Maximal temperature (°C)",
+       ylab = "f(Maximal temperature)",
+       gg = F,
+       fill.par = list(col = c(alpha("darkorange1", 0.25), alpha("darkorange4", 0.25))),
+       line = list(col = c("darkorange1", "darkorange4")),
+       points = list(col = c(alpha("darkorange1", 0.7), alpha("darkorange4", 0.7)), cex = 1),
+       legend = F)
+legend("topright", legend = c("High lemming abundance", "Low lemming abundance"), fill = c("darkorange4", "darkorange1"), border = NA, bty = "n")
+
+#dev.off()
+
+### Prec - partial residuals
+# png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_Annexe_prec.tiff",
+#     res=300,
+#     width=30,
+#     height= 20,
+#     pointsize=12,
+#     unit="cm",
+#     bg="transparent")
+
+visreg(lmgGamm[[7]],
+       "prec",
+       "lmg.crash",
+       overlay = T,
+       scale = "linear",
+       cond = list(log.obs = log(3600)),
+       jitter = T,
+       bty = "n",
+       xlab = "Cumulative precipitation (mm)",
+       ylab = "f(Cumulative precipitation)",
+       gg = F,
+       fill.par = list(col = c(alpha("skyblue3", 0.25), alpha("skyblue4", 0.25))),
+       line = list(col = c("skyblue3", "skyblue4")),
+       points = list(col = c(alpha("skyblue3", 0.7), alpha("skyblue4", 0.7)), cex = 1),
+       legend = F)
+legend("topright", legend = c("High lemming abundance", "Low lemming abundance"), fill = c("skyblue4", "skyblue3"), border = NA, bty = "n")
+
+#dev.off()
+
+### Date - partial residuals
+# png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_Annexe_date.tiff",
+#     res=300,
+#     width=30,
+#     height= 20,
+#     pointsize=12,
+#     unit="cm",
+#     bg="transparent")
+
+visreg(lmgGamm[[7]],
+       "DATE",
+       "lmg.crash",
+       overlay = T,
+       scale = "linear",
+       cond = list(log.obs = log(3600)),
+       jitter = T,
+       bty = "n",
+       xlab = "Date (Julian date)",
+       ylab = "f(Date)",
+       gg = F,
+       fill.par = list(col = c(alpha("plum3", 0.35), alpha("plum4", 0.35))),
+       line = list(col = c("plum3", "plum4")),
+       points = list(col = c(alpha("plum3", 0.7), alpha("plum4", 0.7)), cex = 1),
+       legend = F)
+legend("topright", legend = c("High lemming abundance", "Low lemming abundance"), fill = c("plum4", "plum3"), border = NA, bty = "n")
+
+#dev.off()
+
+### Nest density - partial residuals
+# png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Gamm_Annexe_nestdens.tiff",
+#     res=300,
+#     width=30,
+#     height= 20,
+#     pointsize=12,
+#     unit="cm",
+#     bg="transparent")
+
+visreg(lmgGamm[[7]],
+       "nest.dens",
+       scale = "linear",
+       cond = list(log.obs = log(3600)),
+       jitter = T,
+       bty = "n",
+       xlab = "Goose nest density (nb/ha)",
+       ylab = "f(Goose nest density)",
+       gg = F,
+       fill.par = list(col = alpha("forestgreen", 0.25)),
+       line = list(col = "forestgreen"),
+       points = list(col = alpha("forestgreen", 0.35), cex = 1),
+       legend = F)
+
 #dev.off()
