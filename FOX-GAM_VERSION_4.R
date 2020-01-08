@@ -1187,3 +1187,135 @@ visreg(lmgGamm[[7]],
        legend = F)
 
 #dev.off()
+
+#### Plot with random effects ####
+data_peak <- data_test[data_test$lmg.crash == "noCrash",]
+data_crash <- data_test[data_test$lmg.crash == "crash",]
+
+#####  TEMPERATURE ####
+par(mar=c(4.1, 4.1, 0.2, 0.2), mfrow=c(1,2))
+## Temp - lmg peak
+plot(v,
+     newD1$tranFit[newD1$lmg.crash == "noCrash"],
+     ylim = c(min(newD1$minIC), max(newD1$maxIC)+2),
+     type = "l",
+     bty = "n",
+     lwd = 2.5,
+     xlab = "Maximal temperature (°C)",
+     ylab = "Number of fox attacks per hour",
+     col = "darkorange4")
+
+polygon(x = c(v, rev(v)),
+        y = c(newD1$minIC[newD1$lmg.crash == "noCrash"], rev(newD1$maxIC[newD1$lmg.crash == "noCrash"])),
+        col = alpha("darkorange4", 0.25),
+        border = NA)
+
+re <- as.vector(unique(data_crash$fox.year))
+for(i in re){
+  ND1 <- data.frame(max.temp = v,
+                    prec = mean(data_test$prec),
+                    nest.dens = mean(data_test$nest.dens),
+                    DATE = mean(data_test$DATE),
+                    lmg.crash = "noCrash",
+                    log.obs = log(3600),
+                    fox.year = i)
+  
+  ND1$tranFit <- predict(lmgGamm[[7]], newdata = ND1, type = "response", se.fit = FALSE)
+  
+  
+  lines(ND1$max.temp,
+        ND1$tranFit,
+        ype = "l",
+        lwd = 1,
+        col = alpha("darkorange4", 0.25))
+  
+}
+legend("topleft", "(a)", bty = "n", adj = c(1, 0))
+
+
+
+## Temp - lmg crash
+par(mar = c(4.1, 0.1, 0.1, 0.1))
+plot(v,
+     newD1$tranFit[newD1$lmg.crash == "crash"],
+     ylim = c(min(newD1$minIC), max(newD1$maxIC)+2),
+     type = "l",
+     bty = "n",
+     lwd = 2.5,
+     xlab = "Maximal temperature (°C)",
+    ylab = "",
+    yaxt = "n",
+     col = "darkorange1")
+
+polygon(x = c(v, rev(v)),
+        y = c(newD1$minIC[newD1$lmg.crash == "crash"], rev(newD1$maxIC[newD1$lmg.crash == "crash"])),
+        col = alpha("darkorange1", 0.25),
+        border = NA)
+
+re <- as.vector(unique(data_crash$fox.year))
+for(i in re){
+  ND1 <- data.frame(max.temp = v,
+                        prec = mean(data_test$prec),
+                        nest.dens = mean(data_test$nest.dens),
+                        DATE = mean(data_test$DATE),
+                        lmg.crash = "crash",
+                        log.obs = log(3600),
+                        fox.year = i)
+  
+
+  ND1$tranFit <- predict(lmgGamm[[7]], newdata = ND1, type = "response", se.fit = FALSE)
+  
+  
+  lines(ND1$max.temp,
+        ND1$tranFit,
+        ype = "l",
+        lwd = 1,
+        col = alpha("darkorange4", 0.25))
+  
+}
+legend("topleft", "(b)", bty = "n", adj = c(1, 0))
+
+#####  PRECIPITATION ####
+par(mar=c(4.1, 4.1, 0.2, 0.2), mfrow=c(1,2))
+## prec - lmg peak
+plot(v1,
+     newD2$tranFit[newD2$lmg.crash == "noCrash"],
+     ylim = c(min(newD2$minIC), max(newD2$maxIC)),
+     type = "l",
+     bty = "n",
+     lwd = 2.5,
+     xlab = "Cumulative precipitation (mm)",
+     ylab = "Number of fox attacks per hour",
+     col = "skyblue4")
+
+polygon(x = c(v1, rev(v1)),
+        y = c(newD2$minIC[newD2$lmg.crash == "noCrash"], rev(newD2$maxIC[newD2$lmg.crash == "noCrash"])),
+        col = alpha("skyblue4", 0.25),
+        border = NA)
+
+re <- as.vector(unique(data_crash$fox.year))
+for(i in re){
+  ND2 <- data.frame(max.temp = mean(data_test$max.temp),
+                    prec = v1,
+                    nest.dens = mean(data_test$nest.dens),
+                    DATE = mean(data_test$DATE),
+                    lmg.crash = "noCrash",
+                    log.obs = log(3600),
+                    fox.year = i)
+  
+  ND2$tranFit <- predict(lmgGamm[[7]], newdata = ND2, type = "response", se.fit = FALSE)
+  
+  
+  lines(ND2$prec,
+        ND2$tranFit,
+        ype = "l",
+        lwd = 1,
+        col = alpha("skyblue4", 0.25))
+  
+}
+legend("topleft", "(a)", bty = "n", adj = c(1, 0))
+
+
+
+## Prec - lmg crash
+par(mar = c(4.1, 0.1, 0.1, 0.1))
