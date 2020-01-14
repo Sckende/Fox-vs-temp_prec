@@ -1146,7 +1146,7 @@ plot(v3,
      type = "l",
      bty = "n",
      lwd = 2.5,
-     xlab = "Cumulative precipitation (mm)",
+     xlab = "Date (Julian date)",
      ylab = "",
      yaxt = "n",
      col = "plum3")
