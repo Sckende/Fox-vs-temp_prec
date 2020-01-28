@@ -451,7 +451,6 @@ comp.data$nest.dens <- gs$NEST_DENSITY[match(comp.data$YEAR, gs$YEAR)]
 
 comp.data$prec <- rain$RAIN[match(strptime(paste(comp.data$YEAR, comp.data$DATE, sep = "-"), format = "%Y-%j"), strptime(paste(rain$YEAR, rain$JJ, sep = "-"), format = "%Y-%j"))]
 
-#write.table(comp.data, "FOX_PAPER_Complete_database.txt", sep = "\t", dec = ".")
 
 #### Ajout d'une nouvelle variable - Date relative par rapport à la date median de ponte des oies pour chaque année ####
 
@@ -472,3 +471,5 @@ data$goo.lay <- goo$LAY_JJ[match(data$YEAR, goo$YEAR)]
 data$REL.DATE <- data$DATE - data$goo.lay
 summary(data$REL.DATE)
 data[data$REL.DATE >= 33,]
+
+#write.table(data, "FOX_PAPER_Complete_database.txt", sep = "\t", dec = ".")
