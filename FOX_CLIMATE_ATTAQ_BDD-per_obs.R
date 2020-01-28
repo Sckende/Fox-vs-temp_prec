@@ -453,9 +453,22 @@ comp.data$prec <- rain$RAIN[match(strptime(paste(comp.data$YEAR, comp.data$DATE,
 
 #write.table(comp.data, "FOX_PAPER_Complete_database.txt", sep = "\t", dec = ".")
 
-h <- split(comp.data, comp.data$YEAR)
-x11()
-par(mfrow = c(3, 3))
-lapply(h, function(x){
-  hist(x$prec, main = unique(x$YEAR), xlab = "Cumulative prec per day")
-})
+#### Ajout d'une nouvelle variable - Date relative par rapport à la date median de ponte des oies pour chaque année ####
+
+setwd(dir = "C:/Users/HP_9470m/OneDrive - Université de Moncton/Doc doc doc/Ph.D. - ANALYSES/R analysis/Data")
+list.files()
+data <- read.table("FOX_PAPER_Complete_database.txt", h = T, sep = "\t", dec = ".")
+summary(data)
+names(data)
+goo <- read.table("GOOSE_breeding_informations_1989_2017.txt", h = T, sep = "\t")
+# Conversion in JJ dates
+goo[c(goo$LAY_DATE, goo$LAY_JJ),]
+goo$LAY_JJ <- goo$LAY_JJ$yday + 1 
+
+# Adding goose laying date
+data$goo.lay <- goo$LAY_JJ[match(data$YEAR, goo$YEAR)]
+
+# Computation of the new variable date - relative observation date 
+data$REL.DATE <- data$DATE - data$goo.lay
+summary(data$REL.DATE)
+data[data$REL.DATE >= 33,]
