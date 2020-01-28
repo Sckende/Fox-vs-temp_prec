@@ -131,7 +131,7 @@ summary(lmgGamm[[3]])
 plot(lmgGamm[[3]], page = 1, all.terms = TRUE, residuals = TRUE)
 
 # ----- #
-lmgGamm[[4]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + s(max.temp, by = lmg.crash) + lmg.crash + DATE
+lmgGamm[[4]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + s(max.temp, by = lmg.crash) + lmg.crash + REL.DATE
                     + s(fox.year, bs = "re") 
                     + offset(log.obs),
                     family = poisson(),
@@ -143,7 +143,7 @@ summary(lmgGamm[[4]])
 plot(lmgGamm[[4]], page = 1, all.terms = TRUE, residuals = TRUE)
 
 # ----- #
-lmgGamm[[5]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + s(max.temp, by = lmg.crash) + lmg.crash + DATE + nest.dens
+lmgGamm[[5]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + s(max.temp, by = lmg.crash) + lmg.crash + REL.DATE + nest.dens
                     + s(fox.year, bs = "re") 
                     + offset(log.obs),
                     family = poisson(),
@@ -155,7 +155,7 @@ summary(lmgGamm[[5]])
 plot(lmgGamm[[5]], page = 1, all.terms = TRUE, residuals = TRUE)
 
 # ----- #
-lmgGamm[[6]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + s(max.temp, by = lmg.crash) + lmg.crash + s(DATE) + nest.dens
+lmgGamm[[6]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + s(max.temp, by = lmg.crash) + lmg.crash + s(REL.DATE) + nest.dens
                     + s(fox.year, bs = "re") 
                     + offset(log.obs),
                     family = poisson(),
@@ -167,7 +167,7 @@ summary(lmgGamm[[6]])
 plot(lmgGamm[[6]], page = 1, all.terms = TRUE, residuals = TRUE)
 
 # ----- #
-lmgGamm[[7]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + s(max.temp, by = lmg.crash) + lmg.crash + s(DATE, by = lmg.crash) + nest.dens
+lmgGamm[[7]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + s(max.temp, by = lmg.crash) + lmg.crash + s(REL.DATE, by = lmg.crash) + nest.dens
                     + s(fox.year, bs = "re") 
                     + offset(log.obs),
                     family = poisson(),
@@ -194,7 +194,7 @@ visreg(lmgGamm[[7]], "max.temp", "lmg.crash", overlay = T, scale = "linear", con
 
 visreg(lmgGamm[[7]], "prec", "lmg.crash", overlay = T, scale =
          "response")
-visreg(lmgGamm[[7]], "DATE", "lmg.crash", overlay = T, bty = "n", scale = "response")
+visreg(lmgGamm[[7]], "REL.DATE", "lmg.crash", overlay = T, bty = "n", scale = "response")
 visreg(lmgGamm[[7]], "nest.dens", "lmg.crash", overlay = T, bty = "n", scale = "response")
 
 predict(lmgGamm[[7]], type = "response")
@@ -212,7 +212,7 @@ lmgGamm[[8]] <- gam(AD.atq.number ~ 1
 summary(lmgGamm[[8]])
 
 # ----- #
-lmgGamm[[9]] <- gam(AD.atq.number ~ prec*lmg.crash + s(max.temp, by = lmg.crash) + lmg.crash + s(DATE, by = lmg.crash) + nest.dens
+lmgGamm[[9]] <- gam(AD.atq.number ~ prec*lmg.crash + s(max.temp, by = lmg.crash) + lmg.crash + s(REL.DATE, by = lmg.crash) + nest.dens
                     + s(fox.year, bs = "re") 
                     + offset(log.obs),
                     family = poisson(),
@@ -223,7 +223,7 @@ summary(lmgGamm[[9]])
 visreg(lmgGamm[[9]], "prec", "lmg.crash", overlay = T)
 
 # ----- #
-lmgGamm[[10]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + max.temp*lmg.crash + lmg.crash + s(DATE, by = lmg.crash) + nest.dens
+lmgGamm[[10]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + max.temp*lmg.crash + lmg.crash + s(REL.DATE, by = lmg.crash) + nest.dens
                     + s(fox.year, bs = "re") 
                     + offset(log.obs),
                     family = poisson(),
@@ -231,10 +231,12 @@ lmgGamm[[10]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + max.temp*lmg.cra
                     #select = TRUE,
                     data = data_test)
 summary(lmgGamm[[10]])
+visreg(lmgGamm[[10]], "prec", "lmg.crash", overlay = T)
 visreg(lmgGamm[[10]], "max.temp", "lmg.crash", overlay = T)
+visreg(lmgGamm[[10]], "REL.DATE", "lmg.crash", overlay = T)
 
 # ----- #
-lmgGamm[[11]] <- gam(AD.atq.number ~ te(prec , max.temp) + lmg.crash + s(DATE, by = lmg.crash) + nest.dens
+lmgGamm[[11]] <- gam(AD.atq.number ~ te(prec , max.temp) + lmg.crash + s(REL.DATE, by = lmg.crash) + nest.dens
                      + s(fox.year, bs = "re") 
                      + offset(log.obs),
                      family = poisson(),
