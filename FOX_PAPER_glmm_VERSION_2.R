@@ -92,200 +92,16 @@ summary(scaleData)
 #### Poisson family in GLM-M ####
 # ------------------------------#
 # ------------------- #
-# Models compairison #
+# Models compairison  #
 # ----------------- #
 
 control <- glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 2000000)) # Helping the convergence with "maxfun" increasing the number of iterations 
 
 # Models
 mod <- list()
-mod[[1]] <- glmer(AD.atq.number ~ prec + I(max.temp^2) + max.wind + nest.dens + lmg.crash
-                  + (1|fox.year)
-                  + offset(log.obs),
-                  family = poisson(),
-                  control = control,
-                  #method = "REML",
-                  #select = TRUE,
-                  data = scaleData)
-summary(mod[[1]])
-
-mod[[2]] <- glmer(AD.atq.number ~ prec + max.temp + I(max.temp^2) + max.wind + nest.dens
-                  + (1|fox.year)
-                  + offset(log.obs),
-                  family = poisson(),
-                  control = control,
-                  #method = "REML",
-                  #select = TRUE,
-                  data = scaleData)
-summary(mod[[2]])
-
-mod[[3]] <- glmer(AD.atq.number ~ prec + max.temp + max.wind + nest.dens
-                  + (1|fox.year)
-                  + offset(log.obs),
-                  family = poisson(),
-                  control = control,
-                  #method = "REML",
-                  #select = TRUE,
-                  data = scaleData)
-summary(mod[[3]])
-
-mod[[4]] <- glmer(AD.atq.number ~ prec + max.temp + nest.dens
-                  + (1|fox.year)
-                  + offset(log.obs),
-                  family = poisson(),
-                  control = control,
-                  #method = "REML",
-                  #select = TRUE,
-                  data = scaleData)
-summary(mod[[4]])
-
-mod[[5]] <- glmer(AD.atq.number ~ prec + max.temp
-                  + (1|fox.year)
-                  + offset(log.obs),
-                  family = poisson(),
-                  control = control,
-                  #method = "REML",
-                  #select = TRUE,
-                  data = scaleData)
-summary(mod[[5]])
-
-mod[[6]] <- glmer(AD.atq.number ~ prec + max.temp + max.wind
-                  + (1|fox.year)
-                  + offset(log.obs),
-                  family = poisson(),
-                  control = control,
-                  #method = "REML",
-                  #select = TRUE,
-                  data = scaleData)
-summary(mod[[6]])
-
-mod[[7]] <- glmer(AD.atq.number ~ 1
-                  + (1|fox.year)
-                  + offset(log.obs),
-                  family = poisson(),
-                  control = control,
-                  #method = "REML",
-                  #select = TRUE,
-                  data = scaleData)
-summary(mod[[7]])
-
-mod[[8]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + max.wind*lmg.crash + nest.dens
-                  + (1|fox.year)
-                  + offset(log.obs),
-                  family = poisson(),
-                  control = control,
-                  #method = "REML",
-                  #select = TRUE,
-                  data = scaleData)
-summary(mod[[8]])
-
-mod[[9]] <- glmer(AD.atq.number ~  max.temp*lmg.crash + max.wind*lmg.crash + nest.dens
-                  + (1|fox.year)
-                  + offset(log.obs),
-                  family = poisson(),
-                  control = control,
-                  #method = "REML",
-                  #select = TRUE,
-                  data = scaleData)
-summary(mod[[9]])
-
-mod[[10]] <- glmer(AD.atq.number ~  max.temp*lmg.crash  + nest.dens
-                   + (1|fox.year)
-                   + offset(log.obs),
-                   family = poisson(),
-                   control = control,
-                   #method = "REML",
-                   #select = TRUE,
-                   data = scaleData)
-summary(mod[[10]])
-
-mod[[11]] <- glmer(AD.atq.number ~ prec + I(max.temp^2) + max.wind + nest.dens + lmg.year
-                   + (1|fox.year)
-                   + offset(log.obs),
-                   family = poisson(),
-                   control = control,
-                   #method = "REML",
-                   #select = TRUE,
-                   data = scaleData)
-summary(mod[[11]])
-
-mod[[12]] <- glmer(AD.atq.number ~ max.temp + prec + max.wind + nest.dens + lmg.year
-                   + (1|fox.year)
-                   + offset(log.obs),
-                   family = poisson(),
-                   control = control,
-                   #method = "REML",
-                   #select = TRUE,
-                   data = scaleData)
-summary(mod[[12]])
-
-mod[[13]] <- glmer(AD.atq.number ~ max.temp + nest.dens + lmg.year
-                   + (1|fox.year)
-                   + offset(log.obs),
-                   family = poisson(),
-                   control = control,
-                   #method = "REML",
-                   #select = TRUE,
-                   data = scaleData)
-summary(mod[[13]])
-
-mod[[14]] <- glmer(AD.atq.number ~ nest.dens + lmg.year
-                   + (1|fox.year)
-                   + offset(log.obs),
-                   family = poisson(),
-                   control = control,
-                   #method = "REML",
-                   #select = TRUE,
-                   data = scaleData)
-summary(mod[[14]])
-
-mod[[15]] <- glmer(AD.atq.number ~ prec*lmg.year + max.temp*lmg.year + max.wind*lmg.year + nest.dens
-                   + (1|fox.year)
-                   + offset(log.obs),
-                   family = poisson(),
-                   control = control,
-                   #method = "REML",
-                   #select = TRUE,
-                   data = scaleData)
-summary(mod[[15]])
-visreg(mod[[15]], "max.temp", by = "lmg.year")
-visreg(mod[[15]], "prec", by = "lmg.year")
-visreg(mod[[15]], "max.wind", by = "lmg.year")
-
-mod[[16]] <- glmer(AD.atq.number ~ prec*lmg.year + max.temp*lmg.year  + nest.dens
-                   + (1|fox.year)
-                   + offset(log.obs),
-                   family = poisson(),
-                   control = control,
-                   #method = "REML",
-                   #select = TRUE,
-                   data = scaleData)
-summary(mod[[16]])
-
-mod[[17]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.dens
-                   + (1|fox.year)
-                   + offset(log.obs),
-                   family = poisson(),
-                   control = control,
-                   #method = "REML",
-                   #select = TRUE,
-                   data = scaleData)
-summary(mod[[17]])
-visreg(mod[[17]], "max.temp", by = "lmg.crash")
-visreg(mod[[17]], "prec", by = "lmg.crash")
-
-# Tests with DHARma package
-sims <- simulateResiduals(mod[[17]])
-plot(sims)
-testDispersion(sims)
-testZeroInflation(sims)
-# Check for the distribution of predictions vs. raw data
-par(mfrow = c(1, 2))
-hist(data$AD.atq.number, breaks = 0:50)
-hist(predict(mod[[17]], type = "response"), breaks = 0:50)
 
 
-mod[[18]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.dens + REL.DATE*lmg.crash
+mod[[1]] <- glmer(AD.atq.number ~ 1
                    + (1|fox.year)
                    + offset(log.obs),
                    family = poisson(),
@@ -293,104 +109,97 @@ mod[[18]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.de
                    #method = "REML",
                    #select = TRUE,
                    data = data_test)
-summary(mod[[18]])
-visreg(mod[[18]], "max.temp", by = "lmg.crash", scale = "response", overlay = TRUE, bty = "n")
-visreg(mod[[18]], "prec", by = "lmg.crash", scale = "response", overlay = TRUE, bty = "n")
-visreg(mod[[18]], "REL.DATE", by = "lmg.crash",
-       #scale = "response",
-       overlay = TRUE, bty = "n")
-visreg(mod[[18]], "nest.dens", by = "lmg.crash", 
-       #scale = "response", 
-       overlay = TRUE, bty = "n")
+summary(mod[[1]])
 
-mod[[19]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.dens*lmg.crash + REL.DATE
+mod[[2]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.dens*lmg.crash + REL.DATE
                    + (1|fox.year)
                    + offset(log.obs),
                    family = poisson(),
                    control = control,
                    #method = "REML",
                    #select = TRUE,
-                   data = scaleData)
-summary(mod[[19]])
+                   data = data_test)
+summary(mod[[2]])
 
-mod[[20]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.dens + REL.DATE*lmg.crash
+mod[[3]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.dens + REL.DATE*lmg.crash
                    + (1|fox.year)
                    + offset(log.obs),
                    family = poisson(),
                    control = control,
                    #method = "REML",
                    #select = TRUE,
-                   data = scaleData)
-summary(mod[[20]])
+                   data = data_test)
+summary(mod[[3]])
 x11(); par(mfrow = c(2, 2))
-visreg(mod[[20]], "max.temp", by = "lmg.crash", overlay = T)
-visreg(mod[[20]], "prec", by = "lmg.crash", overlay = T)
-visreg(mod[[20]], "REL.DATE", by = "lmg.crash", overlay = T)
-visreg(mod[[20]], "nest.dens")
+visreg(mod[[3]], "max.temp", by = "lmg.crash", overlay = T)
+visreg(mod[[3]], "prec", by = "lmg.crash", overlay = T)
+visreg(mod[[3]], "REL.DATE", by = "lmg.crash", overlay = T)
+visreg(mod[[3]], "nest.dens")
 
-mod[[21]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.dens*lmg.crash + REL.DATE*lmg.crash
+mod[[4]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.dens*lmg.crash + REL.DATE*lmg.crash
                    + (1|fox.year)
                    + offset(log.obs),
                    family = poisson(),
                    control = control,
                    #method = "REML",
                    #select = TRUE,
-                   data = scaleData)
-summary(mod[[21]])
+                   data = data_test)
+summary(mod[[4]])
 X11(); par(mfrow = c(2, 2))
-visreg(mod[[21]], "max.temp", by = "lmg.crash", overlay = T)
-visreg(mod[[21]], "prec", by = "lmg.crash", overlay = T)
-visreg(mod[[21]], "DATE", by = "lmg.crash", overlay = T)
-visreg(mod[[21]], "nest.dens", by = "lmg.crash", overlay = T)
+visreg(mod[[4]], "max.temp", by = "lmg.crash", overlay = T)
+visreg(mod[[4]], "prec", by = "lmg.crash", overlay = T)
+visreg(mod[[4]], "DATE", by = "lmg.crash", overlay = T)
+visreg(mod[[4]], "nest.dens", by = "lmg.crash", overlay = T)
 
 #####################################
-mod[[22]] <- glmer(AD.atq.number ~ prec*lmg.abun + max.temp*lmg.abun + nest.dens*lmg.abun + REL.DATE
+mod[[5]] <- glmer(AD.atq.number ~ prec*lmg.abun + max.temp*lmg.abun + nest.dens*lmg.abun + REL.DATE
                    + (1|fox.year)
                    + offset(log.obs),
                    family = poisson(),
                    control = control,
                    #method = "REML",
                    #select = TRUE,
-                   data = scaleData)
-summary(mod[[22]])
+                   data = data_test)
+summary(mod[[5]])
 
-mod[[23]] <- glmer(AD.atq.number ~ prec*lmg.abun + max.temp*lmg.abun + nest.dens + REL.DATE*lmg.abun
+mod[[6]] <- glmer(AD.atq.number ~ prec*lmg.abun + max.temp*lmg.abun + nest.dens + REL.DATE*lmg.abun
                    + (1|fox.year)
                    + offset(log.obs),
                    family = poisson(),
                    control = control,
                    #method = "REML",
                    #select = TRUE,
-                   data = scaleData)
-summary(mod[[23]])
+                   data = data_test)
+summary(mod[[6]])
 
-mod[[24]] <- glmer(AD.atq.number ~ prec*lmg.abun + max.temp*lmg.abun + nest.dens*lmg.abun + REL.DATE*lmg.abun
+mod[[7]] <- glmer(AD.atq.number ~ prec*lmg.abun + max.temp*lmg.abun + nest.dens*lmg.abun + REL.DATE*lmg.abun
                    + (1|fox.year)
                    + offset(log.obs),
                    family = poisson(),
                    control = control,
                    #method = "REML",
                    #select = TRUE,
-                   data = scaleData)
-summary(mod[[24]])
+                   data = data_test)
+summary(mod[[7]])
 
 
-mod[[25]] <- glmer(AD.atq.number ~ prec*lmg.abun + max.temp*lmg.abun + nest.dens + REL.DATE
+mod[[8]] <- glmer(AD.atq.number ~ prec*lmg.abun + max.temp*lmg.abun + nest.dens + REL.DATE
                    + (1|fox.year)
                    + offset(log.obs),
                    family = poisson(),
                    control = control,
                    #method = "REML",
                    #select = TRUE,
-                   data = scaleData)
-summary(mod[[25]])
+                   data = data_test)
+summary(mod[[8]])
+
 
 # AIC table
 aictab(mod, modnames = NULL)
 
 # Computation of R squared
-r.squaredGLMM(mod[[18]])
-r.squaredGLMM(mod[[20]], mod[[7]]) # Check the method !
+r.squaredGLMM(mod[[3]])
+r.squaredGLMM(mod[[3]], mod[[1]]) # Check the method !
 
 # Save the best model for rmarkdown document
 # save(mod, file = "FOX_attack_all_glmm.rda")
@@ -419,8 +228,8 @@ newdat.noCrash <- data.frame(max.temp = v,
                              lmg.crash = "noCrash",
                              log.obs = mean(data$log.obs))
 
-p.crash <- predict(mod[[18]], newdata = newdat.crash, type = "response", re.form = NA)
-p.noCrash <- predict(mod[[18]], newdata = newdat.noCrash, type = "response", re.form = NA)
+p.crash <- predict(mod[[3]], newdata = newdat.crash, type = "response", re.form = NA)
+p.noCrash <- predict(mod[[3]], newdata = newdat.noCrash, type = "response", re.form = NA)
 
 #plot(data$max.temp, data$AD.atq.rate)
 
@@ -436,7 +245,7 @@ newdat1.crash <- data.frame(max.temp = mean(data_test$max.temp),
                             REL.DATE = mean(data_test$REL.DATE),
                             log.obs = mean(data_test$log.obs))
 
-p1.crash <- predict(mod[[18]], newdata = newdat1.crash, type = "response", re.form = NA)
+p1.crash <- predict(mod[[3]], newdata = newdat1.crash, type = "response", re.form = NA)
 
 # ----- #
 newdat1.noCrash <- data.frame(max.temp = mean(data_test$max.temp),
@@ -446,7 +255,7 @@ newdat1.noCrash <- data.frame(max.temp = mean(data_test$max.temp),
                               REL.DATE = mean(data_test$DATE),
                               log.obs = mean(data_test$log.obs))
 
-p1.noCrash <- predict(mod[[18]], newdata = newdat1.noCrash, type = "response", re.form = NA)
+p1.noCrash <- predict(mod[[3]], newdata = newdat1.noCrash, type = "response", re.form = NA)
 
 #plot(data$max.temp, data$AD.atq.rate)
 #plot(v1, p1, type = "l", bty = "n", lwd = 2, xlab = "Cumulative precipitation")
@@ -463,7 +272,7 @@ newdat2 <- data.frame(max.temp = mean(data_test$max.temp),
                       lmg.crash = "noCrash",
                       log.obs = mean(data$log.obs))
 
-p2 <- predict(mod[[18]], newdata = newdat2, type = "response", re.form = NA)
+p2 <- predict(mod[[3]], newdata = newdat2, type = "response", re.form = NA)
 
 # Atq number vs. rel.date #
 # ------------------- #
@@ -477,7 +286,7 @@ newdat3.crash <- data.frame(max.temp = mean(data_test$max.temp),
                       lmg.crash = "crash",
                       log.obs = mean(data$log.obs))
 
-p3.crash <- predict(mod[[18]], newdata = newdat3.crash, type = "response", re.form = NA)
+p3.crash <- predict(mod[[3]], newdata = newdat3.crash, type = "response", re.form = NA)
 
 
 
@@ -488,7 +297,7 @@ newdat3.noCrash <- data.frame(max.temp = mean(data_test$max.temp),
                             lmg.crash = "noCrash",
                             log.obs = mean(data$log.obs))
 
-p3.noCrash <- predict(mod[[18]], newdata = newdat3.noCrash, type = "response", re.form = NA)
+p3.noCrash <- predict(mod[[3]], newdata = newdat3.noCrash, type = "response", re.form = NA)
 # --------- #
 # GRAPHICS #
 # ------- #
@@ -499,7 +308,7 @@ p3.noCrash <- predict(mod[[18]], newdata = newdat3.noCrash, type = "response", r
 # x11()
 # par(mfrow = c(1, 2))
 # # ------ #
-# plot(v, p.crash, ylim = c(0, 7), type = "l", bty = "n", lwd = 2.5, xlab = "Maximal temperature", ylab = "Fox attack number per hour", col = "darkorange4", main = "Crash of lemmings")
+plot(v, p.crash, ylim = c(0, 7), type = "l", bty = "n", lwd = 2.5, xlab = "Maximal temperature", ylab = "Fox attack number per hour", col = "darkorange4", main = "Crash of lemmings")
 # # ... & associated random effects 
 # re <- unique(data_test$fox.year)
 # for(i in re){
@@ -510,7 +319,7 @@ p3.noCrash <- predict(mod[[18]], newdata = newdat3.noCrash, type = "response", r
 #                           lmg.crash = "crash",
 #                           log.obs = mean(data_test$log.obs),
 #                           fox.year = i)
-#   pp.crash <- predict(mod[[18]], newdata = nd2.crash, type = "response")
+#   pp.crash <- predict(mod[[3]], newdata = nd2.crash, type = "response")
 #   lines(v, pp.crash, type = "l", lwd = 1, col = alpha("darkorange", 0.25))
 # }
 # points(data_test$max.temp, 3600*data_test$AD.atq.rate,col = "darkorange4") # WARNINGS ! points are missing on the plot because their value is really high
@@ -527,7 +336,7 @@ p3.noCrash <- predict(mod[[18]], newdata = newdat3.noCrash, type = "response", r
 #                             lmg.crash = "noCrash",
 #                             log.obs = mean(data_test$log.obs),
 #                             fox.year = i)
-#   pp.noCrash <- predict(mod[[18]], newdata = nd2.noCrash, type = "response")
+#   pp.noCrash <- predict(mod[[3]], newdata = nd2.noCrash, type = "response")
 #   lines(v, pp.noCrash, type = "l", lwd = 1, col = alpha("darkorange", 0.25))
 # }
 # points(data_test$max.temp, 3600*data_test$AD.atq.rate,col = "darkorange4") # WARNINGS ! points are missing on the plot because their value is really high
@@ -550,7 +359,7 @@ p3.noCrash <- predict(mod[[18]], newdata = newdat3.noCrash, type = "response", r
 #                           lmg.crash = "crash",
 #                           log.obs = mean(data_test$log.obs),
 #                           fox.year = i)
-#   pp.crash <- predict(mod[[18]], newdata = nd3.crash, type = "response")
+#   pp.crash <- predict(mod[[3]], newdata = nd3.crash, type = "response")
 #   lines(v1, pp.crash, type = "l", lwd = 1, col = alpha("skyblue3", 0.25))
 # }
 # points(data_test$prec, 3600*data_test$AD.atq.rate, col = "skyblue4") # WARNINGS ! points are missing on the plot because their value is really high
@@ -568,7 +377,7 @@ p3.noCrash <- predict(mod[[18]], newdata = newdat3.noCrash, type = "response", r
 #                             lmg.crash = "noCrash",
 #                             log.obs = mean(data_test$log.obs),
 #                             fox.year = i)
-#   pp.noCrash <- predict(mod[[18]], newdata = nd3.noCrash, type = "response")
+#   pp.noCrash <- predict(mod[[3]], newdata = nd3.noCrash, type = "response")
 #   lines(v1, pp.noCrash, type = "l", lwd = 1, col = alpha("skyblue3", 0.25))
 # }
 # points(data_test$prec, 3600*data_test$AD.atq.rate, col = "skyblue4") # WARNINGS ! points are missing on the plot because their value is really high
@@ -590,7 +399,7 @@ p3.noCrash <- predict(mod[[18]], newdata = newdat3.noCrash, type = "response", r
 #                     lmg.crash = "noCrash", 
 #                     log.obs = mean(data$log.obs),
 #                     fox.year = i)
-#   pp <- predict(mod[[18]], newdata = nd4, type = "response")
+#   pp <- predict(mod[[3]], newdata = nd4, type = "response")
 #   lines(v2, pp, type = "l", lwd = 1, col = alpha("green", 0.25))
 # }
 # points(data_test$nest.dens, 3600*data_test$AD.atq.rate, col = "darkgreen") # WARNINGS ! points are missing on the plot because their value is really high
@@ -610,7 +419,7 @@ p3.noCrash <- predict(mod[[18]], newdata = newdat3.noCrash, type = "response", r
 #                     lmg.crash = "noCrash", 
 #                     log.obs = mean(data$log.obs),
 #                     fox.year = i)
-#   pp <- predict(mod[[18]], newdata = nd5, type = "response")
+#   pp <- predict(mod[[3]], newdata = nd5, type = "response")
 #   lines(v3, pp, type = "l", lwd = 1, col = alpha("plum3", 0.25))
 # }
 # points(data_test$DATE, 3600*data_test$AD.atq.rate, col = "plum4") # WARNINGS ! points are missing on the plot because their value is really high
@@ -625,8 +434,8 @@ p3.noCrash <- predict(mod[[18]], newdata = newdat3.noCrash, type = "response", r
 #     pointsize=12,
 #     unit="cm",
 #     bg="transparent")
-#x11(); par(mfrow = c(2, 2))
-visreg(mod[[20]],
+
+visreg(mod[[3]],
        "max.temp",
        "lmg.crash",
        overlay = T,
@@ -650,7 +459,7 @@ visreg(mod[[20]],
 #     pointsize=12,
 #     unit="cm",
 #     bg="transparent")
-visreg(mod[[20]],
+visreg(mod[[3]],
        "prec",
        "lmg.crash",
        overlay = T,
@@ -674,7 +483,7 @@ visreg(mod[[20]],
 #     pointsize=12,
 #     unit="cm",
 #     bg="transparent")
-visreg(mod[[20]],
+visreg(mod[[3]],
        "REL.DATE",
        "lmg.crash",
        overlay = T,
@@ -698,7 +507,7 @@ visreg(mod[[20]],
 #     pointsize=12,
 #     unit="cm",
 #     bg="transparent")
-visreg(mod[[20]],
+visreg(mod[[3]],
        "nest.dens",
        scale = "response",
        cond = list(log.obs = log(3600)),
