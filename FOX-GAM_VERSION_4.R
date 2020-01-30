@@ -243,7 +243,12 @@ x11();plot(sims)
 
 # plot.gam(lmgGamm[[10]], select = 1)
 x11(); par(mfrow = c(2, 2))
-visreg(lmgGamm[[10]], "max.temp", "lmg.crash", overlay = T, scale = "response", cond = list(log.obs = log(3600)),
+visreg(lmgGamm[[10]],
+       "max.temp",
+       "lmg.crash",
+       overlay = T,
+       scale = "response",
+       cond = list(log.obs = log(3600)),
        #log = "y", 
        ylim = c(0.01, 70), bty = "n")
 y <- ((data_test$goo.atq.number/data_test$OBS.LENGTH)*3600) + 0.01
@@ -251,7 +256,8 @@ points(x = data_test$max.temp, y = y, col = ifelse(data_test$lmg.crash == "crash
 
 visreg(lmgGamm[[10]], "max.temp", "lmg.crash", overlay = T, scale = "linear", cond = list(log.obs = log(3600)), points = list(cex = 1), bty = "n")
 
-
+visreg(lmgGamm[[10]], "max.temp", "lmg.crash", overlay = T, scale =
+         "response")
 visreg(lmgGamm[[10]], "prec", "lmg.crash", overlay = T, scale =
          "response")
 visreg(lmgGamm[[10]], "REL.DATE", "lmg.crash", overlay = T, bty = "n", scale = "response")
