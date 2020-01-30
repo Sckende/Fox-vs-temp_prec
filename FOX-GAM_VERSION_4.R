@@ -231,9 +231,34 @@ lmgGamm[[10]] <- gam(AD.atq.number ~ s(prec , by = lmg.crash) + max.temp*lmg.cra
                     #select = TRUE,
                     data = data_test)
 summary(lmgGamm[[10]])
+#saveRDS(lmgGamm[[10]], "lmgGamm10")
+
 visreg(lmgGamm[[10]], "prec", "lmg.crash", overlay = T)
 visreg(lmgGamm[[10]], "max.temp", "lmg.crash", overlay = T)
 visreg(lmgGamm[[10]], "REL.DATE", "lmg.crash", overlay = T)
+x11(); plot(lmgGamm[[10]], page = 1, all.terms = TRUE, residuals = TRUE)
+# Tests with DHARma package
+sims <- simulateResiduals(lmgGamm[[10]])
+x11();plot(sims)
+
+# plot.gam(lmgGamm[[10]], select = 1)
+x11(); par(mfrow = c(2, 2))
+visreg(lmgGamm[[10]], "max.temp", "lmg.crash", overlay = T, scale = "response", cond = list(log.obs = log(3600)),
+       #log = "y", 
+       ylim = c(0.01, 70), bty = "n")
+y <- ((data_test$goo.atq.number/data_test$OBS.LENGTH)*3600) + 0.01
+points(x = data_test$max.temp, y = y, col = ifelse(data_test$lmg.crash == "crash", "red", "blue"))
+
+visreg(lmgGamm[[10]], "max.temp", "lmg.crash", overlay = T, scale = "linear", cond = list(log.obs = log(3600)), points = list(cex = 1), bty = "n")
+
+
+visreg(lmgGamm[[10]], "prec", "lmg.crash", overlay = T, scale =
+         "response")
+visreg(lmgGamm[[10]], "REL.DATE", "lmg.crash", overlay = T, bty = "n", scale = "response")
+visreg(lmgGamm[[10]], "nest.dens", "lmg.crash", overlay = T, bty = "n", scale = "response")
+
+predict(lmgGamm[[10]], type = "response")
+
 
 # ----- #
 lmgGamm[[11]] <- gam(AD.atq.number ~ te(prec , max.temp) + lmg.crash + s(REL.DATE, by = lmg.crash) + nest.dens
