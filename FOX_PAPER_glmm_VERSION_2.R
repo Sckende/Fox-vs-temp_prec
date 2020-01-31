@@ -46,9 +46,9 @@ panel.cor <- function(x, y, digits = 2, cex.cor, ...)
   text(0.5, 0.4, txt2)
 }
 x11(); 
-pairs(data[, c(2, 14, 17, 21, 22, 24, 26)], upper.panel = panel.cor)
+pairs(data[, c(13, 14, 15, 16, 17, 21, 22, 24, 26)], upper.panel = panel.cor)
 
-ggpairs(data[, c(14, 17, 21, 22, 24, 26)])
+ggpairs(data[, c(13, 14, 15, 16, 17, 21, 22, 24, 26)])
 graphics.off()
 
 # ------------------------------- #
@@ -426,7 +426,7 @@ plot(v, p.crash, ylim = c(0, 7), type = "l", bty = "n", lwd = 2.5, xlab = "Maxim
 # 
 # graphics.off()
 
-### Visreg ###
+#### Visreg and paper plots ####
 # png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Glmm_visreg_temp.tiff",
 #     res=300,
 #     width=30,
@@ -444,12 +444,23 @@ visreg(mod[[3]],
        jitter = T,
        bty = "n",
        xlab = "Maximal temperature (°C)",
+       #xlim = c(0,16),
+       xaxt = "n",
        ylab = "Fox attack rate (nb/hour)",
+       ylim = c(0, 10),
        gg = F,
        fill.par = list(col = c(alpha("darkorange1", 0.25), alpha("darkorange4", 0.25))),
        line = list(col = c("darkorange1", "darkorange4")),
-       points = list(col = c(alpha("darkorange1", 0.7), alpha("darkorange4", 0.7)), cex = 1),
-       legend =T) 
+       points = list(col = c(alpha("darkorange1", 0.7), alpha("darkorange4", 0.7)), cex = 2),
+       legend = F,
+#       strip.names = c("low", "high"),
+       cex.axis = 1.5,
+       cex.lab = 1.5,
+       cex.main = 1.5,
+       rug = 2,
+       partial = FALSE) 
+legend("topright", legend = c("low", "high"), fill = c("darkorange1", "darkorange4"), border = NA, bty = "n", cex = 1.5)
+axis(1, cex.axis = 1.5, at = seq(0, 16, 2), xpd = T)
 #dev.off()
 
 # png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Glmm_prec_visreg.tiff",
@@ -467,13 +478,18 @@ visreg(mod[[3]],
        cond = list(log.obs = log(3600)),
        jitter = T,
        bty = "n",
-       xlab = "Total precipitation",
+       xlab = "Total precipitation (mm)",
        ylab = "Fox attack rate (nb/hour)",
        gg = F,
        fill.par = list(col = c(alpha("skyblue1", 0.25), alpha("skyblue4", 0.25))),
        line = list(col = c("skyblue1", "skyblue4")),
        points = list(col = c(alpha("skyblue1", 0.7), alpha("skyblue4", 0.7)), cex = 1),
-       legend = T)
+       legend = F,
+       cex.axis = 1.5,
+       cex.lab = 1.5,
+       rug = 2,
+       partial = F)
+legend(x = 0, y = 14, legend = c("low", "high"), fill = c("skyblue1", "skyblue4"), border = NA, bty = "n", cex = 1.5)
 #dev.off()
 
 # png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Glmm_rel.date_visreg.tiff",
@@ -492,12 +508,20 @@ visreg(mod[[3]],
        jitter = T,
        bty = "n",
        xlab = "Relative date",
+       xaxt = "n",
        ylab = "Fox attack rate (nb/hour)",
+       ylim = c(0, 30),
        gg = F,
-       fill.par = list(col = c(alpha("plum1", 0.25), alpha("plum4", 0.25))),
-       line = list(col = c("plum1", "plum4")),
+       fill.par = list(col = c(alpha("plum2", 0.25), alpha("plum4", 0.25))),
+       line = list(col = c("plum2", "plum4")),
        points = list(col = c(alpha("plum1", 0.7), alpha("plum4", 0.7)), cex = 1),
-       legend = T)
+       legend = F,
+       cex.axis = 1.5,
+       cex.lab = 1.5,
+       rug = 2,
+       partial = F)
+legend("topright", legend = c("low", "high"), fill = c("plum2", "plum4"), border = NA, bty = "n", cex = 1.5)
+axis(1, cex.axis = 1.5, at = seq(-4, 44, 4), xpd = T)
 #dev.off()
 
 # png("C:/Users/HP_9470m/Dropbox/PHD. Claire/Chapitres de thèse/CHAPTER 3 - Fox predation & climate variables/FOX PRED PAPER/Figures paper/FOX_PAPER_Glmm_nest_visreg.tiff",
@@ -514,10 +538,16 @@ visreg(mod[[3]],
        jitter = T,
        bty = "n",
        xlab = "Goose nest dens",
+       xlim = c(0, 10),
        ylab = "Fox attack rate (nb/hour)",
+       ylim = c(0, 6),
        gg = F,
        fill.par = list(col = c(alpha("forestgreen", 0.25))),
        line = list(col = c("forestgreen")),
        points = list(col = c(alpha("forestgreen", 0.7)), cex = 1),
-       legend = F)
+       legend = F,
+       cex.axis = 1.5,
+       cex.lab = 1.5,
+       rug = 2,
+       partial = F)
 #dev.off()
