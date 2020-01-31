@@ -23,6 +23,7 @@ library("ggplot2")
 library("GGally") # correlation panels
 library("MuMIn")
 library("splines")
+library("r2glmm")
 
 # -------------------------------- #
 #### Correlation btw variables ####
@@ -130,6 +131,7 @@ mod[[3]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.den
                    #select = TRUE,
                    data = data_test)
 summary(mod[[3]])
+r2beta(mod[[3]], method = "nsj")
 x11(); par(mfrow = c(2, 2))
 visreg(mod[[3]], "max.temp", by = "lmg.crash", overlay = T)
 visreg(mod[[3]], "prec", by = "lmg.crash", overlay = T)
