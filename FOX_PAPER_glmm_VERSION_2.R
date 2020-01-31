@@ -136,6 +136,12 @@ visreg(mod[[3]], "prec", by = "lmg.crash", overlay = T)
 visreg(mod[[3]], "REL.DATE", by = "lmg.crash", overlay = T)
 visreg(mod[[3]], "nest.dens")
 
+# Tests with DHARma package
+sims <- simulateResiduals(mod[[3]])
+plot(sims)
+testDispersion(sims)
+testZeroInflation(sims)
+
 mod[[4]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.dens*lmg.crash + REL.DATE*lmg.crash
                    + (1|fox.year)
                    + offset(log.obs),
