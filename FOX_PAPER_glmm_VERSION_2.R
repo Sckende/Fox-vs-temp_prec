@@ -131,7 +131,10 @@ mod[[3]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.den
                    #select = TRUE,
                    data = data_test)
 summary(mod[[3]])
-r2beta(mod[[3]], method = "nsj")
+
+# Marginal and conditional R2
+r.squaredGLMM(mod[[3]]) # package MuMIn
+
 x11(); par(mfrow = c(2, 2))
 visreg(mod[[3]], "max.temp", by = "lmg.crash", overlay = T)
 visreg(mod[[3]], "prec", by = "lmg.crash", overlay = T)
@@ -208,6 +211,9 @@ aictab(mod, modnames = NULL)
 # Computation of R squared
 r.squaredGLMM(mod[[3]])
 r.squaredGLMM(mod[[3]], mod[[1]]) # Check the method !
+
+# VÉRIFICATION DE LA MULTICOLINÉARITÉ
+car::vif(mod[[3]])
 
 # Save the best model for rmarkdown document
 # save(mod, file = "FOX_attack_all_glmm.rda")
@@ -507,7 +513,7 @@ legend(x = 0, y = 14, legend = c("low", "high"), fill = c("skyblue1", "skyblue4"
 #     pointsize=12,
 #     unit="cm",
 #     bg="transparent")
-visreg(mod[[3]],
+j <- visreg(mod[[3]],
        "REL.DATE",
        "lmg.crash",
        overlay = T,
@@ -546,7 +552,8 @@ visreg(mod[[3]],
        jitter = T,
        bty = "n",
        xlab = "Goose nest dens",
-       xlim = c(0, 10),
+       xlim = c(min(data_test$nest.dens), max(data_test$nest.dens)),
+       xaxt = "n",
        ylab = "Fox attack rate (nb/hour)",
        ylim = c(0, 6),
        gg = F,
@@ -558,4 +565,5 @@ visreg(mod[[3]],
        cex.lab = 1.5,
        rug = 2,
        partial = F)
+axis(1, at = seq(0, 9.5, 2), xpd = T, cex.axis = 1.5)
 #dev.off()
