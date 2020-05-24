@@ -319,81 +319,81 @@ p3.noCrash <- predict(mod[[3]], newdata = newdat3.noCrash, type = "response", re
 # -------------------- #
 # Temperature effect...
 # ------------------- #
-# x11()
-# par(mfrow = c(1, 2))
-# # ------ #
+x11()
+par(mfrow = c(1, 2))
+# ------ #
 plot(v, p.crash, ylim = c(0, 7), type = "l", bty = "n", lwd = 2.5, xlab = "Maximal temperature", ylab = "Fox attack number per hour", col = "darkorange4", main = "Crash of lemmings")
-# # ... & associated random effects 
-# re <- unique(data_test$fox.year)
-# for(i in re){
-#   nd2.crash <- data.frame(max.temp = v,
-#                           prec = mean(data_test$prec),
-#                           nest.dens = mean(data_test$nest.dens),
-#                           DATE = mean(data_test$DATE),
-#                           lmg.crash = "crash",
-#                           log.obs = mean(data_test$log.obs),
-#                           fox.year = i)
-#   pp.crash <- predict(mod[[3]], newdata = nd2.crash, type = "response")
-#   lines(v, pp.crash, type = "l", lwd = 1, col = alpha("darkorange", 0.25))
-# }
-# points(data_test$max.temp, 3600*data_test$AD.atq.rate,col = "darkorange4") # WARNINGS ! points are missing on the plot because their value is really high
-# 
+# ... & associated random effects
+re <- unique(data_test$fox.year)
+for(i in re){
+  nd2.crash <- data.frame(max.temp = v,
+                          prec = mean(data_test$prec),
+                          nest.dens = mean(data_test$nest.dens),
+                          REL.DATE = mean(data_test$REL.DATE),
+                          lmg.crash = "crash",
+                          log.obs = mean(data_test$log.obs),
+                          fox.year = i)
+  pp.crash <- predict(mod[[3]], newdata = nd2.crash, type = "response")
+  lines(v, pp.crash, type = "l", lwd = 1, col = alpha("darkorange", 0.25))
+}
+#points(data_test$max.temp, 3600*data_test$AD.atq.rate,col = "darkorange4") # WARNINGS ! points are missing on the plot because their value is really high
+
 # # ------ #
-# plot(v, p.noCrash, ylim = c(0, 7), type = "l", bty = "n", lwd = 2.5, xlab = "Maximal temperature", ylab = "Fox attack number per hour", col = "darkorange4", main = "No crash of lemming")
-# # ... & associated random effects 
-# re <- unique(data_test$fox.year)
-# for(i in re){
-#   nd2.noCrash <- data.frame(max.temp = v,
-#                             prec = mean(data_test$prec),
-#                             nest.dens = mean(data_test$nest.dens),
-#                             DATE = mean(data_test$DATE),
-#                             lmg.crash = "noCrash",
-#                             log.obs = mean(data_test$log.obs),
-#                             fox.year = i)
-#   pp.noCrash <- predict(mod[[3]], newdata = nd2.noCrash, type = "response")
-#   lines(v, pp.noCrash, type = "l", lwd = 1, col = alpha("darkorange", 0.25))
-# }
+plot(v, p.noCrash, ylim = c(0, 7), type = "l", bty = "n", lwd = 2.5, xlab = "Maximal temperature", ylab = "Fox attack number per hour", col = "darkorange4", main = "No crash of lemming")
+# ... & associated random effects
+re <- unique(data_test$fox.year)
+for(i in re){
+  nd2.noCrash <- data.frame(max.temp = v,
+                            prec = mean(data_test$prec),
+                            nest.dens = mean(data_test$nest.dens),
+                            REL.DATE = mean(data_test$REL.DATE),
+                            lmg.crash = "noCrash",
+                            log.obs = mean(data_test$log.obs),
+                            fox.year = i)
+  pp.noCrash <- predict(mod[[3]], newdata = nd2.noCrash, type = "response")
+  lines(v, pp.noCrash, type = "l", lwd = 1, col = alpha("darkorange", 0.25))
+}
 # points(data_test$max.temp, 3600*data_test$AD.atq.rate,col = "darkorange4") # WARNINGS ! points are missing on the plot because their value is really high
 # 
 # # ------------------------ #
 # # Precipitation effects....#
 # # ------------------------ #
-# x11()
-# par(mfrow = c(1, 2))
-# # ----- #
-# plot(v1, p1.crash, type = "l", ylim = c(0, 4), lwd = 2, col = "skyblue4", bty = "n", ylab = "Fox attack number per hour", xlab = "Cumulative precipitation (mm)", main = "Crash of lemmings")
-# 
-# # ... & associated random effects
-# re <- unique(data_test$fox.year)
-# for(i in re){
-#   nd3.crash <- data.frame(max.temp = mean(data_test$max.temp),
-#                           prec = v1,
-#                           nest.dens = mean(data_test$nest.dens),
-#                           DATE = mean(data_test$DATE),
-#                           lmg.crash = "crash",
-#                           log.obs = mean(data_test$log.obs),
-#                           fox.year = i)
-#   pp.crash <- predict(mod[[3]], newdata = nd3.crash, type = "response")
-#   lines(v1, pp.crash, type = "l", lwd = 1, col = alpha("skyblue3", 0.25))
-# }
+x11()
+par(mfrow = c(1, 2))
+# ----- #
+plot(v1, p1.crash, type = "l", ylim = c(0, 8), lwd = 2, col = "skyblue4", bty = "n", ylab = "Fox attack number per hour", xlab = "Cumulative precipitation (mm)", main = "Crash of lemmings")
+
+# ... & associated random effects
+re <- unique(data_test$fox.year)
+for(i in re){
+  nd3.crash <- data.frame(max.temp = mean(data_test$max.temp),
+                          prec = v1,
+                          nest.dens = mean(data_test$nest.dens),
+                          REL.DATE = mean(data_test$REL.DATE),
+                          lmg.crash = "crash",
+                          log.obs = mean(data_test$log.obs),
+                          fox.year = i)
+  pp.crash <- predict(mod[[3]], newdata = nd3.crash, type = "response")
+  lines(v1, pp.crash, type = "l", lwd = 1, col = alpha("skyblue3", 0.25))
+}
 # points(data_test$prec, 3600*data_test$AD.atq.rate, col = "skyblue4") # WARNINGS ! points are missing on the plot because their value is really high
 # 
 # # ----- #
-# plot(v1, p1.noCrash, type = "l", ylim = c(0, 4), lwd = 2, col = "skyblue4", bty = "n", ylab = "Fox attack number per hour", xlab = "Cumulative precipitation (mm)", main = "No crash of lemmings")
-# 
-# # ... & associated random effects
-# re <- unique(data_test$fox.year)
-# for(i in re){
-#   nd3.noCrash <- data.frame(max.temp = mean(data_test$max.temp),
-#                             prec = v1,
-#                             nest.dens = mean(data_test$nest.dens),
-#                             DATE = mean(data_test$DATE),
-#                             lmg.crash = "noCrash",
-#                             log.obs = mean(data_test$log.obs),
-#                             fox.year = i)
-#   pp.noCrash <- predict(mod[[3]], newdata = nd3.noCrash, type = "response")
-#   lines(v1, pp.noCrash, type = "l", lwd = 1, col = alpha("skyblue3", 0.25))
-# }
+plot(v1, p1.noCrash, type = "l", ylim = c(0, 8), lwd = 2, col = "skyblue4", bty = "n", ylab = "Fox attack number per hour", xlab = "Cumulative precipitation (mm)", main = "No crash of lemmings")
+
+# ... & associated random effects
+re <- unique(data_test$fox.year)
+for(i in re){
+  nd3.noCrash <- data.frame(max.temp = mean(data_test$max.temp),
+                            prec = v1,
+                            nest.dens = mean(data_test$nest.dens),
+                            REL.DATE = mean(data_test$REL.DATE),
+                            lmg.crash = "noCrash",
+                            log.obs = mean(data_test$log.obs),
+                            fox.year = i)
+  pp.noCrash <- predict(mod[[3]], newdata = nd3.noCrash, type = "response")
+  lines(v1, pp.noCrash, type = "l", lwd = 1, col = alpha("skyblue3", 0.25))
+}
 # points(data_test$prec, 3600*data_test$AD.atq.rate, col = "skyblue4") # WARNINGS ! points are missing on the plot because their value is really high
 # 
 # # ----------------------- #
@@ -401,43 +401,61 @@ plot(v, p.crash, ylim = c(0, 7), type = "l", bty = "n", lwd = 2.5, xlab = "Maxim
 # # --------------------- #
 # x11()
 # par(mfrow = c(1, 2))
-# plot(v2, p2, ylim = c(0, 6), type = "l", lwd = 2, bty = "n", xlab = "Goose nest density", col = "darkgreen", ylab = "Fox attack number per hour")
-# 
-# # ... & associated random effects
-# re <- unique(data_test$fox.year)
-# for(i in re){
-#   nd4 <- data.frame(max.temp = mean(data_test$max.temp),
-#                     prec = mean(data_test$prec),
-#                     nest.dens = v2,
-#                     DATE = mean(data_test$DATE),
-#                     lmg.crash = "noCrash", 
-#                     log.obs = mean(data$log.obs),
-#                     fox.year = i)
-#   pp <- predict(mod[[3]], newdata = nd4, type = "response")
-#   lines(v2, pp, type = "l", lwd = 1, col = alpha("green", 0.25))
-# }
+plot(v2, p2, ylim = c(0, 6), type = "l", lwd = 2, bty = "n", xlab = "Goose nest density", col = "darkgreen", ylab = "Fox attack number per hour")
+
+# ... & associated random effects
+re <- unique(data_test$fox.year)
+for(i in re){
+  nd4 <- data.frame(max.temp = mean(data_test$max.temp),
+                    prec = mean(data_test$prec),
+                    nest.dens = v2,
+                    REL.DATE = mean(data_test$REL.DATE),
+                    lmg.crash = "noCrash",
+                    log.obs = mean(data$log.obs),
+                    fox.year = i)
+  pp <- predict(mod[[3]], newdata = nd4, type = "response")
+  lines(v2, pp, type = "l", lwd = 1, col = alpha("green", 0.25))
+}
 # points(data_test$nest.dens, 3600*data_test$AD.atq.rate, col = "darkgreen") # WARNINGS ! points are missing on the plot because their value is really high
 # 
 # # --------------- #
 # # Date effect ...#
 # # ------------- #
-# plot(v3, p3, ylim = c(0, 6), type = "l", lwd = 2, bty = "n", xlab = "Date of observations", col = "plum4", ylab = "Fox attack number per hour")
-# 
-# # ... & associated random effects
-# re <- unique(data_test$fox.year)
-# for(i in re){
-#   nd5 <- data.frame(max.temp = mean(data_test$max.temp),
-#                     prec = mean(data_test$prec),
-#                     nest.dens = mean(data_test$nest.dens),
-#                     DATE = v3,
-#                     lmg.crash = "noCrash", 
-#                     log.obs = mean(data$log.obs),
-#                     fox.year = i)
-#   pp <- predict(mod[[3]], newdata = nd5, type = "response")
-#   lines(v3, pp, type = "l", lwd = 1, col = alpha("plum3", 0.25))
-# }
+# x11()
+# par(mfrow = c(1, 2))
+plot(v3, p3.crash, ylim = c(0, 15), type = "l", lwd = 2, bty = "n", xlab = "Date of observations", col = "plum4", ylab = "Fox attack number per hour", main = "Crash of lemmings")
+
+# ... & associated random effects
+re <- unique(data_test$fox.year)
+for(i in re){
+  nd5 <- data.frame(max.temp = mean(data_test$max.temp),
+                    prec = mean(data_test$prec),
+                    nest.dens = mean(data_test$nest.dens),
+                    REL.DATE = v3,
+                    lmg.crash = "crash",
+                    log.obs = mean(data$log.obs),
+                    fox.year = i)
+  pp <- predict(mod[[3]], newdata = nd5, type = "response")
+  lines(v3, pp, type = "l", lwd = 1, col = alpha("plum3", 0.25))
+}
 # points(data_test$DATE, 3600*data_test$AD.atq.rate, col = "plum4") # WARNINGS ! points are missing on the plot because their value is really high
 # 
+
+plot(v3, p3.noCrash, ylim = c(0, 15), type = "l", lwd = 2, bty = "n", xlab = "Date of observations", col = "plum4", ylab = "Fox attack number per hour", main = "No crash of lemmings")
+
+# ... & associated random effects
+re <- unique(data_test$fox.year)
+for(i in re){
+  nd5 <- data.frame(max.temp = mean(data_test$max.temp),
+                    prec = mean(data_test$prec),
+                    nest.dens = mean(data_test$nest.dens),
+                    REL.DATE = v3,
+                    lmg.crash = "noCrash",
+                    log.obs = mean(data$log.obs),
+                    fox.year = i)
+  pp <- predict(mod[[3]], newdata = nd5, type = "response")
+  lines(v3, pp, type = "l", lwd = 1, col = alpha("plum3", 0.25))
+}
 # graphics.off()
 
 #### Visreg and paper plots ####
