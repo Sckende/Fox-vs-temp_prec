@@ -25,6 +25,7 @@ library("MuMIn")
 library("splines")
 library("r2glmm")
 
+
 # -------------------------------- #
 #### Correlation btw variables ####
 # ------------------------------ #
@@ -215,6 +216,13 @@ r.squaredGLMM(mod[[3]], mod[[1]]) # Check the method !
 # VÉRIFICATION DE LA MULTICOLINÉARITÉ
 car::vif(mod[[3]])
 
+# Test de la significativité des pentes
+emtrends(mod[[3]], pairwise~lmg.crash, var = "max.temp")
+
+emmip(mod[[3]], lmg.crash~max.temp, cov.reduce = range)
+
+emtrends(mod[[3]], pairwise~lmg.crash, var = "prec")
+
 # Save the best model for rmarkdown document
 # save(mod, file = "FOX_attack_all_glmm.rda")
 # bestMod <- mod[[18]]
@@ -238,7 +246,7 @@ newdat.crash <- data.frame(max.temp = v,
 newdat.noCrash <- data.frame(max.temp = v,
                              prec = mean(data_test$prec),
                              nest.dens = mean(data_test$nest.dens),
-                             REL.DATE = mean(data_test$REL.DATE),
+                            REL.DATE = mean(data_test$REL.DATE),
                              lmg.crash = "noCrash",
                              log.obs = mean(data$log.obs))
 
