@@ -209,6 +209,12 @@ summary(mod[[8]])
 # AIC table
 aictab(mod, modnames = NULL)
 
+# summary of the best model
+summary(mod[[3]])
+
+# Computation of confidence intervals
+confint(mod[[3]])
+
 # Computation of R squared
 r.squaredGLMM(mod[[3]])
 r.squaredGLMM(mod[[3]], mod[[1]]) # Check the method !
