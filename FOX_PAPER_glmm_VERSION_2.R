@@ -205,6 +205,16 @@ mod[[8]] <- glmer(AD.atq.number ~ prec*lmg.abun + max.temp*lmg.abun + nest.dens 
                    data = data_test)
 summary(mod[[8]])
 
+mod[[9]] <- glmer(AD.atq.number ~ prec + max.temp + nest.dens + REL.DATE + lmg.abun
+                  + (1|fox.year)
+                  + offset(log.obs),
+                  family = poisson(),
+                  control = control,
+                  #method = "REML",
+                  #select = TRUE,
+                  data = data_test)
+summary(mod[[9]])
+
 
 # AIC table
 aictab(mod, modnames = NULL)
