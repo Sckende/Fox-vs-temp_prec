@@ -231,6 +231,11 @@ r.squaredGLMM(mod[[3]], mod[[1]]) # Check the method !
 
 # VÉRIFICATION DE LA MULTICOLINÉARITÉ
 car::vif(mod[[3]])
+car::vif(mod[[4]])
+car::vif(mod[[2]])
+car::vif(mod[[6]])
+car::vif(mod[[7]])
+car::vif(mod[[9]])
 
 # Test de la significativité des pentes
 emtrends(mod[[3]], pairwise~lmg.crash, var = "max.temp")
