@@ -102,7 +102,7 @@ control <- glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 2000000)) 
 # Models
 mod <- list()
 
-
+################## lmg.crash ###################
 mod[[1]] <- glmer(AD.atq.number ~ 1
                    + (1|fox.year)
                    + offset(log.obs),
@@ -163,7 +163,7 @@ visreg(mod[[4]], "prec", by = "lmg.crash", overlay = T)
 visreg(mod[[4]], "DATE", by = "lmg.crash", overlay = T)
 visreg(mod[[4]], "nest.dens", by = "lmg.crash", overlay = T)
 
-#####################################
+################## lmg.abun ###################
 mod[[5]] <- glmer(AD.atq.number ~ prec*lmg.abun + max.temp*lmg.abun + nest.dens*lmg.abun + REL.DATE
                    + (1|fox.year)
                    + offset(log.obs),
@@ -205,7 +205,9 @@ mod[[8]] <- glmer(AD.atq.number ~ prec*lmg.abun + max.temp*lmg.abun + nest.dens 
                    data = data_test)
 summary(mod[[8]])
 
-mod[[9]] <- glmer(AD.atq.number ~ prec + max.temp + nest.dens + REL.DATE + lmg.abun
+####
+
+mod[[9]] <- glmer(AD.atq.number ~ prec + max.temp + nest.dens + REL.DATE + lmg.crash
                   + (1|fox.year)
                   + offset(log.obs),
                   family = poisson(),
@@ -215,6 +217,16 @@ mod[[9]] <- glmer(AD.atq.number ~ prec + max.temp + nest.dens + REL.DATE + lmg.a
                   data = data_test)
 summary(mod[[9]])
 
+mod[[10]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.dens + REL.DATE
+                  + (1|fox.year)
+                  + offset(log.obs),
+                  family = poisson(),
+                  control = control,
+                  #method = "REML",
+                  #select = TRUE,
+                  data = data_test)
+summary(mod[[10]])
+
 
 # AIC table
 aictab(mod, modnames = NULL)
@@ -223,7 +235,7 @@ aictab(mod, modnames = NULL)
 summary(mod[[3]])
 
 # Computation of confidence intervals
-confint(mod[[3]])
+#confint(mod[[3]])
 
 # Computation of R squared
 r.squaredGLMM(mod[[3]])
@@ -235,7 +247,9 @@ car::vif(mod[[4]])
 car::vif(mod[[2]])
 car::vif(mod[[6]])
 car::vif(mod[[7]])
+car::vif(mod[[8]])
 car::vif(mod[[9]])
+car::vif(mod[[10]])
 
 # Test de la significativité des pentes
 emtrends(mod[[3]], pairwise~lmg.crash, var = "max.temp")
