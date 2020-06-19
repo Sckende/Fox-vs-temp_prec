@@ -227,6 +227,16 @@ mod[[10]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.de
                   data = data_test)
 summary(mod[[10]])
 
+mod[[11]] <- glmer(AD.atq.number ~ lmg.crash + nest.dens + REL.DATE
+                   + (1|fox.year)
+                   + offset(log.obs),
+                   family = poisson(),
+                   control = control,
+                   #method = "REML",
+                   #select = TRUE,
+                   data = data_test)
+summary(mod[[11]])
+
 
 # AIC table
 aictab(mod, modnames = NULL)
@@ -253,11 +263,13 @@ car::vif(mod[[10]])
 
 # Test de la significativité des pentes
 emtrends(mod[[3]], pairwise~lmg.crash, var = "max.temp")
-
 emmip(mod[[3]], lmg.crash~max.temp, cov.reduce = range)
 
 emtrends(mod[[3]], pairwise~lmg.crash, var = "prec")
+emmip(mod[[3]], lmg.crash~prec, cov.reduce = range)
 
+emtrends(mod[[3]], pairwise~lmg.crash, var = "REL.DATE")
+emmip(mod[[3]], lmg.crash~REL.DATE, cov.reduce = range)
 # Save the best model for rmarkdown document
 # save(mod, file = "FOX_attack_all_glmm.rda")
 # bestMod <- mod[[18]]
