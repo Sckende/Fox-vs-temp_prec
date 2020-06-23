@@ -123,15 +123,14 @@ mod[[2]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.den
                    data = data_test)
 summary(mod[[2]])
 
-mod[[3]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.dens + REL.DATE*lmg.crash
+mod[[3]] <- glmer(AD.atq.number ~ -1 + prec*lmg.crash + max.temp*lmg.crash + nest.dens + REL.DATE*lmg.crash
                    + (1|fox.year)
                    + offset(log.obs),
                    family = poisson(),
                    control = control,
                    #method = "REML",
                    #select = TRUE,
-                   data = data_test,
-                  contrasts = list(lmg.crash = contr.sum))
+                   data = data_test)
 summary(mod[[3]])
 
 # Marginal and conditional R2
