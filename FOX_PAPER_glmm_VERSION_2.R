@@ -130,7 +130,8 @@ mod[[3]] <- glmer(AD.atq.number ~ prec*lmg.crash + max.temp*lmg.crash + nest.den
                    control = control,
                    #method = "REML",
                    #select = TRUE,
-                   data = data_test)
+                   data = data_test,
+                  contrasts = list(lmg.crash = contr.sum))
 summary(mod[[3]])
 
 # Marginal and conditional R2
